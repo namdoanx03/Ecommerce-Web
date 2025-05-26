@@ -42,25 +42,12 @@ const Search = () => {
 
   return (
     <div className='w-full  min-w-[300px] lg:min-w-[420px] h-11 lg:h-12 rounded-lg border overflow-hidden flex items-center text-neutral-500 bg-slate-50 group focus-within:border-primary-200 '>
-        <div>
-            {
-                (isMobile && isSearchPage ) ? (
-                    <Link to={"/"} className='flex justify-center items-center h-full p-2 m-1 group-focus-within:text-primary-200 bg-white rounded-full shadow-md'>
-                        <FaArrowLeft size={20}/>
-                    </Link>
-                ) :(
-                    <button className='flex justify-center items-center h-full p-3 group-focus-within:text-primary-200'>
-                        <IoSearch size={22}/>
-                    </button>
-                )
-            }
-        </div>
         <div className='w-full h-full'>
             {
                 !isSearchPage ? (
                      //not in search page
                      <div onClick={redirectToSearchPage} className='w-full h-full flex items-center'>
-                        <TypeAnimation
+                        <TypeAnimation className='px-4'
                                 sequence={[
                                     // Same substring at the start will only be typed out once, initially
                                     'Search "milk"',
@@ -94,14 +81,26 @@ const Search = () => {
                             placeholder='Search for atta dal and more.'
                             autoFocus
                             value={searchValue}
-                            className='bg-transparent w-full h-full outline-none'
+                            className='bg-transparent w-full h-full outline-none px-4'
                             onChange={handleOnChange}
                         />
                     </div>
                 )
             }
         </div>
-        
+        <div>
+            {
+                (isMobile && isSearchPage ) ? (
+                    <Link to={"/"} className='flex justify-center items-center h-full p-2 m-1 group-focus-within:text-primary-200 bg-white rounded-full shadow-md '>
+                        <FaArrowLeft size={20}/>
+                    </Link>
+                ) :(
+                    <button className='flex justify-center items-center h-full p-3 group-focus-within:text-primary-200 bg-[#ffa53b] text-white'>
+                        <IoSearch size={22}/>
+                    </button>
+                )
+            }
+        </div>
     </div>
   )
 }
