@@ -68,16 +68,20 @@ function App() {
     // fetchCartItem()
   },[])
 
+  const isAuthPage = location.pathname === '/login' || 
+                    location.pathname === '/register' || 
+                    location.pathname === '/forgot-password'
+
   return (
     <GlobalProvider> 
-      <Header/>
+      {!isAuthPage && <Header/>}
       <main className='min-h-[78vh]'>
           <Outlet/>
       </main>
-      <Footer/>
+      {!isAuthPage && <Footer/>}
       <Toaster/>
       {
-        location.pathname !== '/checkout' && (
+        location.pathname !== '/checkout' && !isAuthPage && (
           <CartMobileLink/>
         )
       }
