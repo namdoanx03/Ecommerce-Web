@@ -43,15 +43,36 @@ const UserMenu = ({close}) => {
    }
   return (
     <div>
-        <div className='font-semibold'>My Account</div>
-        <div className='text-sm flex items-center gap-2'>
-          <span className='max-w-52 text-ellipsis line-clamp-1'>{user.name || user.mobile} <span className='text-medium text-red-600'>{user.role === "ADMIN" ? "(Admin)" : "" }</span></span>
-          <Link onClick={handleClose} to={"/dashboard/profile"} className='hover:text-primary-200'>
-            <HiOutlineExternalLink size={15}/>
-          </Link>
-        </div>
+      <div className="flex flex-col items-center text-center">
+        {user.avatar ? (
+          <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover border mb-2" />
+        ) : (
+          <FiUser size={35} className="mb-2" />
+        )}
+        <span>
+          Hello <span className="font-semibold text-lg">{user.name}!</span>
+        </span>
+      </div>
+      
+      <Divider/>
+      {
+        !isAdmin(user.role) && (
+          <>
+            <div className='px-2 hover:bg-orange-200 py-1'>
+              <Link onClick={handleClose} to={"/dashboard/profile"}>My Account</Link>
+            </div>
+            <div className='px-2 hover:bg-orange-200 py-1'>
+              <button onClick={handleLogout}>Log Out </button>
+      </div>
+      <div className='text-sm flex items-center gap-2'>
+        {/* ... */}
+      </div>
+    </>
+  )
+}
 
-        <Divider/>
+
+        
 
         <div className='text-sm grid gap-1'>
             {
@@ -76,13 +97,19 @@ const UserMenu = ({close}) => {
               isAdmin(user.role) && (
                 <Link onClick={handleClose} to={"/dashboard/product"} className='px-2 hover:bg-orange-200 py-1'>Product</Link>
               )
+              
+            }
+            {
+              isAdmin(user.role) && (
+                <button onClick={handleLogout} className='text-left px-2 hover:bg-orange-200 py-1'>Log Out</button>
+              )
             }
 
-            <Link onClick={handleClose} to={"/dashboard/myorders"} className='px-2 hover:bg-orange-200 py-1'>My Orders</Link>
+            {/* <Link onClick={handleClose} to={"/dashboard/myorders"} className='px-2 hover:bg-orange-200 py-1'>My Orders</Link>
 
             <Link onClick={handleClose} to={"/dashboard/address"} className='px-2 hover:bg-orange-200 py-1'>Save Address</Link>
 
-            <button onClick={handleLogout} className='text-left px-2 hover:bg-orange-200 py-1'>Log Out</button>
+            <button onClick={handleLogout} className='text-left px-2 hover:bg-orange-200 py-1'>Log Out</button> */}
 
         </div>
     </div>
