@@ -7,6 +7,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import CategoryWiseProductDisplay from '../components/CategoryWiseProductDisplay'
 import { FaRegHandPointRight } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { CiHeart } from "react-icons/ci";
+import { IoEyeOutline } from "react-icons/io5";
 
 import banner1 from '../assets/1.jpg'
 import banner2 from '../assets/2.jpg'
@@ -25,12 +31,30 @@ import banner13 from '../assets/13.jpg'
 
 const Home = () => {
 
-
+  // const [products, setProducts] = useState([]);
 
   const loadingCategory = useSelector(state => state.product.loadingCategory)
   const categoryData = useSelector(state => state.product.allCategory)
   const subCategoryData = useSelector(state => state.product.allSubCategory)
   const navigate = useNavigate()
+
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await Axios({
+  //         ...SummaryApi.getProduct,
+  //         data: { page: 1, limit: 4 }
+  //       });
+  //       const { data: responseData } = response;
+  //       if (responseData.success) {
+  //         setProducts(responseData.data);
+  //       }
+  //     } catch (error) {
+  //       // handle error nếu muốn
+  //     }
+  //   };
+  //   fetchProducts();
+  // }, []);
 
   const handleRedirectProductListpage = (id, cat) => {
     console.log(id, cat)
@@ -46,6 +70,92 @@ const Home = () => {
     navigate(url)
     console.log(url)
   }
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024, // tablet
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 640, // mobile
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  const products = [
+    {
+      id: 1,
+      image: "https://khasasco.com.vn/wp-content/uploads/2022/05/hinh-anh-hoa-qua-trai-cay-troll-photoshop-thay-ruot.jpg",
+      name: "Cà Chua Beef 365 Fresh Thùng 1.5kg",
+      price: 90000,
+      oldPrice: 99000,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 2,
+      image: "https://khasasco.com.vn/wp-content/uploads/2022/05/hinh-anh-hoa-qua-trai-cay-troll-photoshop-thay-ruot.jpg",
+      name: "Kim Chi Cải Thảo Cắt Lát bibigo Hộp 500G",
+      price: 34900,
+      oldPrice: 44700,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 3,
+      image: "https://khasasco.com.vn/wp-content/uploads/2022/05/hinh-anh-hoa-qua-trai-cay-troll-photoshop-thay-ruot.jpg",
+      name: "Xúc Xích Truyền Thống Xông Khói Choice L Gói 1.5kg",
+      price: 115000,
+      oldPrice: 125000,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 4,
+      image: "https://cdn.kienthuc.net.vn/images/26fe2694513bcf908a826b256c6273279ff337d2fe6aba56c91ecd020cdfe01a3107231b3f0fd13cd88ce4dc496106180dc104225babb651c0cbc34a2dd348e605d879d4db4fd7b4b564386960394a165207038c46c3b8b85849747edebc1c09/loi-ich-suc-khoe-dang-ngac-nhien-cua-dua-hau-2-8899.png",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 5,
+      image: "https://cdn.kienthuc.net.vn/images/26fe2694513bcf908a826b256c6273279ff337d2fe6aba56c91ecd020cdfe01a3107231b3f0fd13cd88ce4dc496106180dc104225babb651c0cbc34a2dd348e605d879d4db4fd7b4b564386960394a165207038c46c3b8b85849747edebc1c09/loi-ich-suc-khoe-dang-ngac-nhien-cua-dua-hau-2-8899.png",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 6,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 7,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+  ];
 
 
   return (
@@ -273,49 +383,7 @@ const Home = () => {
           </div>
         </section>
 
-        
 
-        {/* <div className='container mx-auto px-4 my-2 grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10  gap-2'>
-          {
-            loadingCategory ? (
-              new Array(12).fill(null).map((c,index)=>{
-                return(
-                  <div key={index+"loadingcategory"} className='bg-white rounded p-4 min-h-36 grid gap-2 shadow animate-pulse'>
-                    <div className='bg-blue-100 min-h-24 rounded'></div>
-                    <div className='bg-blue-100 h-8 rounded'></div>
-                  </div>
-                )
-              })
-            ) : (
-              categoryData.map((cat,index)=>{
-                return(
-                  <div key={cat._id+"displayCategory"} className='w-full h-full' onClick={()=>handleRedirectProductListpage(cat._id,cat.name)}>
-                    <div>
-                        <img 
-                          src={cat.image}
-                          className='w-full h-full object-scale-down'
-                        />
-                    </div>
-                  </div>
-                )
-              })
-              
-            )
-          }
-      </div> */}
-
-        {/***display category product */}
-        {/* {
-        categoryData?.map((c,index)=>{
-          return(
-            <CategoryWiseProductDisplay 
-              key={c?._id+"CategorywiseProduct"} 
-              id={c?._id} 
-              name={c?.name}
-            />
-          )
-        })
-      } */}
       </section>
 
       <section className="product-section bg-white pt-12 px-24">
@@ -399,8 +467,55 @@ const Home = () => {
                   <span className="font-mono font-bold">58</span>
                 </div>
               </div>
+              <div className="display-product" style={{ borderRadius: '10px', border: '1px solid #ccc', overflow: 'hidden' }}>
+                <Slider {...settings}>
+                  {products.map((p, idx) => (
+                    <div
+                      key={p.id}
+                      className={
+                        `flex flex-col items-stretch text-left px-4 py-4` +
+                        (idx !== products.length - 1 ? ' border-x border-gray-200' : '')
+                      }
+                      style={{ width: 240, minHeight: 370, background: '#fff' }}
+                    >
+                      <div className="flex justify-center items-center mb-2" style={{ height: 140 }}>
+                        <img src={p.image} alt={p.name} className="object-contain h-32" style={{ maxHeight: 130, maxWidth: 130 }} />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="font-semibold text-sm mb-1 leading-tight line-clamp-2" style={{ minHeight: 48, lineHeight: '1.5' }}>{p.name}</div>
+                          <div className="flex items-end gap-2 mb-1">
+                            <span className="text-red-600 font-bold text-lg">{p.price.toLocaleString("vi-VN")} đ</span>
+                            <span className="text-gray-400 line-through text-sm">{p.oldPrice.toLocaleString("vi-VN")} đ</span>
+                          </div>
+                          <div className="flex items-center gap-1 mb-2">
+                            {[...Array(5)].map((_, i) => (
+                              <svg
+                                key={i}
+                                className="w-4 h-4 fill-current text-yellow-400"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.922-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.389 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.973a1 1 0 00-.364-1.118L2.037 9.4c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.974z" />
+                              </svg>
+                            ))}
+                            <span className="text-red-500 font-semibold text-base ml-2">{p.stockStatus}</span>
+                          </div>
+                        </div>
+                        <button
+                          className="w-full rounded-full py-3 text-gray-600 font-semibold bg-gray-100 hover:bg-gray-200 transition mt-2"
+                          style={{ fontSize: 18, marginTop: 16 }}
+                        >
+                          Thêm vào giỏ
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              </div>
               <div>
-                
+
               </div>
 
             </div>
