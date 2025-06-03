@@ -72,9 +72,55 @@ const Home = () => {
   }
 
   const settings = {
+    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 4,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024, // tablet
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 640, // mobile
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  const settings2 = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 1800,
+    cssEase: 'linear',
+    responsive: [
+      {
+        breakpoint: 1024, // tablet
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 640, // mobile
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+  const settings3 = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
     slidesToScroll: 1,
     responsive: [
       {
@@ -155,8 +201,123 @@ const Home = () => {
       rating: 0,
       stockStatus: "Còn Hàng",
     },
+    {
+      id: 8,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 9,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 10,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 11,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
+    {
+      id: 12,
+      image: "https://bizweb.dktcdn.net/100/164/964/files/cong-dung-cua-qua-mit-voi-suc-khoe-con-nguoi-nhu-the-nao-1.jpg?v=1533178320653",
+      name: "Mì Ăn Liền Ottogi Vị Bò Hầm Gói 960G (120G x 8 Gói)",
+      price: 60900,
+      oldPrice: 84500,
+      rating: 0,
+      stockStatus: "Còn Hàng",
+    },
   ];
 
+  const categories = [
+    {
+      id: 1,
+      name: "Tạp Hóa & Hàng Thiết Yếu",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/grocery.svg",
+      link: "https://devidai.io.vn/san-pham?category=T%E1%BA%A1p%20H%C3%B3a%20%26%20H%C3%A0ng%20Thi%E1%BA%BFt%20Y%E1%BA%BFu",
+    },
+    {
+      id: 2,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    },
+    ,
+    {
+      id: 3,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    }
+    ,
+    {
+      id: 4,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    }
+    ,
+    {
+      id: 5,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    }
+    ,
+    {
+      id: 6,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    }
+    ,
+    {
+      id: 7,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    },
+    {
+      id: 8,
+      name: "Thịt & Hải Sản",
+      img: "https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg",
+      link: "https://devidai.io.vn/san-pham?category=Th%E1%BB%8Bt%20%26%20H%E1%BA%A3i%20S%E1%BA%A3n",
+    }
+  ];
+
+  // Hàm chia mảng thành các nhóm 3 phần tử
+  const chunkArray = (array, size) => {
+    const result = [];
+    for (let i = 0; i < array.length; i += size) {
+      let chunk = array.slice(i, i + size);
+      while (chunk.length < size) {
+        chunk.push(null);
+      }
+      result.push(chunk);
+    }
+    return result;
+  };
+
+  const productChunks = chunkArray(products, 3);
 
   return (
     <>
@@ -383,6 +544,8 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Banner ngang 2 card giống mẫu */}
+        
 
       </section>
 
@@ -390,7 +553,7 @@ const Home = () => {
         <div className="container-fluid lg:px-8 px-4 ">
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4">
             <div className="hidden xl:block xl:col-span-4 2xl:col-span-3">
-              <div className="bg-gray-50 rounded-xl shadow flex flex-col p-6 h-full">
+              <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 ">
                 <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
                 <ul className="flex flex-col gap-1">
                   <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition border-l-4 border-red-500 bg-white">
@@ -444,16 +607,70 @@ const Home = () => {
                   <li className="px-3 py-2 text-gray-600 hover:text-red-500 cursor-pointer">Hàng mới về</li>
                 </ul>
               </div>
+              <div className="relative aspect-w-16 aspect-h-9 section-t-space mt-10">
+                <div className="home-container">
+                  <div
+                    className="bg-white rounded-2xl shadow p-6 flex flex-col items-start w-full max-w-xs mx-auto"
+                    style={{
+                      minHeight: 470,
+                      backgroundImage: `url(${banner8})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  >
+                    <span className="text-yellow-500 text-sm font-semibold mb-1">Các sản phẩm</span>
+                    <h3 className="text-2xl font-bold uppercase mb-1">
+                      HẢI SẢN TƯƠI MỚI <span className="text-[#d94c3a]">MỖI GIỜ</span>
+                    </h3>
+                    <div className="text-gray-700 text-lg mb-4">mỗi ngày</div>
+                    <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
+                      Mua ngay <span className="ml-1">→</span>
+                    </button>
+                    
+                  </div>
+                </div>
+              </div>
+              <div className="relative aspect-w-16 aspect-h-9 section-t-space mt-10">
+                <div className="home-container">
+                  <div
+                    className="bg-white rounded-2xl shadow p-6 flex flex-col items-start w-full max-w-xs mx-auto"
+                    style={{
+                      minHeight: 780,
+                      backgroundImage: `url(${banner11})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  >
+                    <span className="text-yellow-500 text-lg font-bold mb-1 ">Rau</span>
+                    <h3 className="text-4xl text-[#d94c3a] font-bold uppercase mb-1">
+                      TƯƠI   <br />
+                      <span className="text-gray-700 font-medium">HỮU CƠ</span>
+                    </h3>
+                    <div className="text-gray-700 text-base mb-4">Siêu khuyến mại giảm giá tới 50%</div>
+                    <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
+                      Mua ngay <span className="ml-1">→</span>
+                    </button>
+                    
+                  </div>
+                </div>
+              </div>
+              <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-20">
+                <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
+                
+                <div className="my-4">Không có sản phẩm nào</div>
+                
+              </div>
+
             </div>
             <div className="xl:col-span-8 2xl:col-span-9">
               <div className="title flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
                 <div className="text-left">
-                  <h2 className="font-bold text-4xl text-black mb-1 pb-1">Các Sản Phẩm Đang Giảm Giá</h2>
+                  <h2 className="font-bold text-2xl text-black mb-1 pb-1">Các Sản Phẩm Đang Giảm Giá</h2>
                   <div className="flex  gap-4 mt-2 mb-2">
                     <div className="h-0.5 w-20 bg-red-300 rounded"></div>
                     <div className="h-0.5 w-20 bg-red-300 rounded"></div>
                   </div>
-                  <p className="text-lg text-gray-500 mb-4">Đừng bỏ lỡ cơ hội giảm giá đặc biệt chỉ có trong tuần này.</p>
+                  <p className="text-base text-gray-500 my-4">Đừng bỏ lỡ cơ hội giảm giá đặc biệt chỉ có trong tuần này.</p>
                 </div>
                 <div className="flex items-center gap-2 bg-red-500 text-white px-5 py-2 rounded-lg font-semibold shadow text-sm">
                   <FaRegClock className="mr-2 text-lg" />
@@ -514,8 +731,222 @@ const Home = () => {
                   ))}
                 </Slider>
               </div>
-              <div>
+              <div className="title flex flex-col sm:flex-row justify-between items-center my-8 gap-4">
+                <div className="text-left">
+                  <h2 className="font-bold text-2xl text-black mb-1 pb-1">Danh mục nổi bật</h2>
+                  <div className="flex  gap-4 mt-2 mb-2">
+                    <div className="h-0.5 w-20 bg-red-300 rounded"></div>
+                    <div className="h-0.5 w-20 bg-red-300 rounded"></div>
+                  </div>
+                  <p className="text-base text-gray-500 my-4">Các danh mục hàng đầu của tuần </p>
+                </div>
 
+              </div>
+              <div className="display-categories" style={{ borderRadius: '10px', marginBottom: '60px' }}>
+                <Slider {...settings2}>
+                  {categories.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex flex-col text-left px-4 py-4 bg-gray-100 border-x-8 border-white w-full h-full"
+                      style={{ minWidth: 170, minHeight: 134, background: '#fff' }}
+                    >
+                      <div className="flex flex-col justify-center items-center mb-2" style={{}}>
+                        <img src={p.img} alt={p.name} className="object-contain h-32" style={{ maxHeight: 43, maxWidth: 43 }} />
+                        <div className="font-medium text-base my-2 line-clamp-2 truncate max-w-[170px] px-4"> {p.name} </div>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              </div>
+              {/* Banner khuyến mãi 2 cột giống mẫu */}
+              <div className="banner-discount flex gap-6 w-full my-8">
+                {/* Card 1 */}
+                <div
+                  className="flex flex-1 bg-cover bg-center bg-no-repeat rounded-xl overflow-hidden items-center p-6 min-h-[180px]"
+                  style={{ backgroundImage: `url(${banner9})` }}
+                >
+                  <div className="flex-1">
+                    <div className="text-3xl font-semibold mb-2">Giảm giá 50%</div>
+                    <div className="text-2xl font-bold text-[#d94c3a] mb-4">Thịt tươi</div>
+                    <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition">
+                      Mua ngay <span className="ml-1">→</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 2 */}
+                <div
+                  className="flex flex-1 bg-cover bg-center bg-no-repeat rounded-xl overflow-hidden items-center p-6 min-h-[180px]"
+                  style={{ backgroundImage: `url(${banner10})` }}
+                >
+                  <div className="flex-1">
+                    <div className="text-3xl font-semibold mb-2">Giảm giá 50%</div>
+                    <div className="text-2xl font-bold text-[#d94c3a] mb-4">Nấm Testy</div>
+                    <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition">
+                      Mua ngay <span className="ml-1">→</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="title flex flex-col sm:flex-row justify-between items-center my-8 gap-4">
+                <div className="text-left">
+                  <h2 className="font-bold text-2xl text-black mb-1 pb-1">Đồ khô & Đóng gói</h2>
+                  <div className="flex  gap-4 mt-2 mb-2">
+                    <div className="h-0.5 w-20 bg-red-300 rounded"></div>
+                    <div className="h-0.5 w-20 bg-red-300 rounded"></div>
+                  </div>
+                  <p className="text-base text-gray-500 my-4">Lựa chọn đa dạng các sản phẩm thực phẩm khô, đóng gói tiện dụng – chất lượng đảm bảo, giá cả hợp lý, giao hàng nhanh chóng.</p>
+                </div>
+
+              </div>
+              <div className="display-product" style={{ borderRadius: '10px', border: '1px solid #ccc', overflow: 'hidden' }}>
+                <Slider {...settings}>
+                  {products.map((p, idx) => (
+                    <div
+                      key={p.id}
+                      className={
+                        `flex flex-col items-stretch text-left px-4 py-4` +
+                        (idx !== products.length - 1 ? ' border-x border-gray-200' : '')
+                      }
+                      style={{ width: 240, minHeight: 370, background: '#fff' }}
+                    >
+                      <div className="flex justify-center items-center mb-2" style={{ height: 140 }}>
+                        <img src={p.image} alt={p.name} className="object-contain h-32" style={{ maxHeight: 130, maxWidth: 130 }} />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div>
+                          <div className="font-semibold text-sm mb-1 leading-tight line-clamp-2" style={{ minHeight: 48, lineHeight: '1.5' }}>{p.name}</div>
+                          <div className="flex items-end gap-2 mb-1">
+                            <span className="text-red-600 font-bold text-lg">{p.price.toLocaleString("vi-VN")} đ</span>
+                            <span className="text-gray-400 line-through text-sm">{p.oldPrice.toLocaleString("vi-VN")} đ</span>
+                          </div>
+                          <div className="flex items-center gap-1 mb-2">
+                            {[...Array(5)].map((_, i) => (
+                              <svg
+                                key={i}
+                                className="w-4 h-4 fill-current text-yellow-400"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.922-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.389 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.973a1 1 0 00-.364-1.118L2.037 9.4c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.974z" />
+                              </svg>
+                            ))}
+                            <span className="text-red-500 font-semibold text-base ml-2">{p.stockStatus}</span>
+                          </div>
+                        </div>
+                        <button
+                          className="w-full rounded-full py-3 text-gray-600 font-semibold bg-gray-100 hover:bg-gray-200 transition mt-2"
+                          style={{ fontSize: 18, marginTop: 16 }}
+                        >
+                          Thêm vào giỏ
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              </div>
+              {/* Banner khuyến mãi */}
+              <div className="banner-discount2 flex w-full my-8 gap-6 min-h-[240px]">
+                {/* Card 1 bên trái (8 phần) */}
+                <div
+                  className="flex flex-col bg-cover bg-center bg-no-repeat rounded-md overflow-hidden p-6 "
+                  style={{ backgroundImage: `url(${banner12})`, flexBasis: '66.6667%' }}
+                >
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div
+                      className="text-3xl font-semibold mb-2"
+                      style={{ fontFamily: "'Dancing Script', cursive", color: '#d94c3a' }}
+                    >
+                      Sẵn Sàng Để Mua Sắm
+                    </div>
+                    <div className="text-2xl font-semibold mb-4">cho ngày hôm nay!</div>
+                    <div className="text-xs font-semibold mb-4 " style={{ color: '#4C5566', lineHeight: '1.5' }}>Bắt đầu ngày mới đầy năng lượng – tìm <br/>hàng nhanh, mua sắm gọn!</div>
+                    <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition w-max">
+                      Mua ngay <span className="ml-1">→</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Card 2 bên phải (4 phần) */}
+                <div
+                  className="flex flex-col bg-cover bg-center bg-no-repeat rounded-md overflow-hidden p-6 "
+                  style={{ backgroundImage: `url(${banner13})`, flexBasis: '33.3333%' }}
+                >
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div
+                      className="text-3xl font-semibold mb-2"
+                      style={{ fontFamily: "'Dancing Script', cursive", color: '#d94c3a' }}
+                    >
+                      Giảm Giá 20%
+                    </div>
+                    <div className="text-2xl font-bold text-[#d94c3a] mb-4">Tất cả <br/> <span className="text-black">Đồ uống</span></div>
+                    <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition w-max">
+                      Mua ngay <span className="ml-1">→</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="title flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <div className="text-left">
+                  <h2 className="font-bold text-2xl text-black mb-1 pb-1">Sản phẩm bán chạy</h2>
+                  <div className="flex  gap-4 mt-2 mb-2">
+                    <div className="h-0.5 w-20 bg-red-300 rounded"></div>
+                    <div className="h-0.5 w-20 bg-red-300 rounded"></div>
+                  </div>
+                  <p className="text-base text-gray-500 my-4">Bạn không thể bỏ lỡ những sản phẩm đang được săn đón nhất tại siêu thị – xem ngay trước khi hết hàng!</p>
+                </div>
+                
+              </div>
+              <div className="best-selling-slider"
+                style={{  background: '#fff',  }}>
+                <Slider
+                  infinite={true}
+                  speed={500}
+                  slidesToShow={3}
+                  slidesToScroll={1}
+                >
+                  {productChunks.map((group, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white border-2 border-gray-200 flex flex-col justify-between rounded-lg "
+                    >
+                      {group.map((p, i) => (
+                        <React.Fragment key={p ? p.id : `empty-${i}`}> 
+                          {p ? (
+                            <div className="flex flex-row items-center justify-center gap-3 p-4" style={{ minHeight: 80, minWidth: 250 }}>
+                              <img
+                                src={p.image}
+                                alt={p.name}
+                                className="object-contain w-26 h-20"
+                                style={{ background: '#fafafa' }}
+                                onError={e => (e.currentTarget.src = '/images/placeholder.png')}
+                              />
+                              <div
+                                className={
+                                  "flex-1 min-w-0 ml-2" +
+                                  (i !== group.length - 1 ? " border-b-2 border-dashed border-gray-300" : "")
+                                }
+                              >
+                                <div className="font-semibold text-sm truncate max-w-[140px]">{p.name}</div>
+                                <div className="text-xs text-gray-500 my-1">{p.stockStatus}</div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-red-600 font-bold text-base ">{p.price.toLocaleString('vi-VN')} đ</span>
+                                  {p.oldPrice && p.oldPrice !== p.price && (
+                                    <span className="text-xs line-through text-gray-400">{p.oldPrice.toLocaleString('vi-VN')} đ</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div style={{ minHeight: 80, minWidth: 250 }} className="p-4"></div>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  ))}
+                </Slider>
               </div>
 
             </div>
@@ -528,3 +959,5 @@ const Home = () => {
 }
 
 export default Home
+
+
