@@ -6,7 +6,7 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import useMobile from '../hooks/useMobile';
 import { useSelector } from 'react-redux';
 import UserMenu from './UserMenu';
-import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees';
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND';
 import { useGlobalContext } from '../provider/GlobalProvider';
 import DisplayCartItem from './DisplayCartItem';
 import { FiUser } from "react-icons/fi";

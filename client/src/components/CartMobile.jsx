@@ -1,7 +1,7 @@
 import React from 'react'
 import { useGlobalContext } from '../provider/GlobalProvider'
 import { FaCartShopping } from 'react-icons/fa6'
-import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 import { Link } from 'react-router-dom'
 import { FaCaretRight } from "react-icons/fa";
 import { useSelector } from 'react-redux'
@@ -22,7 +22,7 @@ const CartMobileLink = () => {
                         </div>
                         <div className='text-xs'>
                                 <p>{totalQty} items</p>
-                                <p>{DisplayPriceInRupees(totalPrice)}</p>
+                                <p>{DisplayPriceInVND(totalPrice)}</p>
                         </div>
                     </div>
 

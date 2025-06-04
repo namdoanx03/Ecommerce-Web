@@ -8,14 +8,18 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { CiStar } from "react-icons/ci";
+import { FaThLarge, FaTh } from "react-icons/fa";
+import CardProduct from '../components/CardProduct';
 
 
 const Product = () => {
   const [productData,setProductData] = useState([])
   const [page,setPage] = useState(1)
+  const [totalPage, setTotalPage] = useState(1);
   const [openCategory, setOpenCategory] = useState(true);
   const [openPrice, setOpenPrice] = useState(true);
   const [openRating, setOpenRating] = useState(true);
+  const [gridCols, setGridCols] = useState(3); // 3 hoặc 4 cột
   
   const fetchProductData = async()=>{
     try {
@@ -23,6 +27,7 @@ const Product = () => {
            ...SummaryApi.getProduct,
            data : {
               page : page,
+              limit: 15
            }
         })
 
@@ -32,6 +37,7 @@ const Product = () => {
         if(responseData.success){
           
           setProductData(responseData.data)
+          setTotalPage(responseData.totalNoPage || 1)
         }
 
     } catch (error) {
@@ -42,7 +48,7 @@ const Product = () => {
   console.log("product page")
   useEffect(()=>{
     fetchProductData()
-  },[])
+  },[page])
 
   const categories = [
     {
@@ -129,7 +135,7 @@ const Product = () => {
         <div className='breadcrumb-section h-24 bg-gray-50 flex items-center justify-between py-7 px-2'>
           <h2 className='text-2xl font-bold '>Tất cả sản phẩm</h2>
           <div className='breadcrumb flex items-center gap-2 h-10'>
-            <IoIosHome className='text-gray-500 text-xl' />
+            <a  href='/'><IoIosHome className='text-gray-500 text-xl'/></a>
             <FaAngleRight className='text-gray-500 text-base' />
             <span className=' text-black-500 font-medium'>Đi chợ tại nhà</span>
           </div>
@@ -151,9 +157,9 @@ const Product = () => {
           </Slider>
         </div>
         <div className='product-list'>
-          <div className='container mx-auto'>
-            <div className='section-left w-full md:w-1/5 '>
-              <div className='left-box-sidebar rounded-md border-r-2 border-gray-200 p-2'>
+          <div className='container mx-auto flex justify-between'>
+            <div className='section-left w-full md:w-1/5 pb-16'>
+              <div className='left-box-sidebar border-r-2 border-gray-200 p-2 sticky top-1'>
                 {/* Tìm kiếm */}
                 <div className="relative mb-12">
                   <input
@@ -170,7 +176,7 @@ const Product = () => {
                   </label>
                   <div className="absolute inset-y-0 right-16 flex items-center pointer-events-none">
                     <div className="w-px h-6 bg-gray-200 mx-2"></div>
-                    <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-gray-600 " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <circle cx="11" cy="11" r="8" />
                       <line x1="21" y1="21" x2="16.65" y2="16.65" />
                     </svg>
@@ -305,8 +311,48 @@ const Product = () => {
               </div>
             </div>
 
-            <div className='section-right w-full md:w-2/3 p-4'>
-              {/* Nội dung bên phải */}
+            <div className='section-right w-full md:w-4/5 p-4'>
+              <div className=' flex justify-end items-center mb-4'>
+                <div className='flex gap-2'>
+                  <button onClick={() => setGridCols(3)} className={`p-2 rounded ${gridCols === 3 ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500'}`} title="Hiển thị 3 cột">
+                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/grid-3.svg" />
+                  </button>
+                  <button onClick={() => setGridCols(4)} className={`p-2 rounded ${gridCols === 4 ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500'}`} title="Hiển thị 4 cột">
+                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/grid-4.svg" />
+                  </button>
+                </div>
+              </div>
+              <div className={`grid gap-4 ${gridCols === 3 ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
+                {productData.map((p, idx) => (
+                  <CardProduct data={p} key={p._id || idx} />
+                ))}
+              </div>
+              {/* Pagination */}
+              <div className="flex justify-center items-center mt-12 mb-10 gap-2">
+                <button
+                  onClick={() => setPage(page > 1 ? page - 1 : 1)}
+                  disabled={page === 1}
+                  className={`px-3 py-1 rounded border ${page === 1 ? 'bg-gray-200 text-gray-400' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
+                >
+                  &lt;
+                </button>
+                {Array.from({ length: totalPage }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    className={`px-3 py-1 rounded border ${page === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage(page < totalPage ? page + 1 : totalPage)}
+                  disabled={page === totalPage}
+                  className={`px-3 py-1 rounded border ${page === totalPage ? 'bg-gray-200 text-gray-400' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
+                >
+                  &gt;
+                </button>
+              </div>
             </div>
           </div>
         </div>

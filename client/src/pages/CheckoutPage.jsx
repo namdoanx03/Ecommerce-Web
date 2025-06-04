@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useGlobalContext } from '../provider/GlobalProvider'
-import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 import AddAddress from '../components/AddAddress'
 import { useSelector } from 'react-redux'
 import AxiosToastError from '../utils/AxiosToastError'
@@ -125,7 +125,7 @@ const CheckoutPage = () => {
             <h3 className='font-semibold'>Bill details</h3>
             <div className='flex gap-4 justify-between ml-1'>
               <p>Items total</p>
-              <p className='flex items-center gap-2'><span className='line-through text-neutral-400'>{DisplayPriceInRupees(notDiscountTotalPrice)}</span><span>{DisplayPriceInRupees(totalPrice)}</span></p>
+              <p className='flex items-center gap-2'><span className='line-through text-neutral-400'>{DisplayPriceInVND(notDiscountTotalPrice)}</span><span>{DisplayPriceInVND(totalPrice)}</span></p>
             </div>
             <div className='flex gap-4 justify-between ml-1'>
               <p>Quntity total</p>
@@ -137,7 +137,7 @@ const CheckoutPage = () => {
             </div>
             <div className='font-semibold flex items-center justify-between gap-4'>
               <p >Grand total</p>
-              <p>{DisplayPriceInRupees(totalPrice)}</p>
+              <p>{DisplayPriceInVND(totalPrice)}</p>
             </div>
           </div>
           <div className='w-full flex flex-col gap-4'>

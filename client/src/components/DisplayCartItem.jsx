@@ -2,7 +2,7 @@ import React from 'react'
 import { IoClose } from 'react-icons/io5'
 import { Link, useNavigate } from 'react-router-dom'
 import { useGlobalContext } from '../provider/GlobalProvider'
-import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 import { FaCaretRight } from "react-icons/fa";
 import { useSelector } from 'react-redux'
 import AddToCartButton from './AddToCartButton'
@@ -46,7 +46,7 @@ const DisplayCartItem = ({close}) => {
                         <>
                             <div className='flex items-center justify-between px-4 py-2 bg-blue-100 text-blue-500 rounded-full'>
                                     <p>Your total savings</p>
-                                    <p>{DisplayPriceInRupees(notDiscountTotalPrice - totalPrice )}</p>
+                                    <p>{DisplayPriceInVND(notDiscountTotalPrice - totalPrice )}</p>
                             </div>
                             <div className='bg-white rounded-lg p-4 grid gap-5 overflow-auto'>
                                     {
@@ -63,7 +63,7 @@ const DisplayCartItem = ({close}) => {
                                                         <div className='w-full max-w-sm text-xs'>
                                                             <p className='text-xs text-ellipsis line-clamp-2'>{item?.productId?.name}</p>
                                                             <p className='text-neutral-400'>{item?.productId?.unit}</p>
-                                                            <p className='font-semibold'>{DisplayPriceInRupees(pricewithDiscount(item?.productId?.price,item?.productId?.discount))}</p>
+                                                            <p className='font-semibold'>{DisplayPriceInVND(pricewithDiscount(item?.productId?.price,item?.productId?.discount))}</p>
                                                         </div>
                                                         <div>
                                                             <AddToCartButton data={item?.productId}/>
@@ -78,7 +78,7 @@ const DisplayCartItem = ({close}) => {
                                 <h3 className='font-semibold'>Bill details</h3>
                                 <div className='flex gap-4 justify-between ml-1'>
                                     <p>Items total</p>
-                                    <p className='flex items-center gap-2'><span className='line-through text-neutral-400'>{DisplayPriceInRupees(notDiscountTotalPrice)}</span><span>{DisplayPriceInRupees(totalPrice)}</span></p>
+                                    <p className='flex items-center gap-2'><span className='line-through text-neutral-400'>{DisplayPriceInVND(notDiscountTotalPrice)}</span><span>{DisplayPriceInVND(totalPrice)}</span></p>
                                 </div>
                                 <div className='flex gap-4 justify-between ml-1'>
                                     <p>Quntity total</p>
@@ -90,7 +90,7 @@ const DisplayCartItem = ({close}) => {
                                 </div>
                                 <div className='font-semibold flex items-center justify-between gap-4'>
                                     <p >Grand total</p>
-                                    <p>{DisplayPriceInRupees(totalPrice)}</p>
+                                    <p>{DisplayPriceInVND(totalPrice)}</p>
                                 </div>
                             </div>
                         </>
@@ -112,7 +112,7 @@ const DisplayCartItem = ({close}) => {
                     <div className='p-2'>
                         <div className='bg-green-700 text-neutral-100 px-4 font-bold text-base py-4 static bottom-3 rounded flex items-center gap-4 justify-between'>
                             <div>
-                                {DisplayPriceInRupees(totalPrice)}
+                                {DisplayPriceInVND(totalPrice)}
                             </div>
                             <button onClick={redirectToCheckoutPage} className='flex items-center gap-1'>
                                 Proceed

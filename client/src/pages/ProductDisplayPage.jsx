@@ -4,7 +4,7 @@ import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
 import AxiosToastError from '../utils/AxiosToastError'
 import { FaAngleRight,FaAngleLeft } from "react-icons/fa6";
-import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
+import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 import Divider from '../components/Divider'
 import image1 from '../assets/minute_delivery.png'
 import image2 from '../assets/Best_Prices_Offers.png'
@@ -134,11 +134,11 @@ const ProductDisplayPage = () => {
               <p className=''>Price</p> 
               <div className='flex items-center gap-2 lg:gap-4'>
                 <div className='border border-green-600 px-4 py-2 rounded bg-green-50 w-fit'>
-                    <p className='font-semibold text-lg lg:text-xl'>{DisplayPriceInRupees(pricewithDiscount(data.price,data.discount))}</p>
+                    <p className='font-semibold text-lg lg:text-xl'>{DisplayPriceInVND(pricewithDiscount(data.price,data.discount))}</p>
                 </div>
                 {
                   data.discount && (
-                    <p className='line-through'>{DisplayPriceInRupees(data.price)}</p>
+                    <p className='line-through'>{DisplayPriceInVND(data.price)}</p>
                   )
                 }
                 {
