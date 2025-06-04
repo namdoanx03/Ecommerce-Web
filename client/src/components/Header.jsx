@@ -61,7 +61,7 @@ const Header = () => {
     // },[cartItem])
 
   return (
-      <header className='lg:h-20 lg:shadow-md  top-0 z-40 flex flex-col justify-center gap-1 bg-white px-28' style={{height: "200px"}}>
+      <header className='lg:h-20 lg:shadow-md  top-0 z-40 flex flex-col justify-center gap-1 bg-white px-28' style={{height: "180px"}}>
           {
               !(isSearchPage && isMobile) && (
                   <div className='container mx-auto flex items-center px-2 justify-between'>
@@ -301,7 +301,7 @@ const Header = () => {
             </ul>
           </div>
           <div className='header-nav-right'>
-            <button className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-xl py-4 px-8 text-lg mt-[22px]'>
+            <button className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg mt-[20px]'>
               <BsFillLightningFill size={24} className='text-[#C83C2B]' />
               <span>Giảm giá hôm nay</span>
             </button>

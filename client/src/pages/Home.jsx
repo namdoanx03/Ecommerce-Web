@@ -654,7 +654,7 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-20">
+              <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-40">
                 <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
                 
                 <div className="my-4">Không có sản phẩm nào</div>
@@ -932,9 +932,9 @@ const Home = () => {
                                 <div className="font-semibold text-sm truncate max-w-[140px]">{p.name}</div>
                                 <div className="text-xs text-gray-500 my-1">{p.stockStatus}</div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-red-600 font-bold text-base ">{p.price.toLocaleString('vi-VN')} đ</span>
+                                  <span className="text-red-600 font-bold text-base truncate">{p.price.toLocaleString('vi-VN')} đ</span>
                                   {p.oldPrice && p.oldPrice !== p.price && (
-                                    <span className="text-xs line-through text-gray-400">{p.oldPrice.toLocaleString('vi-VN')} đ</span>
+                                    <span className="text-xs line-through text-gray-400 truncate">{p.oldPrice.toLocaleString('vi-VN')} đ</span>
                                   )}
                                 </div>
                               </div>

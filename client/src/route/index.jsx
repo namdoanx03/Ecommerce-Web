@@ -23,7 +23,7 @@ import CartMobile from "../pages/CartMobile";
 import CheckoutPage from "../pages/CheckoutPage";
 import Success from "../pages/Success";
 import Cancel from "../pages/Cancel";
-
+import Product from "../pages/Product";
 const router = createBrowserRouter([
     {
         path : "/",
@@ -103,6 +103,10 @@ const router = createBrowserRouter([
                         element : <ProductListPage/>
                     }
                 ]
+            },
+            {
+                path : "product",
+                element : <Product/>
             },
             {
                 path : "product/:product",
