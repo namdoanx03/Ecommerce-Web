@@ -14,6 +14,12 @@ import AddToCartButton from '../components/AddToCartButton'
 import { IoIosHome } from "react-icons/io";
 import { CiStar } from "react-icons/ci";
 import InDeButton from '../components/InDeButton'
+import pr5 from '../assets/pr5.jpg'
+import pr4 from '../assets/pr4.jpg'
+import pr3 from '../assets/pr3.jpg'
+import pr2 from '../assets/pr2.jpg'
+import pr1 from '../assets/pr1.jpg'
+
 
 const ProductDisplayPage = () => {
   const params = useParams()
@@ -86,7 +92,7 @@ const ProductDisplayPage = () => {
   console.log("product data", data)
   return (
     <section className='container bg-white '>
-      <div className='breadcrumb-section h-24 bg-gray-100 flex items-center justify-between py-7 px-32'>
+      <div className='breadcrumb-section h-24 bg-[#f8f8f8] flex items-center justify-between py-7 px-32'>
         <h2 className='text-2xl font-bold '>Chi tiết sản phẩm</h2>
         <div className='breadcrumb flex items-center gap-2 h-10'>
           <a href='/'><IoIosHome className='text-gray-500 text-xl' /></a>
@@ -171,7 +177,7 @@ const ProductDisplayPage = () => {
         </div>
         {/* Thông tin sản phẩm */}
         <div className='flex flex-col gap-3 w-[40%]'>
-          <div className='bg-white rounded-lg border  flex flex-col gap-4'>
+          <div className='bg-white rounded-lg  flex flex-col gap-4'>
             <div className='flex items-center gap-3 mb-2'>
               <span className='bg-red-100 text-red-500 px-3 py-1 rounded-md text-lg font-semibold'>
                 {data.discount ? `Giảm ${data.discount}%` : 'Không giảm giá'}
@@ -324,34 +330,98 @@ const ProductDisplayPage = () => {
         </div>
         {/* Sidebar phải */}
         <aside className='right-sidebar-section'>
-          <div className='bg-white rounded-lg border py-5 mb-6'>
-            <div className='flex items-center mb-4'>
+          <div className=' rounded-lg bg-[#f8f8f8] py-5 mb-6'>
+            <div className='flex items-center mb-4 px-4'>
               <div className='w-1 h-6 bg-red-500 rounded mr-2'></div>
               <h3 className='font-bold text-lg'>Sản phẩm gợi ý</h3>
             </div>
-            <ul className='product-list product-right-sidebar border-0 p-0 flex flex-col gap-4'>
-              {/* Sản phẩm gợi ý mẫu, bạn có thể map từ API nếu có */}
-              <li className='flex gap-3 items-center'>
-                <a href='#' className='block w-16 h-16 rounded overflow-hidden border'>
-                  <img src='/uploads/products/1744602251-2081300000004-1-bb.jpg.webp' alt='Khoai tây bắc 1kg' className='w-full h-full object-cover' />
-                </a>
-                <div className='flex-1'>
-                  <a href='#' className='font-semibold text-base leading-tight'>Khoai tây bắc 1kg</a>
-                  <div className='text-xs text-gray-500'>Còn hàng</div>
-                  <div className='text-red-500 font-bold text-base'>23,900 đ</div>
-                </div>
-              </li>
-              <li className='flex gap-3 items-center'>
-                <a href='#' className='block w-16 h-16 rounded overflow-hidden border'>
-                  <img src='/uploads/products/1744602781-0400298190009-4.jpg.webp' alt='Ớt Chuông Đỏ 180g' className='w-full h-full object-cover' />
-                </a>
-                <div className='flex-1'>
-                  <a href='#' className='font-semibold text-base leading-tight'>Ớt Chuông Đỏ 180g</a>
-                  <div className='text-xs text-gray-500'>Còn hàng</div>
-                  <div className='text-red-500 font-bold text-base'>18,900 đ</div>
-                </div>
-              </li>
-              {/* ...Thêm các sản phẩm khác tương tự... */}
+            <ul className='product-list product-right-sidebar border-0 p-0 flex flex-col'>
+              {/* Ví dụ, bạn có thể map từ API nếu có */}
+              {[ // Dữ liệu mẫu, thay bằng map nếu có API
+                {
+                  img: pr5,
+                  name: 'Cà Chua Beef 365...',
+                  stock: 'Còn hàng',
+                  price: '90,000 đ',
+                  oldPrice: '99,000 đ',
+                },
+                {
+                  img: pr4,
+                  name: 'Ớt Chuông Đỏ 180g',
+                  stock: 'Còn hàng',
+                  price: '18,900 đ',
+                },
+                {
+                  img: pr3,
+                  name: 'Bí Ngòi Xanh 365...',
+                  stock: 'Còn hàng',
+                  price: '44,900 đ',
+                },
+                {
+                  img: pr2,
+                  name: 'Xà Lách Frise 300G',
+                  stock: 'Còn hàng',
+                  price: '25,900 đ',
+                  oldPrice: '25,900 đ',
+                },
+                {
+                  img: pr1,
+                  name: 'Dẻ sườn bò Canada...',
+                  stock: 'Còn hàng',
+                  price: '155,000 đ',
+                },
+                {
+                  img: pr5,
+                  name: 'Kẹo Dẻo Top Fruit ...',
+                  stock: 'Còn hàng',
+                  price: '36,900 đ',
+                  oldPrice: '36,900 đ',
+                },
+                {
+                  img: pr4,
+                  name: 'Kẹo Dẻo Top Fruit ...',
+                  stock: 'Còn hàng',
+                  price: '36,900 đ',
+                  oldPrice: '36,900 đ',
+                },
+                {
+                  img: pr3,
+                  name: 'Kẹo Dẻo Top Fruit ...',
+                  stock: 'Còn hàng',
+                  price: '36,900 đ',
+                  oldPrice: '36,900 đ',
+                },
+                {
+                  img: pr2,
+                  name: 'Kẹo Dẻo Top Fruit ...',
+                  stock: 'Còn hàng',
+                  price: '36,900 đ',
+                  oldPrice: '36,900 đ',
+                },
+                {
+                  img: pr1,
+                  name: 'Kẹo Dẻo Top Fruit ...',
+                  stock: 'Còn hàng',
+                  price: '36,900 đ',
+                  oldPrice: '36,900 đ',
+                }
+              ].map((item, idx) => (
+                <li key={item.name + idx} className={`flex gap-3 items-center px-4 py-2 ${idx !== 0 ? 'border-t border-gray-100' : ''}`} style={{ minHeight: 70 }}>
+                  <a href='#' className='block w-16 h-16 rounded overflow-hidden border flex-shrink-0 bg-white'>
+                    <img src={item.img} alt={item.name} className='w-full h-full object-cover'/>
+                  </a>
+                  <div className='flex-1 min-w-0'>
+                    <a href='#' className='font-semibold text-base leading-tight truncate block'>{item.name}</a>
+                    <div className='text-xs text-gray-500'>{item.stock}</div>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-red-500 font-bold text-base'>{item.price}</span>
+                      {item.oldPrice && (
+                        <span className='line-through text-gray-400 text-sm'>{item.oldPrice}</span>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
         </aside>
