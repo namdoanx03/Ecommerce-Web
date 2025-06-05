@@ -5,22 +5,26 @@ const addressSchema = new mongoose.Schema({
         type : String,
         default : ""
     },
-    city : {
+    district : {
         type : String,
         default : ""
     },
-    state : {
+    province : {
         type : String,
         default : ""
     },
-    pincode : {
+    ward : {
         type : String
     },
-    country : {
+    name : {
         type : String
     },
     mobile : {
         type : Number,
+        default : null
+    },
+    email : {
+        type : String,
         default : null
     },
     status : {
