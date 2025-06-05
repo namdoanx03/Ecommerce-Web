@@ -1,3 +1,30 @@
 .best-selling-slider .slick-slide > div {
     margin: 0 10px; /* Khoảng cách ngang 20px giữa các slide */
   }
+
+/* Ẩn thanh scroll dọc cho thumbnail */
+.thumbnail-scroll-hide::-webkit-scrollbar {
+  display: none;
+}
+.thumbnail-scroll-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+/* Hiệu ứng progress bar sọc chéo cam đậm */
+@keyframes moveStripe {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+
+.progress-striped {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #f59e42,
+    #f59e42 10px,
+    #fbbf24 10px,
+    #fbbf24 20px
+  );
+  background-size: 40px 40px;
+  animation: moveStripe 1s linear infinite;
+}

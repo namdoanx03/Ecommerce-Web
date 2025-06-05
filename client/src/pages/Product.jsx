@@ -132,7 +132,7 @@ const Product = () => {
   return (
     <div className='product-page '>
       <div className='container min-h-screen bg-white px-28'>
-        <div className='breadcrumb-section h-24 bg-gray-50 flex items-center justify-between py-7 px-2'>
+        <div className='breadcrumb-section h-24 bg-gray-100 flex items-center justify-between py-7 px-2'>
           <h2 className='text-2xl font-bold '>Tất cả sản phẩm</h2>
           <div className='breadcrumb flex items-center gap-2 h-10'>
             <a  href='/'><IoIosHome className='text-gray-500 text-xl'/></a>
