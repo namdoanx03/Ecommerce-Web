@@ -337,7 +337,7 @@ const Home = () => {
               <div className="relative z-10 flex flex-col justify-center h-full p-12 max-w-[60%]">
                 <div className="mb-3 flex items-center gap-3">
                   <span className="text-gray-600 font-medium text-base">Ưu đãi độc quyền</span>
-                  <span className="bg-red-100 text-[#C83C2B] font-bold px-2 py-0.5 text-xs rounded-full">Giảm giá 30%</span>
+                  <span className="bg-red-100 text-[#C83C2B] font-bold px-2 py-2 text-sm rounded-full">Giảm giá 30%</span>
                 </div>
                 <h1 className="text-3xl font-medium tracking-tight mb-2 text-black leading-tight">
                   Ở NHÀ VÀ NHẬN HÀNG   <br />
@@ -346,7 +346,7 @@ const Home = () => {
                 <p className="text-gray-600 mb-7 text-base font-medium">
                   Rau chứa nhiều vitamin và khoáng chất tốt cho sức khỏe.
                 </p>
-                <button className="bg-[#C83C2B] hover:bg-[#b8321a] text-white font-bold px-8 py-3 rounded-xl text-lg flex items-center gap-2 w-fit shadow transition-all duration-200">
+                <button onClick={() => window.location.href = '/product'} className="bg-[#C83C2B] hover:bg-[#b8321a] text-white font-bold px-8 py-3 rounded-xl text-lg flex items-center gap-2 w-fit shadow transition-all duration-200">
                   Mua ngay <FaRegHandPointRight size={18} />
                 </button>
               </div>
@@ -369,7 +369,7 @@ const Home = () => {
                   </div>
                   <h3 className="text-lg font-bold text-[#C83C2B] mb-1">Bộ sưu tập hạt</h3>
                   <p className="text-gray-600 text-base font-medium mb-2">Chúng tôi cung cấp rau và trái cây hữu cơ</p>
-                  <a href="https://devidai.io.vn/san-pham" className="text-[#C83C2B] font-bold flex items-center gap-1 hover:underline transition-all duration-200">
+                  <a href="/product" className="text-[#C83C2B] font-bold flex items-center gap-1 hover:underline transition-all duration-200">
                     Mua ngay <FaRegHandPointRight size={18} />
                   </a>
                 </div>
@@ -390,7 +390,7 @@ const Home = () => {
                   </div>
                   <h3 className="text-lg font-bold text-[#C83C2B] mb-1">Chợ hữu cơ</h3>
                   <p className="text-gray-600 text-base font-medium mb-2">Bắt đầu mua sắm hàng <br /> ngày của bạn với một số...</p>
-                  <a href="https://devidai.io.vn/san-pham" className="text-[#C83C2B] font-bold flex items-center gap-1 hover:underline transition-all duration-200">
+                  <a href="/product" className="text-[#C83C2B] font-bold flex items-center gap-1 hover:underline transition-all duration-200">
                     Mua ngay <FaRegHandPointRight size={18} />
                   </a>
                 </div>
@@ -444,7 +444,7 @@ const Home = () => {
               </div>
               {/* Nút mua ngay */}
               <a
-                href="https://devidai.io.vn/san-pham"
+                href="/product"
                 className="absolute left-4 bottom-1 px-3 py-2  text-white font-bold "
               >
                 Mua ngay &rarr;
@@ -475,7 +475,7 @@ const Home = () => {
                 <div className="text-gray-500 text-sm">Rau tươi</div>
               </div>
               <a
-                href="https://devidai.io.vn/san-pham"
+                href="/product"
                 className="absolute left-4 bottom-1 px-3 py-2 text-white font-bold"
               >
                 Mua ngay &rarr;
@@ -505,7 +505,7 @@ const Home = () => {
                 <div className="text-gray-500 text-sm">Giao đến tận nhà bạn</div>
               </div>
               <a
-                href="https://devidai.io.vn/san-pham"
+                href="/product"
                 className="absolute left-4 bottom-1 px-3 py-2 text-white font-bold "
               >
                 Mua ngay &rarr;
@@ -535,7 +535,7 @@ const Home = () => {
                 <div className="text-gray-500 text-sm">Các loại hạt và đồ ăn nhẹ</div>
               </div>
               <a
-                href="https://devidai.io.vn/san-pham"
+                href="/product"
                 className="absolute left-4 bottom-1 px-3 py-2  text-white font-bold"
               >
                 Mua ngay &rarr;

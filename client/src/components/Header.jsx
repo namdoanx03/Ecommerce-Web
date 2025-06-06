@@ -93,6 +93,12 @@ const Header = () => {
         setTimeout(() => setShowHotOffersModal(false), 300);
     };
 
+    const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+            handleCloseHotOffers();
+        }
+    };
+
     //total item and total price
     // useEffect(()=>{
     //     const qty = cartItem.reduce((preve,curr)=>{
@@ -360,7 +366,7 @@ const Header = () => {
 
         {/* Modal Hot Offers */}
         {showHotOffersModal && (
-            <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-40'>
+            <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-40' onClick={handleOverlayClick}>
                 <div className={`bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative transform transition-all duration-300 ${modalAnimation ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                     <button
                         className='absolute top-3 right-3 bg-red-500 text-white rounded px-2 py-1 text-lg font-bold hover:bg-red-600'
