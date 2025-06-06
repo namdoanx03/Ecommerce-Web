@@ -26,7 +26,7 @@ import Cancel from "../pages/Cancel";
 import Product from "../pages/Product";
 import HotOffers from "../pages/HotOffers";
 import SalePage from "../pages/SalePage";
-
+import DashboardPage from "../pages/DashboardPage";
 
 const router = createBrowserRouter([
     {
@@ -88,6 +88,10 @@ const router = createBrowserRouter([
                     {
                         path : "address",
                         element : <Address/>
+                    },
+                    {
+                        path : 'admin',
+                        element : <AdminPermision><DashboardPage/></AdminPermision>
                     },
                     {
                         path : 'category',
