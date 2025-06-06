@@ -3,7 +3,7 @@ import SummaryApi from "../common/SummaryApi"
 import Axios from "./Axios"
 import AxiosToastError from "./AxiosToastError"
 
-export const addToCartProduct = async(productId,qty)=>{
+export const addToCartProduct = async(productId, qty) => {
     try {
         const response = await Axios({
             ...SummaryApi.addToCart,
@@ -13,22 +13,24 @@ export const addToCartProduct = async(productId,qty)=>{
             }
         })
 
-        const { data : responseData} = response
+        const { data : responseData } = response
 
-        console.log(responseData)
         if(responseData.success){
             toast.success(responseData.message)
+            return responseData
         }
-        return responseData
 
     } catch (error) {
-        AxiosToastError(error)
-
-        return {}
+        if (error.response?.data?.message) {
+            toast.error(error.response.data.message)
+        } else {
+            AxiosToastError(error)
+        }
+        return { success: false }
     }
 }
 
-export const getCartItems = async()=>{
+export const getCartItems = async() => {
     try {
         const response = await Axios({
             ...SummaryApi.getCartItems
@@ -39,8 +41,9 @@ export const getCartItems = async()=>{
         if(responseData.success){
             return responseData 
         }
+        return { success: false }
     } catch (error) {
         AxiosToastError(error)
-        return error
+        return { success: false }
     }
 }

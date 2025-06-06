@@ -8,7 +8,7 @@ export const addToCartItemController = async(request,response)=>{
         
         if(!productId){
             return response.status(402).json({
-                message : "Provide productId",
+                message : "Vui lòng cung cấp ID sản phẩm",
                 error : true,
                 success : false
             })
@@ -20,8 +20,17 @@ export const addToCartItemController = async(request,response)=>{
         })
 
         if(checkItemCart){
-            return response.status(400).json({
-                message : "Item already in cart"
+            const updatedCartItem = await CartProductModel.findOneAndUpdate(
+                { _id: checkItemCart._id },
+                { $inc: { quantity: 1 } },
+                { new: true }
+            )
+
+            return response.json({
+                data : updatedCartItem,
+                message : "Đã tăng số lượng sản phẩm trong giỏ hàng",
+                error : false,
+                success : true
             })
         }
 
@@ -40,7 +49,7 @@ export const addToCartItemController = async(request,response)=>{
 
         return response.json({
             data : save,
-            message : "Item add successfully",
+            message : "Đã thêm sản phẩm vào giỏ hàng",
             error : false,
             success : true
         })
