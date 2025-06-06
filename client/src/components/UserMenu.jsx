@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import AxiosToastError from '../utils/AxiosToastError'
 import { HiOutlineExternalLink } from "react-icons/hi";
 import isAdmin from '../utils/isAdmin'
+import { FiUser } from 'react-icons/fi'
 
 const UserMenu = ({close}) => {
    const user = useSelector((state)=> state.user)
