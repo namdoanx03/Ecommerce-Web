@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useGlobalContext } from '../provider/GlobalProvider'
 import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
-import AddAddress from '../components/AddAddress'
 import { useSelector } from 'react-redux'
 import AxiosToastError from '../utils/AxiosToastError'
 import Axios from '../utils/Axios'
@@ -12,6 +11,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { IoIosHome } from "react-icons/io";
 import { FaAngleRight } from "react-icons/fa6";
 import { useForm } from "react-hook-form"
+import { useAddress } from '../hooks/useAddress';
 
 function maskPhone(phone) {
   if (!phone) return '';
@@ -21,17 +21,17 @@ function maskPhone(phone) {
 }
 
 const CheckoutPage = () => {
-  const { notDiscountTotalPrice, totalPrice, totalQty, fetchCartItem,fetchOrder } = useGlobalContext()
+  const { notDiscountTotalPrice, totalPrice, totalQty, fetchCartItem, fetchOrder } = useGlobalContext()
   const [openAddress, setOpenAddress] = useState(false)
   const addressList = useSelector(state => state.addresses.addressList)
   const [selectAddress, setSelectAddress] = useState(0)
   const cartItemsList = useSelector(state => state.cartItem.cart)
   const navigate = useNavigate()
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
-  const { fetchAddress } = useGlobalContext()
-  const [addressMode, setAddressMode] = useState('saved'); // 'saved' hoặc 'new'
-  const [showSavedList, setShowSavedList] = useState(false);
-  const [editAddress, setEditAddress] = useState(null);
+  const { fetchAddress, createAddress, updateAddress, deleteAddress } = useAddress()
+  const [addressMode, setAddressMode] = useState('saved')
+  const [showSavedList, setShowSavedList] = useState(false)
+  const [editAddress, setEditAddress] = useState(null)
 
   const handleCashOnDelivery = async() => {
       try {
@@ -69,44 +69,21 @@ const CheckoutPage = () => {
   const onSubmit = async (data) => {
     try {
       if (addressMode === 'edit' && editAddress) {
-        const response = await Axios({
-          ...SummaryApi.updateAddress, // Đảm bảo endpoint đúng
-          data: { ...data, id: editAddress._id }
-        });
-        const { data: responseData } = response;
-        if (responseData.success) {
-          toast.success('Cập nhật địa chỉ thành công!');
+        const success = await updateAddress({ ...data, _id: editAddress._id });
+        if (success) {
           reset();
           setEditAddress(null);
           setAddressMode('saved');
           setShowSavedList(true);
-          if (fetchAddress) fetchAddress();
-        } else {
-          toast.error('Cập nhật địa chỉ thất bại!');
         }
         return;
       }
-      const response = await Axios({
-        ...SummaryApi.createAddress,
-        data: {
-          address_line: data.address_line,
-          province: data.province,
-          district: data.district,
-          ward: data.ward,
-          name: data.name,
-          mobile: data.mobile,
-          email: data.email
-        }
-      });
-      const { data: responseData } = response;
-      if (responseData.success) {
-        toast.success(responseData.message);
+      
+      const success = await createAddress(data);
+      if (success) {
         reset();
-        if (fetchAddress) fetchAddress();
         setAddressMode('saved');
         setShowSavedList(true);
-      } else {
-        toast.error('Lưu địa chỉ thất bại!');
       }
     } catch (error) {
       AxiosToastError(error);
@@ -148,25 +125,6 @@ const CheckoutPage = () => {
     // TODO: Xử lý đặt hàng ở đây
   }
 
-  // const handleSaveNewAddress = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await Axios({
-  //       ...SummaryApi.addAddress, // Đảm bảo endpoint này đúng
-  //       data: newAddress
-  //     });
-  //     if (response.data.success) {
-  //       toast.success('Đã lưu địa chỉ mới!');
-  //       if (fetchAddressList) fetchAddressList(); // Gọi lại hàm lấy danh sách địa chỉ nếu có
-  //       setAddressMode('saved');
-  //       setShowSavedList(true);
-  //     } else {
-  //       toast.error('Lưu địa chỉ thất bại!');
-  //     }
-  //   } catch (error) {
-  //     AxiosToastError(error);
-  //   }
-  // };
 
   const handleEditAddress = (address) => {
     setEditAddress(address);
@@ -183,23 +141,9 @@ const CheckoutPage = () => {
     });
   };
 
+
   const handleDeleteAddress = async (id) => {
-    try {
-      const response = await Axios({
-        ...SummaryApi.disableAddress, // Đảm bảo endpoint đúng
-        data: { id }
-      });
-      console.log(data)
-      const { data: responseData } = response;
-      if (responseData.success) {
-        toast.success('Đã xóa địa chỉ!');
-        if (fetchAddress) fetchAddress();
-      } else {
-        toast.error('Xóa địa chỉ thất bại!');
-      }
-    } catch (error) {
-      AxiosToastError(error);
-    }
+    await deleteAddress(id);
   };
   return (
     <section className="checkout-section bg-white min-h-screen py-8">
@@ -239,7 +183,7 @@ const CheckoutPage = () => {
                 {showSavedList && (
                   <div className='bg-white grid gap-4 max-h-[350px] overflow-y-auto scrollbar-none'>
                     {addressList.length === 0 ? (
-                      <div className="text-center text-gray-500 py-4">Không có vị trí nào được lưu</div>
+                      <div className="text-center text-gray-500 py-4">Không có địa chỉ nào được lưu</div>
                     ) : (
                       addressList.map((address, index) => (
                         <label htmlFor={"address" + index} className={!address.status && "hidden"} key={address._id}>
@@ -429,13 +373,6 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
-
-
-      {
-        openAddress && (
-          <AddAddress close={() => setOpenAddress(false)} />
-        )
-      }
     </section>
   )
 }

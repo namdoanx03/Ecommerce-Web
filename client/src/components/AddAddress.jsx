@@ -19,11 +19,12 @@ const AddAddress = ({close}) => {
                 ...SummaryApi.createAddress,
                 data : {
                     address_line :data.addressline,
-                    city : data.city,
-                    state : data.state,
-                    country : data.country,
-                    pincode : data.pincode,
-                    mobile : data.mobile
+                    province : data.province,
+                    district : data.district,
+                    ward : data.ward,
+                    mobile : data.mobile,
+                    email : data.email,
+                    name : data.name
                 }
             })
 

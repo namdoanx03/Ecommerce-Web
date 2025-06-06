@@ -15,10 +15,16 @@ const AddToCartButton = ({ data }) => {
     const [isAvailableCart, setIsAvailableCart] = useState(false)
     const [qty, setQty] = useState(0)
     const [cartItemDetails, setCartItemsDetails] = useState()
+    const user = useSelector(state => state.user)
 
     const handleADDTocart = async (e) => {
         e.preventDefault()
         e.stopPropagation()
+
+        if (!user?._id) {
+            toast.error("Vui lòng đăng nhập")
+            return
+        }
 
         try {
             setLoading(true)
@@ -43,7 +49,6 @@ const AddToCartButton = ({ data }) => {
         } finally {
             setLoading(false)
         }
-
     }
 
     //checking this item in cart or not
@@ -56,12 +61,8 @@ const AddToCartButton = ({ data }) => {
         setCartItemsDetails(product)
     }, [data, cartItem])
 
-
-
     return (
         <div className='w-full max-w-[150px]'>
-
-
             <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-3 py-2 rounded-xl'>
                 {loading ? <Loading /> : "Thêm vào giỏ"}
             </button>
