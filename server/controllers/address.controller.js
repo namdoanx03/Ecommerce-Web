@@ -64,7 +64,7 @@ export const getAddressController = async(request,response)=>{
 export const updateAddressController = async(request,response)=>{
     try {
         const userId = request.userId // middleware auth 
-        const { _id, address_line,city,state,country,name, email, mobile } = request.body 
+        const { _id, address_line, province, district, ward, name, email, mobile } = request.body 
 
         const updateAddress = await AddressModel.updateOne({ _id : _id, userId : userId },{
             address_line,
@@ -96,15 +96,20 @@ export const deleteAddresscontroller = async(request,response)=>{
         const userId = request.userId // auth middleware    
         const { _id } = request.body 
 
-        const disableAddress = await AddressModel.updateOne({ _id : _id, userId},{
-            status : false
-        })
+        // Delete the address from database
+        const deleteAddress = await AddressModel.deleteOne({ _id : _id, userId })
+
+        // Remove address reference from user's address_details array
+        await UserModel.updateOne(
+            { _id: userId },
+            { $pull: { address_details: _id } }
+        )
 
         return response.json({
-            message : "Address remove",
+            message : "Address deleted successfully",
             error : false,
             success : true,
-            data : disableAddress
+            data : deleteAddress
         })
     } catch (error) {
         return response.status(500).json({
