@@ -24,6 +24,10 @@ import CheckoutPage from "../pages/CheckoutPage";
 import Success from "../pages/Success";
 import Cancel from "../pages/Cancel";
 import Product from "../pages/Product";
+import HotOffers from "../pages/HotOffers";
+import SalePage from "../pages/SalePage";
+
+
 const router = createBrowserRouter([
     {
         path : "/",
@@ -60,6 +64,14 @@ const router = createBrowserRouter([
             {
                 path : "user",
                 element : <UserMenuMobile/>
+            },
+            {
+                path : "hot-offers",
+                element : <HotOffers/>
+            },
+            {
+                path : "sale",
+                element : <SalePage/>
             },
             {
                 path : "dashboard",

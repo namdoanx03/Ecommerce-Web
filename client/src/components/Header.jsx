@@ -14,6 +14,8 @@ import { IoCartOutline } from "react-icons/io5";
 import { FiMenu } from "react-icons/fi";
 import { FaAngleRight } from "react-icons/fa6";
 import { BsFillLightningFill } from "react-icons/bs";
+import Axios from '../utils/Axios';
+import SummaryApi from '../common/SummaryApi';
 
 const Header = () => {
     const [ isMobile ] = useMobile()
@@ -28,7 +30,11 @@ const Header = () => {
     const { totalPrice, totalQty} = useGlobalContext()
     const [openCartSection,setOpenCartSection] = useState(false)
     const [showDropdown, setShowDropdown] = useState(false);
- 
+    const [showHotOffersModal, setShowHotOffersModal] = useState(false);
+    const [hotOffers, setHotOffers] = useState([]);
+    const [loadingHotOffers, setLoadingHotOffers] = useState(false);
+    const [modalAnimation, setModalAnimation] = useState(false);
+
     const redirectToLoginPage = ()=>{
         navigate("/login")
     }
@@ -45,6 +51,47 @@ const Header = () => {
 
         navigate("/user")
     }
+
+    const fetchHotOffers = async () => {
+        setLoadingHotOffers(true);
+        try {
+            const response = await Axios({
+                ...SummaryApi.searchProduct,
+                data: { search: '', page: 1, limit: 50 }
+            });
+            if (response.data && response.data.success) {
+                // Lọc sản phẩm có discount > 0 và được tạo hôm nay
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const tomorrow = new Date(today);
+                tomorrow.setDate(today.getDate() + 1);
+                setHotOffers(
+                    response.data.data.filter(p =>
+                        p.discount > 0 &&
+                        p.createdAt &&
+                        new Date(p.createdAt) >= today &&
+                        new Date(p.createdAt) < tomorrow
+                    )
+                );
+            } else {
+                setHotOffers([]);
+            }
+        } catch (error) {
+            setHotOffers([]);
+        } finally {
+            setLoadingHotOffers(false);
+        }
+    };
+
+    const handleOpenHotOffers = () => {
+        setShowHotOffersModal(true);
+        setTimeout(() => setModalAnimation(true), 10);
+        fetchHotOffers();
+    };
+    const handleCloseHotOffers = () => {
+        setModalAnimation(false);
+        setTimeout(() => setShowHotOffersModal(false), 300);
+    };
 
     //total item and total price
     // useEffect(()=>{
@@ -67,7 +114,7 @@ const Header = () => {
                   <div className='container mx-auto flex items-center px-2 justify-between'>
                       {/**logo */}
                       <div className='h-full'>
-                          <Link to={"/"} className='h-full flex justify-center items-center'>
+                          <a href='/' className='h-full flex justify-center items-center' onClick={e => { e.preventDefault(); window.location.href = '/' }}>
                               <img
                                   src={logo}
                                   width={170}
@@ -82,7 +129,7 @@ const Header = () => {
                                   alt='logo'
                                   className='lg:hidden'
                               />
-                          </Link>
+                          </a>
                       </div>
 
                       {/**Search */}
@@ -184,7 +231,7 @@ const Header = () => {
                 onMouseEnter={() => setShowDropdown(true)}
                 onMouseLeave={() => setShowDropdown(false)}
               >
-                <button className='flex items-center gap-3 bg-[#C83C2B] hover:bg-[#b8321a] text-white font-bold rounded-md py-[12px] px-[26px] mt-[22px]'>
+                <button className='flex items-center gap-3 bg-[rgb(218,41,28)] hover:bg-[#b8321a] text-white font-bold rounded-md py-[11px] px-[26px] mt-[21px]'>
                   <FiMenu size={24} />
                   <span className='text-[18px]'>Danh Mục</span>
                 </button>
@@ -286,14 +333,14 @@ const Header = () => {
           <div className='header-nav-middle flex-1 flex justify-center'>
             <ul className='navbar-nav flex items-center gap-12'>
               <li className='nav-item'>
-                <a href="#" className='nav-link text-black font-medium text-lg'>Đi Chợ Tại Nhà</a>
+                <a href="/product" className='nav-link text-black font-medium text-lg'>Đi Chợ Tại Nhà</a>
               </li>
               <li className='nav-item flex items-center gap-2'>
-                <a href="#" className='nav-link text-black font-medium text-lg'>Ưu Đãi Hot</a>
+                <a href="/hot-offers" className='nav-link text-black font-medium text-lg'>Ưu Đãi Hot</a>
                 <span className='bg-red-400 text-white text-xs font-bold px-2 py-0.5 rounded'>Hot</span>
               </li>
               <li className='nav-item'>
-                <a href="#" className='nav-link text-black font-medium text-lg'>Khuyến mãi</a>
+                <a href="/sale" className='nav-link text-black font-medium text-lg'>Khuyến mãi</a>
               </li>
               <li className='nav-item'>
                 <a href="#" className='nav-link text-black font-medium text-lg'>Tin Tức</a>
@@ -301,12 +348,50 @@ const Header = () => {
             </ul>
           </div>
           <div className='header-nav-right'>
-            <button className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg mt-[20px]'>
-              <BsFillLightningFill size={24} className='text-[#C83C2B]' />
-              <span>Giảm giá hôm nay</span>
+            <button
+                className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg mt-[20px]'
+                onClick={handleOpenHotOffers}
+            >
+                <BsFillLightningFill size={24} className='text-[#C83C2B]' />
+                <span>Giảm giá hôm nay</span>
             </button>
           </div>
         </div>
+
+        {/* Modal Hot Offers */}
+        {showHotOffersModal && (
+            <div className='fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-40'>
+                <div className={`bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative transform transition-all duration-300 ${modalAnimation ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+                    <button
+                        className='absolute top-3 right-3 bg-red-500 text-white rounded px-2 py-1 text-lg font-bold hover:bg-red-600'
+                        onClick={handleCloseHotOffers}
+                    >
+                        ×
+                    </button>
+                    <h2 className='text-2xl font-bold mb-2'>Ưu đãi hôm nay</h2>
+                    <p className='mb-4 text-gray-600'>Khuyến mại được đề xuất cho bạn.</p>
+                    {loadingHotOffers ? (
+                        <div className='text-center py-8'>Đang tải...</div>
+                    ) : hotOffers.length === 0 ? (
+                        <div className='text-center py-8'>Không có sản phẩm nào được giảm giá trong hôm nay</div>
+                    ) : (
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto'>
+                            {hotOffers.map(product => (
+                                <div key={product._id} className='flex gap-3 items-center border rounded p-2'>
+                                    <img src={product.image?.[0]} alt={product.name} className='w-16 h-16 object-cover rounded'/>
+                                    <div className='flex-1'>
+                                        <div className='font-semibold'>{product.name}</div>
+                                        <div className='text-sm text-gray-500 line-through'>Giá gốc: {product.price?.toLocaleString()} đ</div>
+                                        <div className='text-base text-red-600 font-bold'>Giá KM: {(product.price - (product.price * product.discount / 100)).toLocaleString()} đ</div>
+                                        <div className='text-xs text-green-600'>Giảm {product.discount}%</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        )}
       </header>
   )
 }
