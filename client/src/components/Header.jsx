@@ -104,7 +104,7 @@ const Header = () => {
                                   <div className="relative">
                                       <IoCartOutline size={28} />
                                       <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[22px] text-center">
-                                          {totalQty || 0}
+                                          {cartItem.length || 0}
                                       </span>
                                   </div>
                               </button>
