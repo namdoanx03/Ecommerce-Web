@@ -27,6 +27,7 @@ import Product from "../pages/Product";
 import HotOffers from "../pages/HotOffers";
 import SalePage from "../pages/SalePage";
 import DashboardPage from "../pages/DashboardPage";
+import ManageOrder from "../pages/ManageOrder";
 
 const router = createBrowserRouter([
     {
@@ -90,12 +91,16 @@ const router = createBrowserRouter([
                         element : <Address/>
                     },
                     {
-                        path : 'admin',
+                        path : '',
                         element : <AdminPermision><DashboardPage/></AdminPermision>
                     },
                     {
                         path : 'category',
                         element : <AdminPermision><CategoryPage/></AdminPermision>
+                    },
+                    {
+                        path : 'manage-order',
+                        element : <AdminPermision><ManageOrder/></AdminPermision>
                     },
                     {
                         path : "subcategory",

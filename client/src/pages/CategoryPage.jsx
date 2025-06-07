@@ -72,9 +72,9 @@ const CategoryPage = () => {
     }
 
   return (
-    <section className=''>
-        <div className='p-2   bg-white shadow-md flex items-center justify-between'>
-            <h2 className='font-semibold'>Category</h2>
+    <section className='bg-[#F8F8F8] py-4'>
+        <div className='px-6 py-3 flex items-center justify-between '>
+            <h1 className=" text-2xl font-semibold text-black ">Danh mục sản phẩm</h1>
             <button onClick={()=>setOpenUploadCategory(true)} className='text-sm border border-primary-200 hover:bg-primary-200 px-3 py-1 rounded'>Add Category</button>
         </div>
         {

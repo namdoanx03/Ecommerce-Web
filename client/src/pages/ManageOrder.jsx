@@ -7,19 +7,19 @@ import { IoSearchOutline } from "react-icons/io5";
 import { TbEdit } from "react-icons/tb";
 import { FaRegTrashCan } from "react-icons/fa6";
 
-const ProductAdmin = () => {
-  const [productData, setProductData] = useState([])
+const ManageOrder = () => {
+  const [orderData, setOrderData] = useState([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
   const [totalPageCount, setTotalPageCount] = useState(1)
   const [search, setSearch] = useState("")
   const [totalCount, setTotalCount] = useState(0);
 
-  const fetchProductData = async () => {
+  const fetchOrderData = async () => {
     try {
       setLoading(true)
       const response = await Axios({
-        ...SummaryApi.getProduct,
+        ...SummaryApi.getOrderItems,
         data: {
           page: page,
           limit: 10,
@@ -31,7 +31,7 @@ const ProductAdmin = () => {
 
       if (responseData.success) {
         setTotalPageCount(responseData.totalNoPage)
-        setProductData(responseData.data)
+        setOrderData(responseData.data)
         setTotalCount(responseData.totalCount)
       }
 
@@ -43,7 +43,7 @@ const ProductAdmin = () => {
   }
 
   useEffect(() => {
-    fetchProductData()
+    fetchOrderData()
   }, [page])
 
   const handleNext = () => {
@@ -68,7 +68,7 @@ const ProductAdmin = () => {
 
     const interval = setTimeout(() => {
       if (flag) {
-        fetchProductData()
+        fetchOrderData()
         flag = false
       }
     }, 300);
@@ -82,8 +82,8 @@ const ProductAdmin = () => {
     <div className=''>
       <div className='dashboard px-2 bg-[#F8F8F8] min-h-[88vh] sticky top-0'>
         <div className='flex items-center justify-between pt-3 p-4'>
-          <h1 className=" text-2xl font-semibold text-black ">Danh sách sản phẩm</h1>
-          <div className=' bg-blue-50 px-4 flex items-center gap-3 py-2 rounded  border focus-within:border-primary-200'>
+          <h1 className=" text-2xl font-semibold text-black ">Quản lí đơn hàng</h1>
+          {/* <div className=' bg-blue-50 px-4 flex items-center gap-3 py-2 rounded  border focus-within:border-primary-200'>
             <IoSearchOutline size={25} className='text-primary-200 ' />
             <input
               type='text'
@@ -92,32 +92,32 @@ const ProductAdmin = () => {
               value={search}
               onChange={handleOnChange}
             />
-          </div>
+          </div> */}
         </div>
-        <div className="card-item flex flex-wrap gap-6 px-6 mt-2 pb-14">
+        <div className="card-item flex  gap-6  mt-2 pb-14 justify-center items-center ">
           <div className=''>
             <div className='bg-white rounded-xl shadow'>
 
-              <table className=' text-sm w-[75vw] '>
+              <table className='w-[75vw] text-sm'>
                 <thead>
                   <tr className='bg-gray-100'>
-                    <th className='p-2'>ID</th>
-                    <th className='p-2'>TÊN</th>
-                    <th className='p-2'>ẢNH</th>
-                    <th className='p-2'>GIÁ BÁN</th>
-                    <th className='p-2'>GIÁ SAU KHI GIẢM</th>
-                    <th className='p-2'>SỐ LƯỢNG TRONG KHO</th>
-                    <th className='p-2'>ĐÃ BÁN</th>
-                    <th className='p-2'>CHỨC NĂNG</th>
+                    <th className='p-2 '>ID</th>
+                    <th className='p-2 '>TÊN KHÁCH HÀNG</th>
+                    <th className='p-2 '>SDT</th>
+                    <th className='p-2 '>EMAIL</th>
+                    <th className='p-2 '>ĐỊA CHỈ</th>
+                    <th className='p-2 '>TỔNG GIÁ</th>
+                    <th className='p-2 '>TRẠNG THÁI</th>
+                    <th className='p-2 '>CHỨC NĂNG</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {productData.length === 0 ? (
+                  {orderData.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center py-8 text-gray-500">Không có sản phẩm nào</td>
+                      <td colSpan="8" className="text-center py-8 text-gray-500 w-full">Không có đơn hàng nào</td>
                     </tr>
                   ) : (
-                    productData.map((p, index) => (
+                    orderData.map((p, index) => (
                       <tr key={p._id} className='bg-white border-b hover:bg-gray-50'>
                         <td className='py-2 px-4 truncate'>{p._id}</td>
                         <td className='py-2 px-4 max-w-[200px] truncate'>{p.name}</td>
@@ -146,24 +146,26 @@ const ProductAdmin = () => {
               </table>
 
             </div>
-            <div className='flex items-center justify-between px-2  mt-8'>
-              <span className='text-gray-600 text-sm'>
-                {`Showing ${(page - 1) * 10 + 1} to ${Math.min(page * 10, totalCount)} of ${totalCount} results`}
-              </span>
-              <div className='flex items-center gap-1 rounded-lg border bg-white'>
-                <button onClick={handlePrevious} disabled={page === 1} className={`px-2 py-1 rounded-l-lg ${page === 1 ? 'text-gray-300' : 'text-blue-500 hover:bg-blue-50'}`}>&lt;</button>
-                {Array.from({ length: totalPageCount }, (_, i) => (
-                  <button
-                    key={i + 1}
-                    onClick={() => setPage(i + 1)}
-                    className={`px-3 py-1 ${page === i + 1 ? 'bg-blue-500 text-white' : 'text-blue-500 hover:bg-blue-50'}`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-                <button onClick={handleNext} disabled={page === totalPageCount} className={`px-2 py-1 rounded-r-lg ${page === totalPageCount ? 'text-gray-300' : 'text-blue-500 hover:bg-blue-50'}`}>&gt;</button>
+            {totalCount > 10 && (
+              <div className='flex items-center justify-between px-2  mt-8'>
+                <span className='text-gray-600 text-sm'>
+                  {`Showing ${(page - 1) * 10 + 1} to ${Math.min(page * 10, totalCount)} of ${totalCount} results`}
+                </span>
+                <div className='flex items-center gap-1 rounded-lg border bg-white'>
+                  <button onClick={handlePrevious} disabled={page === 1} className={`px-2 py-1 rounded-l-lg ${page === 1 ? 'text-gray-300' : 'text-blue-500 hover:bg-blue-50'}`}>&lt;</button>
+                  {Array.from({ length: totalPageCount }, (_, i) => (
+                    <button
+                      key={i + 1}
+                      onClick={() => setPage(i + 1)}
+                      className={`px-3 py-1 ${page === i + 1 ? 'bg-blue-500 text-white' : 'text-blue-500 hover:bg-blue-50'}`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button onClick={handleNext} disabled={page === totalPageCount} className={`px-2 py-1 rounded-r-lg ${page === totalPageCount ? 'text-gray-300' : 'text-blue-500 hover:bg-blue-50'}`}>&gt;</button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -171,4 +173,4 @@ const ProductAdmin = () => {
   )
 }
 
-export default ProductAdmin
+export default ManageOrder

@@ -47,7 +47,11 @@ const productSchema = new mongoose.Schema({
     publish : {
         type : Boolean,
         default : true
-    }
+    },
+    productId: {
+        type: Number,
+        unique: true,
+    },
 },{
     timestamps : true
 })

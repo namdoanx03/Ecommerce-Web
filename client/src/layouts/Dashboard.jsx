@@ -6,6 +6,7 @@ import { RiMenu5Fill } from "react-icons/ri";
 import { CiLogout } from "react-icons/ci";
 import { FiUser, FiCreditCard, FiShoppingCart, FiMessageCircle } from "react-icons/fi";
 import { IoSearch } from "react-icons/io5";
+import LeftDashboard from '../pages/LeftDashboard'
 
 
 const Dashboard = () => {
@@ -15,84 +16,14 @@ const Dashboard = () => {
 
   console.log("user dashboard", user)
   return (
-    <section className='bg-white'>
-      <div className='container grid lg:grid-cols-[300px,1fr] max-h-[100vh]'>
+    <section className='bg-white '>
+      <div className='container flex '>
         {/**left for menu */}
-        <div className='left-dashboard sticky top-0 h-screen overflow-y-auto hidden lg:block border-r-2 border-dotted border-gray-300 px-4 bg-white'>
-          <div className="user-card bg-[#F8F8F8] rounded-xl  p-4 border border-gray-200">
-            <div className="flex items-center justify-between ">
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                  <img src={user.avatar} alt="user-avatar" className="w-12 h-12 rounded-full object-cover" />
-                </div>
-                <div className='flex flex-col  '>
-                  <h3 className="font-semibold text-lg text-gray-800 ">{user.name}</h3>
-                  <span className="text-sm text-gray-500">Vai trò : Admin</span>
-                </div>
-              </div>
-              <div className="text-gray-400 cursor-pointer" onClick={() => setShowOptions(v => !v)}>
-                <button><RiMenu5Fill size={26} /></button>
-              </div>
-            </div>
-            {showOptions && (
-              <div
-                className={`flex flex-col gap-1 mt-3 transition-all duration-300 overflow-hidden ${showOptions ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
-              >
-                <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
-                  <FiUser size={20} />
-                  <span>Tài khoản của tôi</span>
-                </a>
-                <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
-                  <CiLogout size={20} />
-                  <span>Đăng xuất</span>
-                </a>
-              </div>
-            )}
-          </div>
-          <div className='navbar-card mt-6'>
-            <ul className="space-y-1">
-              <li className="mb-2"><span className="uppercase text-xs font-bold text-gray-600">ĐIỀU HƯỚNG</span></li>
-              <li>
-                <Link to="/dashboard/admin" className="block px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">Thống kê</Link>
-              </li>
-              <li>
-                <Link to="#" className="block px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">Quản lý đơn hàng</Link>
-              </li>
-              <li>
-                <div className="relative">
-                  <button
-                    type="button"
-                    className="flex items-center justify-between w-full px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium focus:outline-none"
-                    onClick={() => setProductMenuOpen(v => !v)}
-                  >
-                    <span>Quản lý sản phẩm</span>
-                    <svg className={`ml-2 w-4 h-4 transition-transform duration-200 ${productMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                  </button>
-                  <div className={`pl-6 transition-all duration-300 overflow-hidden ${productMenuOpen ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <Link to="/dashboard/product" className="flex items-center gap-2 py-1 text-gray-600 hover:text-blue-600">
-                      <span className="text-2xl">•</span>
-                      <span>Danh sách sản phẩm</span>
-                    </Link>
-                    <a href="#" className="flex items-center gap-2 py-1 text-gray-600 hover:text-blue-600">
-                      <span className="text-2xl">•</span>
-                      <span>Đánh giá sản phẩm</span>
-                    </a>
-                  </div>
-                </div>
-              </li>
-              <li>
-                <Link to="#" className="block px-3 py-2 rounded-lg bg-blue-50 text-blue-600 font-medium">Danh mục sản phẩm</Link>
-              </li>
-              <li>
-                <Link to="#" className="block px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 font-medium">Quản lý bài viết</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
+        <LeftDashboard />
 
         {/**right for content */}
-        <div className='bg-white'>
-          <header className="w-full bg-white py-5 px-8 flex items-center justify-between shadow-sm border-b-2 border-gray-200 sticky top-0 min-h-[10vh] ">
+        <div className='bg-white w-full border-l-2 border-dotted border-gray-300'>
+          <header className="w-full bg-white py-5 px-8 flex items-center justify-between shadow-sm border-b-2 border-gray-200 sticky top-0 min-h-[10vh] z-20">
             {/* Search box */}
             <div className="flex-1 flex justify-center">
               <div className="relative w-full max-w-xl">

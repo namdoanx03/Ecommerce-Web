@@ -7,7 +7,7 @@ const DashboardPage = () => {
     return (
         <>
         <div className='dashboard px-2 bg-[#F8F8F8] min-h-[88vh]'>
-            <h1 className="pt-3 pl-4 text-2xl font-semibold text-black sticky top-0">Dashboard</h1>
+            <h1 className="pt-3 pl-4 text-2xl font-semibold text-black sticky top-0">Thống kê</h1>
             <div className="card-item flex flex-wrap gap-6 mt-3 px-4">
               {/* Total customers */}
               <div className="flex-1 min-w-[220px] max-w-xs bg-white rounded-xl shadow p-6 flex items-center gap-4">
@@ -15,7 +15,7 @@ const DashboardPage = () => {
                   <HiUserGroup className="text-2xl text-orange-500" />
                 </span>
                 <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">Total customers</div>
+                  <div className="text-sm text-gray-500 font-medium mb-1">Tổng số khách hàng</div>
                   <div className="text-2xl font-semibold text-gray-800">765</div>
                 </div>
               </div>
@@ -25,7 +25,7 @@ const DashboardPage = () => {
                   <FiCreditCard className="text-2xl text-green-600" />
                 </span>
                 <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">Total income</div>
+                  <div className="text-sm text-gray-500 font-medium mb-1">Tổng số doanh thu</div>
                   <div className="text-2xl font-semibold text-gray-800">$ 6,760.89</div>
                 </div>
               </div>
@@ -35,7 +35,7 @@ const DashboardPage = () => {
                   <FiShoppingCart className="text-2xl text-blue-500" />
                 </span>
                 <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">New Orders</div>
+                  <div className="text-sm text-gray-500 font-medium mb-1">Đơn hàng mới</div>
                   <div className="text-2xl font-semibold text-gray-800">150</div>
                 </div>
               </div>

@@ -11,154 +11,151 @@ import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import AxiosToastError from '../utils/AxiosToastError';
 import successAlert from '../utils/SuccessAlert';
-import { useEffect } from 'react';
 
 const UploadProduct = () => {
-  const [data,setData] = useState({
-      name : "",
-      image : [],
-      category : [],
-      subCategory : [],
-      unit : "",
-      stock : "",
-      price : "",
-      discount : "",
-      description : "",
-      more_details : {},
+  const [data, setData] = useState({
+    name: "",
+    image: [],
+    category: [],
+    subCategory: [],
+    unit: "",
+    stock: "",
+    price: "",
+    discount: "",
+    description: "",
+    more_details: {},
   })
-  const [imageLoading,setImageLoading] = useState(false)
-  const [ViewImageURL,setViewImageURL] = useState("")
+  const [imageLoading, setImageLoading] = useState(false)
+  const [ViewImageURL, setViewImageURL] = useState("")
   const allCategory = useSelector(state => state.product.allCategory)
-  const [selectCategory,setSelectCategory] = useState("")
-  const [selectSubCategory,setSelectSubCategory] = useState("")
+  const [selectCategory, setSelectCategory] = useState("")
+  const [selectSubCategory, setSelectSubCategory] = useState("")
   const allSubCategory = useSelector(state => state.product.allSubCategory)
 
-  const [openAddField,setOpenAddField] = useState(false)
-  const [fieldName,setFieldName] = useState("")
+  const [openAddField, setOpenAddField] = useState(false)
+  const [fieldName, setFieldName] = useState("")
 
 
-  const handleChange = (e)=>{
-    const { name, value} = e.target 
+  const handleChange = (e) => {
+    const { name, value } = e.target
 
-    setData((preve)=>{
-      return{
-          ...preve,
-          [name]  : value
+    setData((preve) => {
+      return {
+        ...preve,
+        [name]: value
       }
     })
   }
 
-  const handleUploadImages = async(e)=>{
+  const handleUploadImages = async (e) => {
     const files = Array.from(e.target.files)
-    if(!files.length){
+    if (!files.length) {
       return
     }
     setImageLoading(true)
     const uploadedImages = []
-    for(const file of files){
+    for (const file of files) {
       const response = await uploadImage(file)
-      const { data : ImageResponse } = response
+      const { data: ImageResponse } = response
       uploadedImages.push(ImageResponse.data.url)
     }
-    setData((preve)=>{
-      return{
+    setData((preve) => {
+      return {
         ...preve,
-        image : [...preve.image, ...uploadedImages]
+        image: [...preve.image, ...uploadedImages]
       }
     })
     setImageLoading(false)
   }
 
-  const handleDeleteImage = async(index)=>{
-      data.image.splice(index,1)
-      setData((preve)=>{
-        return{
-            ...preve
-        }
-      })
-  }
-
-  const handleRemoveCategory = async(index)=>{
-    data.category.splice(index,1)
-    setData((preve)=>{
-      return{
+  const handleDeleteImage = async (index) => {
+    data.image.splice(index, 1)
+    setData((preve) => {
+      return {
         ...preve
       }
     })
   }
-  const handleRemoveSubCategory = async(index)=>{
-      data.subCategory.splice(index,1)
-      setData((preve)=>{
-        return{
-          ...preve
-        }
-      })
+
+  const handleRemoveCategory = async (index) => {
+    data.category.splice(index, 1)
+    setData((preve) => {
+      return {
+        ...preve
+      }
+    })
+  }
+  const handleRemoveSubCategory = async (index) => {
+    data.subCategory.splice(index, 1)
+    setData((preve) => {
+      return {
+        ...preve
+      }
+    })
   }
 
-  const handleAddField = ()=>{
-    setData((preve)=>{
-      return{
-          ...preve,
-          more_details : {
-            ...preve.more_details,
-            [fieldName] : ""
-          }
+  const handleAddField = () => {
+    setData((preve) => {
+      return {
+        ...preve,
+        more_details: {
+          ...preve.more_details,
+          [fieldName]: ""
+        }
       }
     })
     setFieldName("")
     setOpenAddField(false)
   }
 
-  const handleSubmit = async(e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("data",data)
+    console.log("data", data)
 
     try {
       const response = await Axios({
-          ...SummaryApi.createProduct,
-          data : data
+        ...SummaryApi.createProduct,
+        data: data
       })
-      const { data : responseData} = response
+      const { data: responseData } = response
 
-      if(responseData.success){
-          successAlert(responseData.message)
-          setData({
-            name : "",
-            image : [],
-            category : [],
-            subCategory : [],
-            unit : "",
-            stock : "",
-            price : "",
-            discount : "",
-            description : "",
-            more_details : {},
-          })
+      if (responseData.success) {
+        successAlert(responseData.message)
+        setData({
+          name: "",
+          image: [],
+          category: [],
+          subCategory: [],
+          unit: "",
+          stock: "",
+          price: "",
+          discount: "",
+          description: "",
+          more_details: {},
+        })
 
       }
     } catch (error) {
-        AxiosToastError(error)
+      AxiosToastError(error)
     }
-
-
   }
 
-  // useEffect(()=>{
-  //   successAlert("Upload successfully")
-  // },[])
   return (
-    <section className=''>
-        <div className='p-2   bg-white shadow-md flex items-center justify-between'>
-            <h2 className='font-semibold'>Upload Product</h2>
+    <div className=''>
+      <div className='dashboard px-2 bg-[#F8F8F8] min-h-[88vh] sticky top-0'>
+        <div className='flex items-center justify-between pt-3 p-4'>
+          <h1 className=" text-2xl font-semibold text-black ">Thêm sản phẩm</h1>
         </div>
-        <div className='grid p-3'>
-            <form className='grid gap-4' onSubmit={handleSubmit}>
+        <div className=''>
+          <div className='bg-white rounded-xl shadow'>
+            <div className='grid p-3'>
+              <form className='grid gap-4' onSubmit={handleSubmit}>
                 <div className='grid gap-1'>
-                  <label htmlFor='name' className='font-medium'>Name</label>
-                  <input 
+                  <label htmlFor='name' className='font-medium'>Tên sản phẩm</label>
+                  <input
                     id='name'
                     type='text'
-                    placeholder='Enter product name'
+                    placeholder='Nhập tên sản phẩm'
                     name='name'
                     value={data.name}
                     onChange={handleChange}
@@ -167,64 +164,64 @@ const UploadProduct = () => {
                   />
                 </div>
                 <div className='grid gap-1'>
-                  <label htmlFor='description' className='font-medium'>Description</label>
-                  <textarea 
+                  <label htmlFor='description' className='font-medium'>Mô tả</label>
+                  <textarea
                     id='description'
                     type='text'
-                    placeholder='Enter product description'
+                    placeholder='Nhập mô tả sản phẩm'
                     name='description'
                     value={data.description}
                     onChange={handleChange}
                     required
-                    multiple 
+                    multiple
                     rows={3}
                     className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded resize-none'
                   />
                 </div>
                 <div>
-                    <p className='font-medium'>Image</p>
-                    <div>
-                      <label htmlFor='productImage' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
-                          <div className='text-center flex justify-center items-center flex-col'>
-                            {
-                              imageLoading ?  <Loading/> : (
-                                <>
-                                   <FaCloudUploadAlt size={35}/>
-                                   <p>Upload Image</p>
-                                </>
-                              )
-                            }
-                          </div>
-                          <input 
-                            type='file'
-                            id='productImage'
-                            className='hidden'
-                            accept='image/*'
-                            multiple
-                            onChange={handleUploadImages}
-                          />
-                      </label>
-                      {/**display uploded image*/}
-                      <div className='flex flex-wrap gap-4'>
+                  <p className='font-medium'>Ảnh sản phẩm</p>
+                  <div>
+                    <label htmlFor='productImage' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
+                      <div className='text-center flex justify-center items-center flex-col'>
                         {
-                          data.image.map((img,index) =>{
-                              return(
-                                <div key={img+index} className='h-20 mt-1 w-20 min-w-20 bg-blue-50 border relative group'>
-                                  <img
-                                    src={img}
-                                    alt={img}
-                                    className='w-full h-full object-scale-down cursor-pointer' 
-                                    onClick={()=>setViewImageURL(img)}
-                                  />
-                                  <div onClick={()=>handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
-                                    <MdDelete/>
-                                  </div>
-                                </div>
-                              )
-                          })
+                          imageLoading ? <Loading /> : (
+                            <>
+                              <FaCloudUploadAlt size={35} />
+                              <p>Tải ảnh sản phẩm</p>
+                            </>
+                          )
                         }
                       </div>
+                      <input
+                        type='file'
+                        id='productImage'
+                        className='hidden'
+                        accept='image/*'
+                        multiple
+                        onChange={handleUploadImages}
+                      />
+                    </label>
+                    {/**display uploded image*/}
+                    <div className='flex flex-wrap gap-4'>
+                      {
+                        data.image.map((img, index) => {
+                          return (
+                            <div key={img + index} className='h-20 mt-1 w-20 min-w-20 bg-blue-50 border relative group'>
+                              <img
+                                src={img}
+                                alt={img}
+                                className='w-full h-full object-scale-down cursor-pointer'
+                                onClick={() => setViewImageURL(img)}
+                              />
+                              <div onClick={() => handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
+                                <MdDelete />
+                              </div>
+                            </div>
+                          )
+                        })
+                      }
                     </div>
+                  </div>
 
                 </div>
                 <div className='grid gap-1'>
@@ -233,23 +230,23 @@ const UploadProduct = () => {
                     <select
                       className='bg-blue-50 border w-full p-2 rounded'
                       value={selectCategory}
-                      onChange={(e)=>{
-                        const value = e.target.value 
-                        const category = allCategory.find(el => el._id === value )
-                        
-                        setData((preve)=>{
-                          return{
+                      onChange={(e) => {
+                        const value = e.target.value
+                        const category = allCategory.find(el => el._id === value)
+
+                        setData((preve) => {
+                          return {
                             ...preve,
-                            category : [...preve.category,category],
+                            category: [...preve.category, category],
                           }
                         })
                         setSelectCategory("")
                       }}
                     >
-                      <option value={""}>Select Category</option>
+                      <option value={""}>Chọn danh mục</option>
                       {
-                        allCategory.map((c,index)=>{
-                          return(
+                        allCategory.map((c, index) => {
+                          return (
                             <option value={c?._id}>{c.name}</option>
                           )
                         })
@@ -257,12 +254,12 @@ const UploadProduct = () => {
                     </select>
                     <div className='flex flex-wrap gap-3'>
                       {
-                        data.category.map((c,index)=>{
-                          return(
-                            <div key={c._id+index+"productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
+                        data.category.map((c, index) => {
+                          return (
+                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
                               <p>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer' onClick={()=>handleRemoveCategory(index)}>
-                                <IoClose size={20}/>
+                              <div className='hover:text-red-500 cursor-pointer' onClick={() => handleRemoveCategory(index)}>
+                                <IoClose size={20} />
                               </div>
                             </div>
                           )
@@ -277,14 +274,14 @@ const UploadProduct = () => {
                     <select
                       className='bg-blue-50 border w-full p-2 rounded'
                       value={selectSubCategory}
-                      onChange={(e)=>{
-                        const value = e.target.value 
-                        const subCategory = allSubCategory.find(el => el._id === value )
+                      onChange={(e) => {
+                        const value = e.target.value
+                        const subCategory = allSubCategory.find(el => el._id === value)
 
-                        setData((preve)=>{
-                          return{
+                        setData((preve) => {
+                          return {
                             ...preve,
-                            subCategory : [...preve.subCategory,subCategory]
+                            subCategory: [...preve.subCategory, subCategory]
                           }
                         })
                         setSelectSubCategory("")
@@ -292,8 +289,8 @@ const UploadProduct = () => {
                     >
                       <option value={""} className='text-neutral-600'>Select Sub Category</option>
                       {
-                        allSubCategory.map((c,index)=>{
-                          return(
+                        allSubCategory.map((c, index) => {
+                          return (
                             <option value={c?._id}>{c.name}</option>
                           )
                         })
@@ -301,12 +298,12 @@ const UploadProduct = () => {
                     </select>
                     <div className='flex flex-wrap gap-3'>
                       {
-                        data.subCategory.map((c,index)=>{
-                          return(
-                            <div key={c._id+index+"productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
+                        data.subCategory.map((c, index) => {
+                          return (
+                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
                               <p>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer' onClick={()=>handleRemoveSubCategory(index)}>
-                                <IoClose size={20}/>
+                              <div className='hover:text-red-500 cursor-pointer' onClick={() => handleRemoveSubCategory(index)}>
+                                <IoClose size={20} />
                               </div>
                             </div>
                           )
@@ -318,7 +315,7 @@ const UploadProduct = () => {
 
                 <div className='grid gap-1'>
                   <label htmlFor='unit' className='font-medium'>Unit</label>
-                  <input 
+                  <input
                     id='unit'
                     type='text'
                     placeholder='Enter product unit'
@@ -332,7 +329,7 @@ const UploadProduct = () => {
 
                 <div className='grid gap-1'>
                   <label htmlFor='stock' className='font-medium'>Number of Stock</label>
-                  <input 
+                  <input
                     id='stock'
                     type='number'
                     placeholder='Enter product stock'
@@ -346,7 +343,7 @@ const UploadProduct = () => {
 
                 <div className='grid gap-1'>
                   <label htmlFor='price' className='font-medium'>Price</label>
-                  <input 
+                  <input
                     id='price'
                     type='number'
                     placeholder='Enter product price'
@@ -360,7 +357,7 @@ const UploadProduct = () => {
 
                 <div className='grid gap-1'>
                   <label htmlFor='discount' className='font-medium'>Discount</label>
-                  <input 
+                  <input
                     id='discount'
                     type='number'
                     placeholder='Enter product discount'
@@ -374,36 +371,36 @@ const UploadProduct = () => {
 
 
                 {/**add more field**/}
-                  {
-                    Object?.keys(data?.more_details)?.map((k,index)=>{
-                        return(
-                          <div className='grid gap-1'>
-                            <label htmlFor={k} className='font-medium'>{k}</label>
-                            <input 
-                              id={k}
-                              type='text'
-                              value={data?.more_details[k]}
-                              onChange={(e)=>{
-                                  const value = e.target.value 
-                                  setData((preve)=>{
-                                    return{
-                                        ...preve,
-                                        more_details : {
-                                          ...preve.more_details,
-                                          [k] : value
-                                        }
-                                    }
-                                  })
-                              }}
-                              required
-                              className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
-                            />
-                          </div>
-                        )
-                    })
-                  }
+                {
+                  Object?.keys(data?.more_details)?.map((k, index) => {
+                    return (
+                      <div className='grid gap-1'>
+                        <label htmlFor={k} className='font-medium'>{k}</label>
+                        <input
+                          id={k}
+                          type='text'
+                          value={data?.more_details[k]}
+                          onChange={(e) => {
+                            const value = e.target.value
+                            setData((preve) => {
+                              return {
+                                ...preve,
+                                more_details: {
+                                  ...preve.more_details,
+                                  [k]: value
+                                }
+                              }
+                            })
+                          }}
+                          required
+                          className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                        />
+                      </div>
+                    )
+                  })
+                }
 
-                <div onClick={()=>setOpenAddField(true)} className=' hover:bg-primary-200 bg-white py-1 px-3 w-32 text-center font-semibold border border-primary-200 hover:text-neutral-900 cursor-pointer rounded'>
+                <div onClick={() => setOpenAddField(true)} className=' hover:bg-primary-200 bg-white py-1 px-3 w-32 text-center font-semibold border border-primary-200 hover:text-neutral-900 cursor-pointer rounded'>
                   Add Fields
                 </div>
 
@@ -412,26 +409,30 @@ const UploadProduct = () => {
                 >
                   Submit
                 </button>
-            </form>
+              </form>
+            </div>
+
+            {
+              ViewImageURL && (
+                <ViewImage url={ViewImageURL} close={() => setViewImageURL("")} />
+              )
+            }
+
+            {
+              openAddField && (
+                <AddFieldComponent
+                  value={fieldName}
+                  onChange={(e) => setFieldName(e.target.value)}
+                  submit={handleAddField}
+                  close={() => setOpenAddField(false)}
+                />
+              )
+            }
+          </div>
+
         </div>
-
-        {
-          ViewImageURL && (
-            <ViewImage url={ViewImageURL} close={()=>setViewImageURL("")}/>
-          )
-        }
-
-        {
-          openAddField && (
-            <AddFieldComponent 
-              value={fieldName}
-              onChange={(e)=>setFieldName(e.target.value)}
-              submit={handleAddField}
-              close={()=>setOpenAddField(false)} 
-            />
-          )
-        }
-    </section>
+      </div>
+    </div>
   )
 }
 
