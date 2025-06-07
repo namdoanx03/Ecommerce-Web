@@ -8,66 +8,90 @@ import AxiosToastError from '../utils/AxiosToastError';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const OtpVerification = () => {
-    const [data, setData] = useState(["","","","","",""])
+    const [data, setData] = useState(["", "", "", "", "", ""])
     const navigate = useNavigate()
     const inputRef = useRef([])
     const location = useLocation()
 
-    console.log("location",location)
+    console.log("location", location)
 
-    useEffect(()=>{
-        if(!location?.state?.email){
+    useEffect(() => {
+        if (!location?.state?.email) {
             navigate("/forgot-password")
         }
-    },[])
+    }, [])
 
     const valideValue = data.every(el => el)
 
-    const handleSubmit = async(e)=>{
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         try {
             const response = await Axios({
                 ...SummaryApi.forgot_password_otp_verification,
-                data : {
-                    otp : data.join(""),
-                    email : location?.state?.email
+                data: {
+                    otp: data.join(""),
+                    email: location?.state?.email
                 }
             })
-            
-            if(response.data.error){
+            if (response.data.error) {
                 toast.error(response.data.message)
             }
 
-            if(response.data.success){
+            if (response.data.success) {
                 toast.success(response.data.message)
-                setData(["","","","","",""])
-                navigate("/reset-password",{
-                    state : {
-                        data : response.data,
-                        email : location?.state?.email
+                setData(["", "", "", "", "", ""])
+                navigate("/reset-password", {
+                    state: {
+                        data: response.data,
+                        email: location?.state?.email
                     }
                 })
             }
+            console.log("response", response.data)
 
         } catch (error) {
-            console.log('error',error)
+            console.log('error', error)
             AxiosToastError(error)
         }
-
-
-
     }
 
     return (
-        <section className='w-full container mx-auto px-2'>
-            <div className='bg-white my-4 w-full max-w-lg mx-auto rounded p-7'>
-                <p className='font-semibold text-lg'>Enter OTP</p>
-                <form className='grid gap-4 py-4' onSubmit={handleSubmit}>
-                    <div className='grid gap-1'>
-                        <label htmlFor='otp'>Enter Your OTP :</label>
-                        <div className='flex items-center gap-2 justify-between mt-3'>
-                            {
+        <main id="content" role="main"
+            className="w-full max-w-md mx-auto p-6 bg-gradient-to-br  min-h-screen flex items-center justify-center p-4"
+        >
+            <div className="bg-white  shadow-2xl rounded-3xl w-full max-w-md overflow-hidden grid md:grid-cols-1  ">
+                <div className="p-8 text-center">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 400 300"
+                        className="mx-auto mb-6 w-48 h-48 animate-pulse"
+                    >
+                        <circle cx="200" cy="200" r="150" fill="#3B82F6" />
+                        <circle cx="200" cy="200" r="120" fill="#FFFFFF" />
+                        <circle cx="200" cy="200" r="90" fill="#3B82F6" />
+                        <circle cx="200" cy="200" r="60" fill="#FFFFFF" />
+                        <text
+                            x="200"
+                            y="200"
+                            textAnchor="middle"
+                            fill="#2563EB"
+                            fontSize="40"
+                            fontWeight="bold"
+                            dy=".3em"
+                            className="text-center"
+                        >
+                            OTP
+                        </text>
+                    </svg>
+
+                    <h2 className="text-2xl font-bold mb-2 ">Xác thực OTP</h2>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
+                        Nhập mã 6 chữ số được gửi đến <span className="font-semibold text-[rgb(103,98,98)]">{location?.state?.email}</span>
+                    </p>
+
+                    <div className="flex justify-center space-x-4 mb-6">
+                    {
                                 data.map((element,index)=>{
                                     return(
                                         <input
@@ -90,28 +114,34 @@ const OtpVerification = () => {
                                                 if(value && index < 5){
                                                     inputRef.current[index+1].focus()
                                                 }
-
-
                                             }}
                                             maxLength={1}
-                                            className='bg-blue-50 w-full max-w-16 p-2 border rounded outline-none focus:border-primary-200 text-center font-semibold'
+                                            className="w-12 h-16 text-center text-2xl border-2 border-blue-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500  "
                                         />
                                     )
                                 })
                             }
-                        </div>
-                        
                     </div>
-             
-                    <button disabled={!valideValue} className={` ${valideValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500" }    text-white py-2 rounded font-semibold my-3 tracking-wide`}>Verify OTP</button>
 
-                </form>
+                    <div className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                        Không nhận được mã? &nbsp;
+                        <a
+                            href="#"
+                            className="text-blue-500 hover:underline dark:text-blue-400 transition-colors duration-300 hover:text-blue-600 dark:hover:text-blue-500"
+                        >
+                            Gửi lại mã
+                        </a>
+                    </div>
 
-                <p>
-                    Already have account? <Link to={"/login"} className='font-semibold text-green-700 hover:text-green-800'>Login</Link>
-                </p>
+                    <button
+                        onClick={handleSubmit}
+                        className="w-full py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-transform duration-300 hover:scale-105 dark:bg-blue-600 dark:hover:bg-blue-700"
+                    >
+                        Xác minh OTP
+                    </button>
+                </div>
             </div>
-        </section>
+        </main>
     )
 }
 

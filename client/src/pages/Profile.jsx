@@ -66,7 +66,7 @@ const Profile = () => {
 
     }
   return (
-    <div className='p-4'>
+    <div className='p-4 h-[100vh]'>
 
         {/**profile upload and display image */}
         <div className='w-20 h-20 bg-red-500 flex items-center justify-center rounded-full overflow-hidden drop-shadow-sm'>

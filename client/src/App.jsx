@@ -70,7 +70,9 @@ function App() {
 
   const isAuthPage = location.pathname === '/login' ||
     location.pathname === '/register' ||
-    location.pathname === '/forgot-password'
+    location.pathname === '/forgot-password' ||
+    location.pathname === '/verification-otp' ||
+    location.pathname === '/reset-password'
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   return (
