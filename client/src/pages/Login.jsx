@@ -29,6 +29,7 @@ const Login = () => {
             }
         })
     }
+    
 
     const valideValue = Object.values(data).every(el => el)
 
@@ -53,18 +54,24 @@ const Login = () => {
 
                 const userDetails = await fetchUserDetails()
                 dispatch(setUserDetails(userDetails.data))
+                
+                console.log('check response',userDetails.data)
 
                 setData({
                     email : "",
                     password : "",
                 })
-                navigate("/")
+                if(userDetails.data.role === 'ADMIN'){
+                    navigate("/dashboard")
+                }else{
+                    navigate("/")
+                }
             }
 
         } catch (error) {
             AxiosToastError(error)
         }
-
+        // console.log('check token',localStorage.getItem('accesstoken'))
 
 
     }

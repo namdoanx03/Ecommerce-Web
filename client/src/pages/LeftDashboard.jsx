@@ -1,14 +1,42 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
-import {Link } from 'react-router-dom'
+import { useSelector ,useDispatch} from 'react-redux'
+import {Link, useNavigate } from 'react-router-dom'
 import { RiMenu5Fill } from "react-icons/ri";
 import { CiLogout } from "react-icons/ci";
 import { FiUser } from "react-icons/fi";
+import SummaryApi from '../common/SummaryApi'
+import Axios from '../utils/Axios'
+import AxiosToastError from '../utils/AxiosToastError'
+import { logout } from '../store/userSlice'
 
 const LeftDashboard = () => {
     const user = useSelector(state => state.user)
     const [showOptions, setShowOptions] = useState(false);
     const [productMenuOpen, setProductMenuOpen] = useState(false);
+    const navigate = useNavigate();
+    const dispatch = useDispatch()
+
+    const handleLogout = async()=>{
+        try {
+          const response = await Axios({
+             ...SummaryApi.logout
+          })
+          console.log("logout",response)
+          if(response.data.success){
+            if(close){
+              close()
+            }
+            dispatch(logout())
+            localStorage.clear()
+            toast.success(response.data.message)
+            navigate("/login")
+          }
+        } catch (error) {
+          console.log(error)
+          AxiosToastError(error)
+        }
+   }
+
     return (
         <div className='sticky top-0'>
             <div className='left-dashboard   px-4 bg-white py-20 w-[300px] sticky top-0'>
@@ -31,14 +59,21 @@ const LeftDashboard = () => {
                         <div
                             className={`flex flex-col gap-1 mt-3 transition-all duration-300 overflow-hidden ${showOptions ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}
                         >
-                            <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
+                            <Link to="/dashboard/profile" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
                                 <FiUser size={20} />
                                 <span>Tài khoản của tôi</span>
-                            </a>
-                            <a href="#" className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
-                                <CiLogout size={20} />
-                                <span>Đăng xuất</span>
-                            </a>
+                            </Link>
+                            {user._id ? (
+                                <button onClick={handleLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
+                                    <CiLogout size={20} />
+                                    <span>Đăng xuất</span>
+                                </button>
+                            ) : (
+                                <button onClick={() => navigate('/login')} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-600 font-medium">
+                                    <FiUser size={20} />
+                                    <span>Đăng nhập</span>
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
