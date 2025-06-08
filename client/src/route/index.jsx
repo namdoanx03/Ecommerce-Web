@@ -75,6 +75,14 @@ const router = createBrowserRouter([
                 element : <SalePage/>
             },
             {
+                path : "profile",
+                element : <Profile/>
+            },
+            {
+                path : "myorders",
+                element : <MyOrders/>
+            },
+            {
                 path : "dashboard",
                 element : <Dashboard/>,
                 children : [
@@ -82,10 +90,7 @@ const router = createBrowserRouter([
                         path : "profile",
                         element : <Profile/>
                     },
-                    {
-                        path : "myorders",
-                        element : <MyOrders/>
-                    },
+                    
                     {
                         path : "address",
                         element : <Address/>

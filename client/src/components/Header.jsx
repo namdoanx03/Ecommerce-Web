@@ -34,6 +34,8 @@ const Header = () => {
     const [hotOffers, setHotOffers] = useState([]);
     const [loadingHotOffers, setLoadingHotOffers] = useState(false);
     const [modalAnimation, setModalAnimation] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
 
     const redirectToLoginPage = ()=>{
         navigate("/login")
@@ -51,6 +53,29 @@ const Header = () => {
 
         navigate("/user")
     }
+    const fetchCategory = async()=>{
+        const response = await Axios({
+            ...SummaryApi.getCategory,
+        })
+        if(response.data && response.data.success){
+            setCategories(response.data.data)
+        }
+    }
+
+    const fetchSubCategory = async()=>{
+        const response = await Axios({
+            ...SummaryApi.getSubCategory,
+        })
+        if(response.data && response.data.success){
+            setSubCategories(response.data.data)
+        }
+    }
+    console.log("subCategories", subCategories)
+
+    useEffect(() => {
+        fetchCategory();
+        fetchSubCategory();
+    }, []);
 
     const fetchHotOffers = async () => {
         setLoadingHotOffers(true);
@@ -250,85 +275,31 @@ const Header = () => {
                         : "opacity-0 translate-y-8 pointer-events-none")
                   }
                 >
-                  <div className='categories-dropdown bg-white rounded-xl p-2 w-80 flex flex-col gap-1 shadow-2xl' style={{boxShadow: "0 0 8px #ddd"}}>
+                  <div className='categories-dropdown bg-white rounded-xl  w-80 flex flex-col gap-1 shadow-2xl' style={{boxShadow: "0 0 8px #ddd"}}>
                     <ul className='flex flex-col gap-1'>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/biscuit.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Bánh Quy & Đồ Ăn Nhẹ</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/breakfast.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Bữa Sáng & Sữa</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/drink.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Đồ Uống</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/vegetable.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Rau và Trái Cây</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/wine.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Rượu Vang & Đồ Uống Có Cồn</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/milk.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Sữa & Sản Phẩm Từ Sữa</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/grocery.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Tạp Hóa & Hàng Thiết Yếu</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/seafood.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Thịt & Hải Sản</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/pet-food.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Thức Ăn Cho Thú Cưng</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/dry-food.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Thực phẩm khô</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
-                      <li>
-                        <a className='flex items-center justify-between px-4 py-3 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
-                          <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/frozen.svg" alt="logo" className='w-7 h-7 mr-3' />
-                          <span className='flex-1 text-base font-medium text-gray-800'>Thực Thẩm Đông Lạnh</span>
-                          <FaAngleRight className='text-gray-400' />
-                        </a>
-                      </li>
+                      {categories.map((cat, idx) => (
+                        <li key={cat._id || idx} className="relative group">
+                          <a className='flex items-center justify-between px-4 py-2 rounded-lg hover:bg-gray-100 transition cursor-pointer'>
+                            <img src={cat.icon || cat.image } alt="logo" className='w-7 h-7 mr-3' />
+                            <span className='flex-1 text-base font-medium text-gray-800'>{cat.name}</span>
+                            <FaAngleRight className='text-gray-400' />
+                          </a>
+                          <div className="absolute top-0 left-full min-w-[300px] bg-white rounded-lg shadow z-50 hidden group-hover:block px-4 py-2 ">
+                            <div className="font-bold text-sm text-left mb-2">{cat.name}</div>
+                            {/* subcategory */}
+                            <div className='flex flex-col gap-1'>
+                              {subCategories
+                                .filter(sub => sub.category.some(c => c._id === cat._id))
+                                .map((subCat, idx) => (
+                                  <a key={subCat._id || idx} className='flex items-center gap-2 px-4  rounded-lg hover:bg-gray-100 transition cursor-pointer'>
+                                    <span className="text-lg">•</span>
+                                    <span className='text-[#777b83]'>{subCat.name}</span>
+                                  </a>
+                              ))}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>

@@ -87,13 +87,14 @@ const CategoryPage = () => {
             {
                 categoryData.map((category,index)=>{
                     return(
-                        <div className='w-32 h-56 rounded shadow-md' key={category._id}>
+                        <div className='w-32 h-48 bg-white mb-3 rounded shadow-md relative pb-12' key={category._id}>
                             <img 
                                 alt={category.name}
                                 src={category.image}
-                                className='w-full object-scale-down'
+                                className='w-full h-20 object-contain '
                             />
-                            <div className='items-center h-9 flex gap-2'>
+                            <p className='text-center text-sm font-medium mt-4'>{category.name}</p>
+                            <div className='absolute bottom-0 left-0 w-full items-center h-9 flex gap-2 mb-1 px-2'>
                                 <button onClick={()=>{
                                     setOpenEdit(true)
                                     setEditData(category)

@@ -7,6 +7,7 @@ import { CiLogout } from "react-icons/ci";
 import { FiUser, FiCreditCard, FiShoppingCart, FiMessageCircle } from "react-icons/fi";
 import { IoSearch } from "react-icons/io5";
 import LeftDashboard from '../pages/LeftDashboard'
+import { FaHome } from "react-icons/fa";
 
 
 const Dashboard = () => {
@@ -24,6 +25,11 @@ const Dashboard = () => {
         {/**right for content */}
         <div className='bg-white w-full border-l-2 border-dotted border-gray-300'>
           <header className="w-full bg-white py-5 px-8 flex items-center justify-between shadow-sm border-b-2 border-gray-200 sticky top-0 min-h-[10vh] z-20">
+            <div className ='comback-home flex items-center gap-2'>
+            <Link to="/">
+              <span className='text-base font-medium text-gray-800'><FaHome className='text-2xl'/></span>
+            </Link>
+            </div>
             {/* Search box */}
             <div className="flex-1 flex justify-center">
               <div className="relative w-full max-w-xl">

@@ -556,50 +556,25 @@ const Home = () => {
               <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 ">
                 <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
                 <ul className="flex flex-col gap-1">
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition border-l-4 border-red-500 bg-white">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/biscuit.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Bánh Quy & Đồ Ăn Nhẹ</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/breakfast.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Bữa Sáng & Sữa</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/cup.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Đồ Uống</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/vegetable.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Rau và Trái Cây</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/drink.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Rượu Vang & Đồ Uống Có Cồn</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/milk.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Sữa & Sản Phẩm Từ Sữa</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/grocery.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Tạp Hóa & Hàng Thiết Yếu</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/meats.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Thịt & Hải Sản</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/pet.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Thức Ăn Cho Thú Cưng</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/pet.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Thực phẩm khô</span>
-                  </li>
-                  <li className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
-                    <img src="https://themes.pixelstrap.com/fastkart/assets/svg/1/frozen.svg" className="w-7 h-7 object-contain" />
-                    <span className="text-base font-medium">Thực Thẩm Đông Lạnh</span>
-                  </li>
+                  {categoryData.map((cat) => (
+                    <li key={cat._id} className="relative group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
+                      <img src={cat.icon || cat.image} className="w-7 h-7 object-contain" />
+                      <span className="text-base font-medium">{cat.name}</span>
+                      <span className="ml-auto"><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg></span>
+                      {/* Subcategory menu */}
+                      {subCategoryData.filter(sub => sub.category.some(c => c._id === cat._id)).length > 0 && (
+                        <div className="absolute top-0 left-full min-w-[220px] bg-white rounded-xl shadow-lg z-50 hidden group-hover:block">
+                          <div className="p-2">
+                            {subCategoryData.filter(sub => sub.category.some(c => c._id === cat._id)).map(sub => (
+                              <div key={sub._id} className="px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer whitespace-nowrap">
+                                {sub.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  ))}
                 </ul>
                 <div className="border-t my-4"></div>
                 <ul className="flex flex-col gap-2">

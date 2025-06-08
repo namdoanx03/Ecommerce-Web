@@ -72,7 +72,9 @@ function App() {
     location.pathname === '/register' ||
     location.pathname === '/forgot-password' ||
     location.pathname === '/verification-otp' ||
-    location.pathname === '/reset-password'
+    location.pathname === '/reset-password' ||
+    location.pathname === '/profile' ||
+    location.pathname === '/myorders'
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   return (
