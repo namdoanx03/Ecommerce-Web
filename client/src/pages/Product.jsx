@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import SummaryApi from '../common/SummaryApi'
 import AxiosToastError from '../utils/AxiosToastError'
 import Axios from '../utils/Axios'
@@ -20,6 +20,7 @@ const Product = () => {
   const [openPrice, setOpenPrice] = useState(true);
   const [openRating, setOpenRating] = useState(true);
   const [gridCols, setGridCols] = useState(3); // 3 hoặc 4 cột
+  const productListRef = useRef();
   
   const fetchProductData = async()=>{
     try {
@@ -49,6 +50,12 @@ const Product = () => {
   useEffect(()=>{
     fetchProductData()
   },[page])
+
+  useEffect(() => {
+    if (productListRef.current) {
+      productListRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [page, openCategory, openPrice, openRating, gridCols]);
 
   const categories = [
     {
@@ -156,7 +163,7 @@ const Product = () => {
             ))}
           </Slider>
         </div>
-        <div className='product-list'>
+        <div className='product-list' ref={productListRef}>
           <div className='container mx-auto flex justify-between'>
             <div className='section-left w-full md:w-1/5 pb-16'>
               <div className='left-box-sidebar border-r-2 border-gray-200 p-2 sticky top-1'>
