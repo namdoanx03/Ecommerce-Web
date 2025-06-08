@@ -15,14 +15,13 @@ import toast from 'react-hot-toast'
 
 const SubCategoryPage = () => {
   const [openAddSubCategory, setOpenAddSubCategory] = useState(false)
-  const [data, setData] = useState([])
+  const [allData, setAllData] = useState([])
   const [loading, setLoading] = useState(false)
   const columnHelper = createColumnHelper()
   const [ImageURL, setImageURL] = useState("")
   const [openEdit, setOpenEdit] = useState(false)
   const [page, setPage] = useState(1)
-  const [totalPageCount, setTotalPageCount] = useState(1)
-  const [totalCount, setTotalCount] = useState(0);
+  const limit = 10
 
   const [editData, setEditData] = useState({
     _id: ""
@@ -32,22 +31,15 @@ const SubCategoryPage = () => {
   })
   const [openDeleteConfirmBox, setOpenDeleteConfirmBox] = useState(false)
 
-
-  const fetchSubCategory = async () => {
+  const fetchAllSubCategory = async () => {
     try {
       setLoading(true)
       const response = await Axios({
-        ...SummaryApi.getSubCategory,
-        params: {
-          page,
-          limit: 10
-        }
+        ...SummaryApi.getSubCategory
       })
       const { data: responseData } = response
       if (responseData.success) {
-        setData(responseData.data)
-        setTotalCount(responseData.totalCount)
-        setTotalPageCount(responseData.totalNoPage)
+        setAllData(responseData.data)
       }
     } catch (error) {
       AxiosToastError(error)
@@ -55,14 +47,16 @@ const SubCategoryPage = () => {
       setLoading(false)
     }
   }
-  
 
   useEffect(() => {
-    fetchSubCategory()
-  }, [page])
+    fetchAllSubCategory()
+  }, [])
+
+  const totalPageCount = Math.ceil(allData.length / limit)
+  const data = allData.slice((page - 1) * limit, page * limit)
 
   const handleNext = () => {
-    if (page !== totalPageCount) {
+    if (page < totalPageCount) {
       setPage(prev => prev + 1)
     }
   }
@@ -72,7 +66,6 @@ const SubCategoryPage = () => {
       setPage(prev => prev - 1)
     }
   }
-
 
   const column = [
     columnHelper.display({
@@ -149,7 +142,7 @@ const SubCategoryPage = () => {
 
       if (responseData.success) {
         toast.success(responseData.message)
-        fetchSubCategory()
+        fetchAllSubCategory()
         setOpenDeleteConfirmBox(false)
         setDeleteSubCategory({ _id: "" })
       }
@@ -176,7 +169,7 @@ const SubCategoryPage = () => {
           openAddSubCategory && (
             <UploadSubCategoryModel
               close={() => setOpenAddSubCategory(false)}
-              fetchData={fetchSubCategory}
+              fetchData={fetchAllSubCategory}
             />
           )
         }
@@ -191,7 +184,7 @@ const SubCategoryPage = () => {
           <EditSubCategory
             data={editData}
             close={() => setOpenEdit(false)}
-            fetchData={fetchSubCategory}
+            fetchData={fetchAllSubCategory}
           />
         }
 
@@ -205,9 +198,9 @@ const SubCategoryPage = () => {
           )
         }
       </div>
-      <div className='flex items-center justify-between px-10 '>
+      <div className='flex items-center justify-between px-14'>
         <span className='text-gray-600 text-sm'>
-          {`Showing ${(page - 1) * 10 + 1} to ${Math.min(page * 10, totalCount)} of ${totalCount} results`}
+          {`Showing ${(page - 1) * limit + 1} to ${Math.min(page * limit, allData.length)} of ${allData.length} results`}
         </span>
         <div className='flex items-center gap-1 rounded-lg border bg-white'>
           <button onClick={handlePrevious} disabled={page === 1} className={`px-2 py-1 rounded-l-lg ${page === 1 ? 'text-gray-300' : 'text-blue-500 hover:bg-blue-50'}`}>&lt;</button>
