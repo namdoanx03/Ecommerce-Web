@@ -557,16 +557,31 @@ const Home = () => {
                 <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
                 <ul className="flex flex-col gap-1">
                   {categoryData.map((cat) => (
-                    <li key={cat._id} className="relative group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition">
+                    <li
+                      key={cat._id}
+                      className="relative group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+                      onClick={() => navigate(`/product?category=${cat._id}`)}
+                    >
                       <img src={cat.icon || cat.image} className="w-7 h-7 object-contain" />
                       <span className="text-base font-medium">{cat.name}</span>
-                      <span className="ml-auto"><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg></span>
+                      <span className="ml-auto">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </span>
                       {/* Subcategory menu */}
                       {subCategoryData.filter(sub => sub.category.some(c => c._id === cat._id)).length > 0 && (
                         <div className="absolute top-0 left-full min-w-[220px] bg-white rounded-xl shadow-lg z-50 hidden group-hover:block">
                           <div className="p-2">
                             {subCategoryData.filter(sub => sub.category.some(c => c._id === cat._id)).map(sub => (
-                              <div key={sub._id} className="px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer whitespace-nowrap">
+                              <div
+                                key={sub._id}
+                                className="px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer whitespace-nowrap"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  navigate(`/product?subcategory=${sub._id}`);
+                                }}
+                              >
                                 {sub.name}
                               </div>
                             ))}

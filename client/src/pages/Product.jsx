@@ -10,46 +10,96 @@ import "slick-carousel/slick/slick-theme.css";
 import { CiStar } from "react-icons/ci";
 import { FaThLarge, FaTh } from "react-icons/fa";
 import CardProduct from '../components/CardProduct';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 
+const LoadingSkeleton = () => (
+  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 p-4 gap-4">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <div key={i} className="animate-pulse bg-gray-100 rounded-lg h-64 w-full" />
+    ))}
+  </div>
+);
 
 const Product = () => {
-  const [productData,setProductData] = useState([])
-  const [page,setPage] = useState(1)
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const category = params.get('category');
+  const subcategory = params.get('subcategory');
+  const [allProducts, setAllProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const limit = 12;
   const [totalPage, setTotalPage] = useState(1);
   const [openCategory, setOpenCategory] = useState(true);
   const [openPrice, setOpenPrice] = useState(true);
   const [openRating, setOpenRating] = useState(true);
   const [gridCols, setGridCols] = useState(3); // 3 hoặc 4 cột
+  const [loading, setLoading] = useState(false);
   const productListRef = useRef();
   
-  const fetchProductData = async()=>{
+  const fetchProductData = async () => {
+    setLoading(true);
+    let response;
+    console.log('Query params:', { category, subcategory }); // Debug
     try {
-        const response = await Axios({
-           ...SummaryApi.getProduct,
-           data : {
-              page : page,
-              limit: 15
-           }
-        })
-
-        const { data : responseData } = response 
-
-        console.log("product page ",responseData)
-        if(responseData.success){
-          
-          setProductData(responseData.data)
-          setTotalPage(responseData.totalNoPage || 1)
-        }
-
+      if (subcategory) {
+        console.log('Fetching products by subcategory:', subcategory); // Debug
+        response = await Axios({ 
+          ...SummaryApi.getProductBySubCategory, 
+          data: { id: subcategory } 
+        });
+        console.log('Subcategory response:', response?.data); // Debug
+      } else if (category) {
+        console.log('Fetching products by category:', category); // Debug
+        response = await Axios({ 
+          ...SummaryApi.getProductByCategory, 
+          data: { id: category } 
+        });
+        console.log('Category response:', response?.data); // Debug
+      } else {
+        // Lấy tất cả sản phẩm
+        console.log('Fetching all products'); // Debug
+        response = await Axios({ 
+          ...SummaryApi.getProduct, 
+          data: {} 
+        });
+        console.log('All products response:', response?.data); // Debug
+      }
+      
+      if (response?.data?.success) {
+        console.log('Setting products:', response.data.data); // Debug
+        setAllProducts(response.data.data);
+        setTotalPage(Math.ceil(response.data.data.length / limit));
+        setPage(1); // reset về trang 1 khi đổi filter
+      } else {
+        console.log('No success in response:', response?.data); // Debug
+        setAllProducts([]);
+        setTotalPage(1);
+        setPage(1);
+      }
     } catch (error) {
-      AxiosToastError(error)
+      console.error('Fetch product error:', error);
+      setAllProducts([]);
+      setTotalPage(1);
+      setPage(1);
     }
-  }
-  
-  console.log("product page")
-  useEffect(()=>{
-    fetchProductData()
-  },[page])
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchProductData();
+    // eslint-disable-next-line
+  }, [category, subcategory]); // Bỏ page khỏi dependencies vì không cần fetch lại khi đổi trang
+
+  // Phân trang ở frontend cho tất cả trường hợp
+  const productsToShow = allProducts.slice((page - 1) * limit, page * limit);
+
+  const handleNext = () => {
+    if (page < totalPage) setPage(page + 1);
+  };
+  const handlePrevious = () => {
+    if (page > 1) setPage(page - 1);
+  };
 
   useEffect(() => {
     if (productListRef.current) {
@@ -136,6 +186,48 @@ const Product = () => {
       },
     ],
   };
+
+  // Hàm tạo mảng số trang để hiển thị
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxVisiblePages = 5; // Số trang tối đa hiển thị
+    
+    if (totalPage <= maxVisiblePages) {
+      // Nếu tổng số trang <= maxVisiblePages, hiển thị tất cả
+      for (let i = 1; i <= totalPage; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Nếu tổng số trang > maxVisiblePages
+      if (page <= 3) {
+        // Nếu đang ở trang đầu
+        for (let i = 1; i <= 4; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPage);
+      } else if (page >= totalPage - 2) {
+        // Nếu đang ở trang cuối
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = totalPage - 3; i <= totalPage; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        // Nếu đang ở giữa
+        pageNumbers.push(1);
+        pageNumbers.push('...');
+        for (let i = page - 1; i <= page + 1; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPage);
+      }
+    }
+    
+    return pageNumbers;
+  };
+
   return (
     <div className='product-page '>
       <div className='container min-h-screen bg-white px-28'>
@@ -164,6 +256,10 @@ const Product = () => {
           </Slider>
         </div>
         <div className='product-list' ref={productListRef}>
+          {/* Hiển thị thông báo nếu không có sản phẩm */}
+          {!loading && allProducts.length === 0 && (
+            <div className="text-center text-gray-500 py-8 ">Không có sản phẩm nào phù hợp.</div>
+          )}
           <div className='container mx-auto flex justify-between'>
             <div className='section-left w-full md:w-1/5 pb-16'>
               <div className='left-box-sidebar border-r-2 border-gray-200 p-2 sticky top-1'>
@@ -330,36 +426,86 @@ const Product = () => {
                 </div>
               </div>
               <div className={`grid gap-4 ${gridCols === 3 ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
-                {productData.map((p, idx) => (
-                  <CardProduct data={p} key={p._id || idx} />
-                ))}
+                {loading ? (
+                  <LoadingSkeleton />
+                ) : (
+                  productsToShow.map((p, idx) => (
+                    <CardProduct data={p} key={p._id || idx} />
+                  ))
+                )}
               </div>
-              {/* Pagination */}
-              <div className="flex justify-center items-center mt-12 mb-10 gap-2">
-                <button
-                  onClick={() => setPage(page > 1 ? page - 1 : 1)}
-                  disabled={page === 1}
-                  className={`px-3 py-1 rounded border ${page === 1 ? 'bg-gray-200 text-gray-400' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
-                >
-                  &lt;
-                </button>
-                {Array.from({ length: totalPage }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`px-3 py-1 rounded border ${page === i + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-                <button
-                  onClick={() => setPage(page < totalPage ? page + 1 : totalPage)}
-                  disabled={page === totalPage}
-                  className={`px-3 py-1 rounded border ${page === totalPage ? 'bg-gray-200 text-gray-400' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
-                >
-                  &gt;
-                </button>
-              </div>
+              {/* Thêm pagination mới */}
+              {allProducts.length > 0 && (
+                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+                  <div className="flex flex-1 justify-between sm:hidden">
+                    <button
+                      onClick={handlePrevious}
+                      disabled={page === 1}
+                      className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      disabled={page === totalPage}
+                      className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        Showing <span className="font-medium">{(page - 1) * limit + 1}</span> to{' '}
+                        <span className="font-medium">{Math.min(page * limit, allProducts.length)}</span> of{' '}
+                        <span className="font-medium">{allProducts.length}</span> results
+                      </p>
+                    </div>
+                    <div>
+                      <nav aria-label="Pagination" className="isolate inline-flex -space-x-px rounded-md shadow-xs">
+                        <button
+                          onClick={handlePrevious}
+                          disabled={page === 1}
+                          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <span className="sr-only">Previous</span>
+                          <ChevronLeftIcon aria-hidden="true" className="h-5 w-5" />
+                        </button>
+                        {getPageNumbers().map((pageNum, index) => (
+                          pageNum === '...' ? (
+                            <span
+                              key={`ellipsis-${index}`}
+                              className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-gray-300 ring-inset focus:outline-offset-0"
+                            >
+                              ...
+                            </span>
+                          ) : (
+                            <button
+                              key={pageNum}
+                              onClick={() => setPage(pageNum)}
+                              className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                                page === pageNum
+                                  ? 'z-10 bg-indigo-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+                                  : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          )
+                        ))}
+                        <button
+                          onClick={handleNext}
+                          disabled={page === totalPage}
+                          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <span className="sr-only">Next</span>
+                          <ChevronRightIcon aria-hidden="true" className="h-5 w-5" />
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

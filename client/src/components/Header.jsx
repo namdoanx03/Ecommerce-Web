@@ -289,9 +289,13 @@ const Header = () => {
                             {/* subcategory */}
                             <div className='flex flex-col gap-1'>
                               {subCategories
-                                .filter(sub => sub.category.some(c => c._id === cat._id))
+                                .filter(sub => sub.category.some(c => String(c._id) === String(cat._id)))
                                 .map((subCat, idx) => (
-                                  <a key={subCat._id || idx} className='flex items-center gap-2 px-4  rounded-lg hover:bg-gray-100 transition cursor-pointer'>
+                                  <a 
+                                    key={subCat._id || idx} 
+                                    className='flex items-center gap-2 px-4 rounded-lg hover:bg-gray-100 transition cursor-pointer'
+                                    onClick={() => navigate(`/product?subcategory=${subCat._id}`)}
+                                  >
                                     <span className="text-lg">•</span>
                                     <span className='text-[#777b83]'>{subCat.name}</span>
                                   </a>
