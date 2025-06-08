@@ -364,7 +364,6 @@ const UploadProduct = () => {
                     name='discount'
                     value={data.discount}
                     onChange={handleChange}
-                    required
                     className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
                   />
                 </div>
@@ -400,9 +399,9 @@ const UploadProduct = () => {
                   })
                 }
 
-                <div onClick={() => setOpenAddField(true)} className=' hover:bg-primary-200 bg-white py-1 px-3 w-32 text-center font-semibold border border-primary-200 hover:text-neutral-900 cursor-pointer rounded'>
+                {/* <div onClick={() => setOpenAddField(true)} className=' hover:bg-primary-200 bg-white py-1 px-3 w-32 text-center font-semibold border border-primary-200 hover:text-neutral-900 cursor-pointer rounded'>
                   Add Fields
-                </div>
+                </div> */}
 
                 <button
                   className='bg-primary-100 hover:bg-primary-200 py-2 rounded font-semibold'

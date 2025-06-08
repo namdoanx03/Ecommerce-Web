@@ -23,9 +23,12 @@ export const createProductController = async(request,response)=>{
             })
         }
 
+        // Generate unique productId using timestamp
+        const productId = Date.now();
+
         const product = new ProductModel({
-            name ,
-            image ,
+            name,
+            image,
             category,
             subCategory,
             unit,
@@ -34,6 +37,7 @@ export const createProductController = async(request,response)=>{
             discount,
             description,
             more_details,
+            productId
         })
         const saveProduct = await product.save()
 

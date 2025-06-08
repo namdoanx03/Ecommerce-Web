@@ -118,12 +118,12 @@ const DisplayCartItem = ({close}) => {
                             </div>
                         </>
                     ) : (
-                        <div className='bg-white flex flex-col justify-center items-center'>
+                        <div className='bg-white flex flex-col justify-center items-center py-10 '>
                             <img
                                 src={imageEmpty}
                                 className='w-full h-full object-scale-down' 
                             />
-                            <Link onClick={handleClose} to={"/"} className='block bg-green-600 px-4 py-2 text-white rounded'>Shop Now</Link>
+                            <a onClick={handleClose} href={"/product"} className='block bg-green-600 px-4 py-2 text-white rounded'>Mua sắm ngay</a>
                         </div>
                     )
                 }
