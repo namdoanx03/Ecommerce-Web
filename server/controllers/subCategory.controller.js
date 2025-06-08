@@ -39,10 +39,28 @@ export const AddSubCategoryController = async(request,response)=>{
 
 export const getSubCategoryController = async(request,response)=>{
     try {
-        const data = await SubCategoryModel.find().sort({createdAt : -1}).populate('category')
+        let { page, limit } = request.query 
+
+        if(!page){
+            page = 1
+        }
+
+        if(!limit){
+            limit = 10
+        }
+
+        const skip = (page - 1) * limit
+
+        const [data,totalCount] = await Promise.all([
+            SubCategoryModel.find().sort({createdAt : -1}).skip(skip).limit(limit).populate('category'),
+            SubCategoryModel.countDocuments()
+        ])
+
         return response.json({
             message : "Sub Category data",
             data : data,
+            totalCount : totalCount,
+            totalNoPage : Math.ceil( totalCount / limit),
             error : false,
             success : true
         })

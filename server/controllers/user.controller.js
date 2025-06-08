@@ -141,7 +141,7 @@ export async function loginController(request,response){
 
         if(!checkPassword){
             return response.status(400).json({
-                message : "Check your password",
+                message : "Mật khẩu không chính xác",
                 error : true,
                 success : false
             })
@@ -429,7 +429,7 @@ export async function resetpassword(request,response){
         })
 
         return response.json({
-            message : "Password updated successfully.",
+            message : "Đã cập nhật mật khẩu thành công.",
             error : false,
             success : true
         })
