@@ -76,7 +76,7 @@ const Footer = () => {
                         <div className="flex items-center gap-2 mb-2 text-base">
                             <IoCallOutline className="w-5 h-5" />
                             <span>Hotline 24/7 :</span>
-                            <span className="font-bold">(+84) 973.454.140</span>
+                            <span className="font-bold">(+84) xxx.130.768</span>
                         </div>
                         <div className="flex items-center gap-2 mb-2 text-base border-b pb-2">
                             <CiMail className="w-7 h-7" />

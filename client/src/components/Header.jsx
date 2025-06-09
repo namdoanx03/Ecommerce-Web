@@ -70,7 +70,7 @@ const Header = () => {
             setSubCategories(response.data.data)
         }
     }
-    console.log("subCategories", subCategories)
+    // console.log("subCategories", subCategories)
 
     useEffect(() => {
         fetchCategory();
