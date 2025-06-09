@@ -170,9 +170,6 @@ const Home = () => {
       },
     ],
   };
-  
-
-  // const products = [
   //   {
   //     id: 1,
   //     image: "https://khasasco.com.vn/wp-content/uploads/2022/05/hinh-anh-hoa-qua-trai-cay-troll-photoshop-thay-ruot.jpg",
@@ -812,17 +809,26 @@ const Home = () => {
                   </div>
                   <div className="display-categories" style={{ borderRadius: '10px', marginBottom: '60px' }}>
                     <Slider {...settings2}>
-                      {categories.map((p) => (
+                      {categoryData.map((cat) => (
                         <div
-                          key={p.id}
-                          className="flex flex-col text-left px-4 py-4 bg-gray-100 border-x-8 border-white w-full h-full"
-                          style={{ minWidth: 170, minHeight: 134, background: '#fff' }}
-                        >
-                          <div className="flex flex-col justify-center items-center mb-2" style={{}}>
-                            <img src={p.img} alt={p.name} className="object-contain h-32" style={{ maxHeight: 43, maxWidth: 43 }} />
-                            <div className="font-medium text-base my-2 line-clamp-2 truncate max-w-[170px] px-4"> {p.name} </div>
+                        key={cat._id}
+                        className="group flex flex-col text-left px-4 py-4 bg-gray-100 border-x-8 border-white w-full h-full rounded-xl
+                        hover:bg-[url('https://devidai.io.vn/assets/images/vegetable/shape.png')] hover:bg-cover hover:bg-center hover:bg-[rgba(218,41,28,1)] "
+                        style={{ minWidth: 170, minHeight: 134, background: '#fff' }}
+                      >
+                        <div className="flex flex-col justify-center items-center mb-2">
+                          <img
+                            src={cat.icon || cat.image}
+                            alt={cat.name}
+                            className="object-contain h-32 group-hover:brightness-0 group-hover:invert "
+                            style={{ maxHeight: 43, maxWidth: 43 }}
+                          />
+                          <div className="font-medium text-base my-2 line-clamp-2 truncate max-w-[170px] px-4 group-hover:text-white ">
+                            {cat.name}
                           </div>
                         </div>
+                      </div>
+                      
                       ))}
                     </Slider>
                   </div>
@@ -1020,12 +1026,10 @@ const Home = () => {
                       ))}
                     </Slider>
                   </div> */}
-
                 </div>
               </div>
             </div>
           </section>
-
         </>
       )}
     </>
