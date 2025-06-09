@@ -63,7 +63,7 @@ const AddToCartButton = ({ data }) => {
 
     return (
         <div className='w-full max-w-[150px]'>
-            <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-3 py-2 rounded-xl'>
+            <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-3 py-2 rounded-full w-full font-medium'>
                 {loading ? <Loading /> : "Thêm vào giỏ"}
             </button>
         </div>
@@ -71,3 +71,4 @@ const AddToCartButton = ({ data }) => {
 }
 
 export default AddToCartButton
+// w-full rounded-full py-3 text-gray-600 font-semibold bg-gray-100 hover:bg-gray-200 transition mt-2"

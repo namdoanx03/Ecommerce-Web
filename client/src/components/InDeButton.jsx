@@ -27,7 +27,6 @@ const InDeButton = ({ data }) => {
             const response = await updateCartItem(cartItemDetails?._id, qty + 1)
             if (response.success) {
                 setQty(qty + 1)
-                toast.success("Item added")
             }
         }
     }

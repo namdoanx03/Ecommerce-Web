@@ -15,7 +15,7 @@ import { CiHeart } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
 import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
-
+import AddToCartButton from '../components/AddToCartButton'
 
 import banner1 from '../assets/1.jpg'
 import banner2 from '../assets/2.jpg'
@@ -784,12 +784,9 @@ const Home = () => {
                                   <span className="text-red-500 font-semibold text-base ml-2">{p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}</span>
                                 </div>
                               </div>
-                              <button
-                                className="w-full rounded-full py-3 text-gray-600 font-semibold bg-gray-100 hover:bg-gray-200 transition mt-2"
-                                style={{ fontSize: 18, marginTop: 16 }}
-                              >
-                                Thêm vào giỏ
-                              </button>
+                              <div className='flex justify-center items-center mt-5'>
+                                <AddToCartButton data={p} />
+                              </div>
                             </div>
                           </div>
                         ))
