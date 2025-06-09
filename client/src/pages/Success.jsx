@@ -1,8 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { useGlobalContext } from '../provider/GlobalProvider'
 
 const Success = () => {
   const location = useLocation()
+  const { fetchCartItem } = useGlobalContext()
+  useEffect(() => {
+    fetchCartItem && fetchCartItem()
+  }, [])
     
     console.log("location",)  
   return (

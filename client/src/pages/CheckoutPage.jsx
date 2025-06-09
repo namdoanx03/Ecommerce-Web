@@ -24,7 +24,7 @@ const CheckoutPage = () => {
   const { notDiscountTotalPrice, totalPrice, totalQty, fetchCartItem, fetchOrder } = useGlobalContext()
   const [openAddress, setOpenAddress] = useState(false)
   const addressList = useSelector(state => state.addresses.addressList)
-  const [selectAddress, setSelectAddress] = useState(0)
+  const [selectAddress, setSelectAddress] = useState(null)
   const cartItemsList = useSelector(state => state.cartItem.cart)
   const navigate = useNavigate()
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
@@ -32,20 +32,30 @@ const CheckoutPage = () => {
   const [addressMode, setAddressMode] = useState('saved')
   const [showSavedList, setShowSavedList] = useState(false)
   const [editAddress, setEditAddress] = useState(null)
+  const [formKey, setFormKey] = useState(0);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
   const handleCashOnDelivery = async() => {
-      try {
-          const response = await Axios({
-            ...SummaryApi.CashOnDeliveryOrder,
-            data : {
-              list_items : cartItemsList,
-              addressId : addressList[selectAddress]?._id,
-              subTotalAmt : totalPrice,
-              totalAmt :  totalPrice,
-            }
-          })
+    if (!addressList[selectAddress]?._id) {
+      toast.error("Vui lòng chọn địa chỉ giao hàng!");
+      return;
+    }
+    if (selectedPaymentMethod !== 'cash') {
+      toast.error("Vui lòng chọn phương thức thanh toán khi nhận hàng!");
+      return;
+    }
+    try {
+      const response = await Axios({
+        ...SummaryApi.CashOnDeliveryOrder,
+        data : {
+          list_items : cartItemsList,
+          addressId : addressList[selectAddress]?._id,
+          subTotalAmt : totalPrice,
+          totalAmt :  totalPrice,
+        }
+      })
 
-          const { data : responseData } = response
+      const { data : responseData } = response
 
           if(responseData.success){
               toast.success(responseData.message)
@@ -62,9 +72,9 @@ const CheckoutPage = () => {
               })
           }
 
-      } catch (error) {
-        AxiosToastError(error)
-      }
+    } catch (error) {
+      AxiosToastError(error)
+    }
   }
   const onSubmit = async (data) => {
     try {
@@ -91,39 +101,65 @@ const CheckoutPage = () => {
   };
 
   const handleOnlinePayment = async()=>{
+    if (!addressList[selectAddress]?._id) {
+      toast.error("Vui lòng chọn địa chỉ giao hàng!");
+      return;
+    }
+    if (selectedPaymentMethod !== 'vnpay') {
+      toast.error("Vui lòng chọn phương thức thanh toán VNPay!");
+      return;
+    }
     try {
-        toast.loading("Loading...")
-        const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-        const stripePromise = await loadStripe(stripePublicKey)
-       
-        const response = await Axios({
-            ...SummaryApi.payment_url,
-            data : {
-              list_items : cartItemsList,
-              addressId : addressList[selectAddress]?._id,
-              subTotalAmt : totalPrice,
-              totalAmt :  totalPrice,
-            }
-        })
+      toast.loading("Loading...")
+      const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
+      console.log("stripePublicKey",stripePublicKey)
+      const stripePromise = await loadStripe(stripePublicKey)
+     
+      const response = await Axios({
+          ...SummaryApi.payment_url,
+          data : {
+            list_items : cartItemsList,
+            addressId : addressList[selectAddress]?._id,
+            subTotalAmt : totalPrice,
+            totalAmt :  totalPrice,
+          }
+      })
 
-        const { data : responseData } = response
+      const { data : responseData } = response
 
-        stripePromise.redirectToCheckout({ sessionId : responseData.id })
-        
-        if(fetchCartItem){
-          fetchCartItem()
-        }
-        if(fetchOrder){
-          fetchOrder()
-        }
+      stripePromise.redirectToCheckout({ sessionId : responseData.id })
+      
+      if(fetchCartItem){
+        fetchCartItem()
+      }
+      if(fetchOrder){
+        fetchOrder()
+      }
     } catch (error) {
         AxiosToastError(error)
     }
   }
 
   const handlePlaceOrder = () => {
-    // TODO: Xử lý đặt hàng ở đây
-  }
+    // Kiểm tra địa chỉ
+    if (!addressList[selectAddress]?._id) {
+      toast.error("Vui lòng chọn địa chỉ giao hàng!");
+      return;
+    }
+    // Kiểm tra phương thức thanh toán
+    if (!selectedPaymentMethod) {
+      toast.error("Vui lòng chọn phương thức thanh toán!");
+      return;
+    }
+    // Gọi hàm xử lý tương ứng
+    if (selectedPaymentMethod === 'cash') {
+      handleCashOnDelivery();
+    } else if (selectedPaymentMethod === 'vnpay') {
+      handleOnlinePayment();
+    } else {
+      toast.error("Phương thức thanh toán không hợp lệ!");
+    }
+  };
 
 
   const handleEditAddress = (address) => {
@@ -169,7 +205,20 @@ const CheckoutPage = () => {
               </button>
               <button
                 className={`px-4 py-2 rounded ${addressMode === 'new' ? 'bg-red-600 text-white' : 'bg-white text-black border'}`}
-                onClick={() => setAddressMode('new')}
+                onClick={() => {
+                  setAddressMode('new');
+                  setEditAddress(null);
+                  reset({
+                    name: '',
+                    email: '',
+                    mobile: '',
+                    province: '',
+                    district: '',
+                    ward: '',
+                    address_line: ''
+                  });
+                  setFormKey(prev => prev + 1);
+                }}
               >
                 Địa chỉ mới
               </button>
@@ -189,7 +238,7 @@ const CheckoutPage = () => {
                         <label htmlFor={"address" + index} className={!address.status && "hidden"} key={address._id}>
                           <div className='border rounded p-3 flex gap-3 hover:bg-blue-50 items-center justify-between'>
                             <div>
-                              <input id={"address" + index} type='radio' value={index} onChange={(e) => setSelectAddress(e.target.value)} name='address' />
+                              <input id={"address" + index} type='radio' value={index} onChange={(e) => setSelectAddress(parseInt(e.target.value))} checked={selectAddress === index} name='address' />
                             </div>
                             <div className="flex-1">
                               <p className='font-semibold'>{address.name}</p>
@@ -224,7 +273,7 @@ const CheckoutPage = () => {
               </div>
             )}
             {(addressMode === 'new' || addressMode === 'edit') && (
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
+              <form key={formKey} className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit(onSubmit)}>
                 <div>
                   <label className="block mb-1 font-medium">Họ và tên <span className="text-red-500">*</span></label>
                   <input {...register('name', { required: true })} type="text" placeholder="Họ và tên" className="w-full border rounded px-3 py-2" />
@@ -286,12 +335,26 @@ const CheckoutPage = () => {
             <h4 className="payment-title font-semibold text-xl mb-4">Tùy chọn thanh toán</h4>
             <div className="payment-details flex flex-col gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input className="form-check-input" type="radio" name="payment_method" value="cash" defaultChecked />
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="payment_method"
+                  value="cash"
+                  checked={selectedPaymentMethod === 'cash'}
+                  onChange={() => setSelectedPaymentMethod('cash')}
+                />
                 <span className="font-medium">Thanh toán khi nhận hàng</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input className="form-check-input" type="radio" name="payment_method" value="vnpay" />
-                <span className="font-medium">Thanh toán bằng VNPay</span>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="payment_method"
+                  value="vnpay"
+                  checked={selectedPaymentMethod === 'vnpay'}
+                  onChange={() => setSelectedPaymentMethod('vnpay')}
+                />
+                <span className="font-medium">Thanh toán bằng Stripe</span>
               </label>
             </div>
           </div>
@@ -305,7 +368,7 @@ const CheckoutPage = () => {
                 <div key={item._id + 'summary'} className="flex items-center gap-3">
                   <img src={item.productId.image[0]} alt={item.productId.name} className="w-12 h-12 object-cover rounded" />
                   <div className="flex-1">
-                    <p className="font-medium text-sm line-clamp-2">{item.productId.name} X {item.qty}</p>
+                    <p className="font-medium text-sm line-clamp-2">{item.productId.name} X {item.quantity}</p>
                   </div>
                   <div className="text-right font-semibold text-sm whitespace-nowrap">
                     {DisplayPriceInVND(item.productId.price)}
@@ -339,40 +402,7 @@ const CheckoutPage = () => {
             </button>
           </div>
         </div>
-      </div>
-
-
-      <div className='container mx-auto p-4 flex flex-col lg:flex-row w-full justify-between'>
-
-        <div className='w-full max-w-md bg-white py-4 px-2'>
-          {/**summary**/}
-          <h3 className='text-lg font-semibold'>Summary</h3>
-          <div className='bg-white p-4'>
-            <h3 className='font-semibold'>Bill details</h3>
-            <div className='flex gap-4 justify-between ml-1'>
-              <p>Items total</p>
-              <p className='flex items-center gap-2'><span className='line-through text-neutral-400'>{DisplayPriceInVND(notDiscountTotalPrice)}</span><span>{DisplayPriceInVND(totalPrice)}</span></p>
-            </div>
-            <div className='flex gap-4 justify-between ml-1'>
-              <p>Quntity total</p>
-              <p className='flex items-center gap-2'>{totalQty} item</p>
-            </div>
-            <div className='flex gap-4 justify-between ml-1'>
-              <p>Delivery Charge</p>
-              <p className='flex items-center gap-2'>Free</p>
-            </div>
-            <div className='font-semibold flex items-center justify-between gap-4'>
-              <p >Grand total</p>
-              <p>{DisplayPriceInVND(totalPrice)}</p>
-            </div>
-          </div>
-          <div className='w-full flex flex-col gap-4'>
-            <button className='py-2 px-4 bg-green-600 hover:bg-green-700 rounded text-white font-semibold' onClick={handleOnlinePayment}>Online Payment</button>
-
-            <button className='py-2 px-4 border-2 border-green-600 font-semibold text-green-600 hover:bg-green-600 hover:text-white' onClick={handleCashOnDelivery}>Cash on Delivery</button>
-          </div>
-        </div>
-      </div>
+      </div> 
     </section>
   )
 }
