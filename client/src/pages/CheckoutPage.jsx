@@ -34,7 +34,33 @@ const CheckoutPage = () => {
   const [editAddress, setEditAddress] = useState(null)
   const [formKey, setFormKey] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("VNPAY");
 
+
+  const handlePaymentVNPay = async () => {
+    if (!addressList[selectAddress]?._id) {
+      toast.error("Vui lòng chọn địa chỉ giao hàng!");
+      return;
+    }
+    if (selectedPaymentMethod !== 'vnpay') {
+      toast.error("Vui lòng chọn phương thức thanh toán VNPay!");
+      return;
+    }
+    try {
+      toast.loading("Đang chuyển hướng đến VNPay...");
+      const response = await Axios.get(
+        `http://localhost:8080/api/order/create-payment?amount=${totalPrice}`
+      );
+      const { paymentUrl } = response.data;
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      } else {
+        toast.error("Không lấy được link thanh toán VNPay!");
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    }
+  }
   const handleCashOnDelivery = async() => {
     if (!addressList[selectAddress]?._id) {
       toast.error("Vui lòng chọn địa chỉ giao hàng!");
@@ -100,13 +126,13 @@ const CheckoutPage = () => {
     }
   };
 
-  const handleOnlinePayment = async()=>{
+  const handlePaymentStripe = async()=>{
     if (!addressList[selectAddress]?._id) {
       toast.error("Vui lòng chọn địa chỉ giao hàng!");
       return;
     }
-    if (selectedPaymentMethod !== 'vnpay') {
-      toast.error("Vui lòng chọn phương thức thanh toán VNPay!");
+    if (selectedPaymentMethod !== 'stripe') {
+      toast.error("Vui lòng chọn phương thức thanh toán stripe!");
       return;
     }
     try {
@@ -139,6 +165,7 @@ const CheckoutPage = () => {
         AxiosToastError(error)
     }
   }
+  
 
   const handlePlaceOrder = () => {
     // Kiểm tra địa chỉ
@@ -155,7 +182,9 @@ const CheckoutPage = () => {
     if (selectedPaymentMethod === 'cash') {
       handleCashOnDelivery();
     } else if (selectedPaymentMethod === 'vnpay') {
-      handleOnlinePayment();
+      handlePaymentVNPay();
+    } else if (selectedPaymentMethod === 'stripe') {
+      handlePaymentStripe();
     } else {
       toast.error("Phương thức thanh toán không hợp lệ!");
     }
@@ -353,6 +382,17 @@ const CheckoutPage = () => {
                   value="vnpay"
                   checked={selectedPaymentMethod === 'vnpay'}
                   onChange={() => setSelectedPaymentMethod('vnpay')}
+                />
+                <span className="font-medium">Thanh toán bằng VNPay</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="payment_method"
+                  value="stripe"
+                  checked={selectedPaymentMethod === 'stripe'}
+                  onChange={() => setSelectedPaymentMethod('stripe')}
                 />
                 <span className="font-medium">Thanh toán bằng Stripe</span>
               </label>
