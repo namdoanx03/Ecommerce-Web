@@ -66,8 +66,8 @@ const Home = () => {
         AxiosToastError(error)
       } finally {
         const elapsed = Date.now() - start;
-        if (elapsed < 3000) {
-          setTimeout(() => setLoading(false), 3000 - elapsed);
+        if (elapsed < 1500) {
+          setTimeout(() => setLoading(false), 1500 - elapsed);
         } else {
           setLoading(false);
         }
@@ -519,7 +519,7 @@ const Home = () => {
                           HẢI SẢN TƯƠI MỚI <span className="text-[#d94c3a]">MỖI GIỜ</span>
                         </h3>
                         <div className="text-gray-700 text-lg mb-4">mỗi ngày</div>
-                        <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
+                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
                           Mua ngay <span className="ml-1">→</span>
                         </button>
                         
@@ -543,7 +543,7 @@ const Home = () => {
                           <span className="text-gray-700 font-medium">HỮU CƠ</span>
                         </h3>
                         <div className="text-gray-700 text-base mb-4">Siêu khuyến mại giảm giá tới 50%</div>
-                        <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
+                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
                           Mua ngay <span className="ml-1">→</span>
                         </button>
                         
@@ -586,7 +586,8 @@ const Home = () => {
                         <BubbleSpinner />
                       ) : (
                         products.map((p, idx) => (
-                          <div
+                          <a
+                            href={`/product/${p._id}`}
                             key={p._id}
                             className={
                               `flex flex-col items-stretch text-left px-4 py-4` +
@@ -623,7 +624,7 @@ const Home = () => {
                                 <AddToCartButton data={p} />
                               </div>
                             </div>
-                          </div>
+                          </a>
                         ))
                       )}
                     </Slider>
@@ -674,7 +675,7 @@ const Home = () => {
                       <div className="flex-1">
                         <div className="text-3xl font-semibold mb-2">Giảm giá 50%</div>
                         <div className="text-2xl font-bold text-[#d94c3a] mb-4">Thịt tươi</div>
-                        <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition">
+                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition">
                           Mua ngay <span className="ml-1">→</span>
                         </button>
                       </div>
@@ -688,7 +689,7 @@ const Home = () => {
                       <div className="flex-1">
                         <div className="text-3xl font-semibold mb-2">Giảm giá 50%</div>
                         <div className="text-2xl font-bold text-[#d94c3a] mb-4">Nấm Testy</div>
-                        <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition">
+                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition">
                           Mua ngay <span className="ml-1">→</span>
                         </button>
                       </div>
@@ -773,7 +774,7 @@ const Home = () => {
                         </div>
                         <div className="text-2xl font-semibold mb-4">cho ngày hôm nay!</div>
                         <div className="text-xs font-semibold mb-4 " style={{ color: '#4C5566', lineHeight: '1.5' }}>Bắt đầu ngày mới đầy năng lượng – tìm <br/>hàng nhanh, mua sắm gọn!</div>
-                        <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition w-max">
+                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition w-max">
                           Mua ngay <span className="ml-1">→</span>
                         </button>
                       </div>
@@ -792,7 +793,7 @@ const Home = () => {
                           Giảm Giá 20%
                         </div>
                         <div className="text-2xl font-bold text-[#d94c3a] mb-4">Tất cả <br/> <span className="text-black">Đồ uống</span></div>
-                        <button className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition w-max">
+                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition w-max">
                           Mua ngay <span className="ml-1">→</span>
                         </button>
                       </div>
@@ -809,7 +810,7 @@ const Home = () => {
                     </div>
                     
                   </div>
-                  {/* <div className="best-selling-slider"
+                  <div className="best-selling-slider"
                     style={{  background: '#fff',  }}>
                     <Slider
                       infinite={true}
@@ -823,11 +824,21 @@ const Home = () => {
                           className="bg-white border-2 border-gray-200 flex flex-col justify-between rounded-lg "
                         >
                           {group.map((p, i) => (
-                            <React.Fragment key={p ? p.id : `empty-${i}`}> 
+                            <React.Fragment key={p ? p._id : `empty-${i}`}> 
                               {p ? (
-                                <div className="flex flex-row items-center justify-center gap-3 p-4" style={{ minHeight: 80, minWidth: 250 }}>
+                                <a
+                                  href={`/product/${p._id}`}
+                                  className="flex flex-row items-center justify-center gap-3 p-4 hover:bg-gray-50 transition"
+                                  style={{ minHeight: 80, minWidth: 250, textDecoration: 'none', color: 'inherit' }}
+                                >
                                   <img
-                                    src={p.image}
+                                    src={
+                                      p.image
+                                        ? Array.isArray(p.image)
+                                          ? p.image[0]
+                                          : p.image
+                                        : '/images/placeholder.png'
+                                    }
                                     alt={p.name}
                                     className="object-contain w-26 h-20"
                                     style={{ background: '#fafafa' }}
@@ -840,15 +851,15 @@ const Home = () => {
                                     }
                                   >
                                     <div className="font-semibold text-sm truncate max-w-[140px]">{p.name}</div>
-                                    <div className="text-xs text-gray-500 my-1">{p.stockStatus}</div>
+                                    <div className="text-xs text-gray-500 my-1">{p.stockStatus || (p.stock === 0 ? 'Hết hàng' : 'Còn hàng')}</div>
                                     <div className="flex items-center gap-2">
-                                      <span className="text-red-600 font-bold text-base truncate">{p.price.toLocaleString('vi-VN')} đ</span>
+                                      <span className="text-red-600 font-bold text-base truncate">{p.price?.toLocaleString('vi-VN')} đ</span>
                                       {p.oldPrice && p.oldPrice !== p.price && (
-                                        <span className="text-xs line-through text-gray-400 truncate">{p.oldPrice.toLocaleString('vi-VN')} đ</span>
+                                        <span className="text-xs line-through text-gray-400 truncate">{p.oldPrice?.toLocaleString('vi-VN')} đ</span>
                                       )}
                                     </div>
                                   </div>
-                                </div>
+                                </a>
                               ) : (
                                 <div style={{ minHeight: 80, minWidth: 250 }} className="p-4"></div>
                               )}
@@ -857,7 +868,7 @@ const Home = () => {
                         </div>
                       ))}
                     </Slider>
-                  </div> */}
+                  </div>
                 </div>
               </div>
             </div>
