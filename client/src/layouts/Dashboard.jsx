@@ -25,10 +25,10 @@ const Dashboard = () => {
         {/**right for content */}
         <div className='bg-white w-full border-l-2 border-dotted border-gray-300'>
           <header className="w-full bg-white py-5 px-8 flex items-center justify-between shadow-sm border-b-2 border-gray-200 sticky top-0 min-h-[10vh] z-20">
-            <div className ='comback-home flex items-center gap-2'>
-            <Link to="/">
-              <span className='text-base font-medium text-gray-800'><FaHome className='text-2xl'/></span>
-            </Link>
+            <div className='comback-home flex items-center gap-2'>
+              <Link to="/">
+                <span className='text-base font-medium text-gray-800'><FaHome className='text-2xl' /></span>
+              </Link>
             </div>
             {/* Search box */}
             <div className="flex-1 flex justify-center">
@@ -38,7 +38,7 @@ const Dashboard = () => {
                 </span>
                 <input
                   type="text"
-                  placeholder="Search for projects"
+                  placeholder="Tìm kiếm cái gì đó ?"
                   className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-200 bg-white text-gray-700 shadow-sm"
                 />
               </div>

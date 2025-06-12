@@ -161,6 +161,10 @@ const SummaryApi = {
     deleteOrder : {
         url : '/api/order/delete-order',
         method : 'delete'
+    },
+    dashboardSummary: {
+        url: '/api/user/dashboard-summary',
+        method: 'get'
     }
 }
 

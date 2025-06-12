@@ -149,8 +149,7 @@ const ManageOrder = () => {
                     <th className='p-2'>SỐ ĐIỆN THOẠI</th>
                     <th className='p-2'>ĐỊA CHỈ</th>
                     <th className='p-2'>TỔNG TIỀN</th>
-                    <th className='p-2'>TRẠNG THÁI</th>
-                    <th className='p-2'>CHỨC NĂNG</th>
+                    <th className='p-2'>Hoá đơn</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -168,11 +167,7 @@ const ManageOrder = () => {
                           {order.delivery_address?.address_line}, {order.delivery_address?.ward}, {order.delivery_address?.district}, {order.delivery_address?.province}
                         </td>
                         <td className='py-2 px-4'>{order.totalAmt?.toLocaleString()} đ</td>
-                        <td className='py-2 px-4'>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
-                        </td>
+                        
                         <td className='py-2 px-4 flex gap-2 items-center justify-center'>
                           <button 
                             onClick={() => handleViewOrder(order)}
@@ -181,7 +176,7 @@ const ManageOrder = () => {
                           >
                             <FaEye />
                           </button>
-                          <select
+                          {/* <select
                             onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
                             value={order.status}
                             className='text-sm border rounded px-2 py-1'
@@ -191,7 +186,7 @@ const ManageOrder = () => {
                             <option value="SHIPPED">Đang giao hàng</option>
                             <option value="DELIVERED">Đã giao hàng</option>
                             <option value="CANCELLED">Đã hủy</option>
-                          </select>
+                          </select> */}
                         </td>
                       </tr>
                     ))
