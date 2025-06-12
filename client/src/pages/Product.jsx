@@ -42,6 +42,8 @@ const Product = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [searchValue, setSearchValue] = useState("");
+  const [searchFilteredProducts, setSearchFilteredProducts] = useState([]);
   
   const fetchProductData = async () => {
     setLoading(true);
@@ -222,6 +224,29 @@ useEffect(() => {
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = priceFilteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
+  function removeVietnameseTones(str) {
+    if (!str) return "";
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  useEffect(() => {
+    const keyword = removeVietnameseTones(searchValue);
+    if (!keyword) {
+      setSearchFilteredProducts(currentProducts);
+    } else {
+      setSearchFilteredProducts(
+        currentProducts.filter(p => removeVietnameseTones(p.name).includes(keyword))
+      );
+    }
+  }, [searchValue, currentProducts]);
+
   // Component Pagination
   const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     const pageNumbers = getPageNumbers(totalPages);
@@ -293,9 +318,10 @@ useEffect(() => {
                 <div className="relative mb-12">
                   <input
                     type="text"
-                    id="search"
-                    className="block px-2.5 pb-2.5 pt-3 w-[80%] text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    value={searchValue}
+                    onChange={e => setSearchValue(e.target.value)}
                     placeholder=" "
+                    className="block px-2.5 pb-2.5 pt-3 w-[80%] text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer mb-4"
                   />
                   <label
                     htmlFor="search"
@@ -450,10 +476,10 @@ useEffect(() => {
                 {loading ? (
                   <LoadingSkeleton />
                 ) : (
-                  currentProducts.length === 0 ? (
+                  searchFilteredProducts.length === 0 ? (
                     <div className="text-center text-gray-500 py-8 font-semibold text-lg">Không có sản phẩm phù hợp</div>
                   ) : (
-                    currentProducts.map((p, idx) => (
+                    searchFilteredProducts.map((p, idx) => (
                       <CardProduct data={p} key={p._id || idx} />
                     ))
                   )

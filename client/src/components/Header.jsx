@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import logo from '../assets/logo.png'
 import Search from './Search'
 import { Link, useLocation,useNavigate } from 'react-router-dom'
@@ -36,6 +36,7 @@ const Header = () => {
     const [modalAnimation, setModalAnimation] = useState(false);
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
+    const userMenuRef = useRef(null);
 
     const redirectToLoginPage = ()=>{
         navigate("/login")
@@ -124,6 +125,17 @@ const Header = () => {
         }
     };
 
+    useEffect(() => {
+        if (!openUserMenu) return;
+        function handleClickOutside(event) {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setOpenUserMenu(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [openUserMenu]);
+
     //total item and total price
     // useEffect(()=>{
     //     const qty = cartItem.reduce((preve,curr)=>{
@@ -197,6 +209,7 @@ const Header = () => {
                                       </div>
                                       {openUserMenu && (
                                           <div
+                                              ref={userMenuRef}
                                               className="absolute right-0 top-12 mt-[10px] mr-[-30px]"
                                               style={{ boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.5)" }}
                                           >
@@ -215,7 +228,7 @@ const Header = () => {
                                           <FiUser size={35} />
                                       </div>
                                       {openUserMenu && (
-                                          <div className="absolute right-0 top-12">
+                                          <div ref={userMenuRef} className="absolute right-0 top-12">
                                               <div className="bg-white rounded p-4 min-w-40 lg:shadow-lg">
                                                   <button
                                                       onClick={redirectToLoginPage}

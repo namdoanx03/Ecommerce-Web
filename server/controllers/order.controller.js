@@ -291,3 +291,21 @@ export async function getOrderDetailsController(request,response){
         })
     }
 }
+
+export async function deleteOrderController(req, res) {
+  try {
+    const userId = req.userId;
+    const { _id } = req.body;
+    if (!_id) {
+      return res.status(400).json({ message: "Provide order _id", error: true, success: false });
+    }
+    // Chỉ cho phép xóa đơn của chính mình
+    const deleted = await OrderModel.deleteOne({ _id, userId });
+    if (deleted.deletedCount === 0) {
+      return res.status(404).json({ message: "Order not found or not allowed", error: true, success: false });
+    }
+    return res.json({ message: "Order deleted", error: false, success: true });
+  } catch (error) {
+    return res.status(500).json({ message: error.message || error, error: true, success: false });
+  }
+}

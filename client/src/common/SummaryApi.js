@@ -157,6 +157,10 @@ const SummaryApi = {
     getOrderItems : {
         url : '/api/order/order-list',
         method : 'get'
+    },
+    deleteOrder : {
+        url : '/api/order/delete-order',
+        method : 'delete'
     }
 }
 
