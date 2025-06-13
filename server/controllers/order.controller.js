@@ -317,7 +317,6 @@ export async function paymentController(request, response) {
     }
 }
 
-
 const getOrderProductItems = async ({
     lineItems,
     userId,
@@ -325,31 +324,33 @@ const getOrderProductItems = async ({
     paymentId,
     payment_status,
 }) => {
-    const productList = []
+    if (!lineItems?.data?.length) return [];
 
-    if (lineItems?.data?.length) {
-        for (const item of lineItems.data) {
-            const product = await Stripe.products.retrieve(item.price.product)
+    const productDetails = [];
+    let totalAmount = 0;
 
-            const paylod = {
-                userId: userId,
-                orderId: `ORD-${new mongoose.Types.ObjectId()}`,
-                productId: product.metadata.productId,
-                product_details: [{
-                    name: product.name
-                }],
-                paymentId: paymentId,
-                payment_status: payment_status,
-                delivery_address: addressId,
-                subTotalAmt: Number(item.amount_total / 100),
-                totalAmt: Number(item.amount_total / 100),
-            }
-
-            productList.push(paylod)
-        }
+    for (const item of lineItems.data) {
+        const product = await Stripe.products.retrieve(item.price.product);
+        productDetails.push({
+            name: product.name,
+            productId: product.metadata.productId,
+            quantity: item.quantity,
+            price: item.amount_total / 100
+        });
+        totalAmount += item.amount_total;
     }
 
-    return productList
+    return [{
+        userId: userId,
+        orderId: `ORD-${new mongoose.Types.ObjectId()}`,
+        productId: productDetails.map(p => p.productId),
+        product_details: productDetails,
+        paymentId: paymentId,
+        payment_status: payment_status,
+        delivery_address: addressId,
+        subTotalAmt: totalAmount / 100,
+        totalAmt: totalAmount / 100,
+    }];
 }
 
 //http://localhost:8080/api/order/webhook
