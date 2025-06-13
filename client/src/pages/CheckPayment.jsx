@@ -48,7 +48,7 @@ function CheckPayment() {
     }, [searchParams, dispatch, fetchCartItem, fetchOrder]);
 
     const handleGoHome = () => navigate("/");
-    const handleBuyAgain = () => navigate("/products");
+    const handleBuyAgain = () => navigate("/product");
 
     if (status === "loading") {
         return (

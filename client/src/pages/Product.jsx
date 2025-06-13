@@ -44,6 +44,8 @@ const Product = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [searchValue, setSearchValue] = useState("");
   const [searchFilteredProducts, setSearchFilteredProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [paginatedProducts, setPaginatedProducts] = useState([]);
   
   const fetchProductData = async () => {
     setLoading(true);
@@ -202,29 +204,8 @@ useEffect(() => {
     );
   };
 
-  const filteredProducts = selectedCategories.length === 0
-    ? allProducts
-    : allProducts.filter(product =>
-        Array.isArray(product.category)
-          ? product.category.some(cat => (typeof cat === 'object' ? cat._id : cat) && selectedCategories.includes(typeof cat === 'object' ? cat._id : cat))
-          : selectedCategories.includes(typeof product.category === 'object' ? product.category._id : product.category)
-      );
-
-  const handleMinPriceChange = (e) => setMinPrice(e.target.value);
-  const handleMaxPriceChange = (e) => setMaxPrice(e.target.value);
-
-  const priceFilteredProducts = filteredProducts.filter(product => {
-    const price = product.price || 0;
-    const min = minPrice ? parseInt(minPrice, 10) : 0;
-    const max = maxPrice ? parseInt(maxPrice, 10) : Infinity;
-    return price >= min && price <= max;
-  });
-
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = priceFilteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-
-  function removeVietnameseTones(str) {
+  // Hàm xử lý tiếng Việt
+  const removeVietnameseTones = (str) => {
     if (!str) return "";
     return str
       .toLowerCase()
@@ -234,18 +215,57 @@ useEffect(() => {
       .replace(/[^a-z0-9\s]/g, "")
       .replace(/\s+/g, " ")
       .trim();
-  }
+  };
 
+  // Lọc sản phẩm theo danh mục
+  useEffect(() => {
+    const filtered = selectedCategories.length === 0
+      ? allProducts
+      : allProducts.filter(product =>
+          Array.isArray(product.category)
+            ? product.category.some(cat => (typeof cat === 'object' ? cat._id : cat) && selectedCategories.includes(typeof cat === 'object' ? cat._id : cat))
+            : selectedCategories.includes(typeof product.category === 'object' ? product.category._id : product.category)
+        );
+    setFilteredProducts(filtered);
+  }, [selectedCategories, allProducts]);
+
+  // Lọc sản phẩm theo giá
+  useEffect(() => {
+    const priceFiltered = filteredProducts.filter(product => {
+      const price = product.price || 0;
+      const min = minPrice ? parseInt(minPrice, 10) : 0;
+      const max = maxPrice ? parseInt(maxPrice, 10) : Infinity;
+      return price >= min && price <= max;
+    });
+    setPaginatedProducts(priceFiltered);
+    setCurrentPage(1); // Reset về trang 1 khi filter thay đổi
+  }, [filteredProducts, minPrice, maxPrice]);
+
+  // Phân trang sản phẩm
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const paginated = paginatedProducts.slice(startIndex, endIndex);
+    setSearchFilteredProducts(paginated);
+  }, [currentPage, paginatedProducts]);
+
+  // Tìm kiếm sản phẩm
   useEffect(() => {
     const keyword = removeVietnameseTones(searchValue);
     if (!keyword) {
-      setSearchFilteredProducts(currentProducts);
+      const startIndex = (currentPage - 1) * productsPerPage;
+      const endIndex = startIndex + productsPerPage;
+      setSearchFilteredProducts(paginatedProducts.slice(startIndex, endIndex));
     } else {
-      setSearchFilteredProducts(
-        currentProducts.filter(p => removeVietnameseTones(p.name).includes(keyword))
+      const filtered = paginatedProducts.filter(p => 
+        removeVietnameseTones(p.name).includes(keyword)
       );
+      setSearchFilteredProducts(filtered);
     }
-  }, [searchValue, currentProducts]);
+  }, [searchValue, paginatedProducts, currentPage]);
+
+  const handleMinPriceChange = (e) => setMinPrice(e.target.value);
+  const handleMaxPriceChange = (e) => setMaxPrice(e.target.value);
 
   // Component Pagination
   const Pagination = ({ currentPage, totalPages, onPageChange }) => {
@@ -487,14 +507,21 @@ useEffect(() => {
               </div>
               {/* Render tổng số sản phẩm đang xem */}
               <div className="text-sm text-gray-700 mb-2 mt-6">
-                Showing {priceFilteredProducts.length === 0 ? 0 : (indexOfFirstProduct + 1)} to {Math.min(indexOfLastProduct, priceFilteredProducts.length)} of {priceFilteredProducts.length} results
+                Showing {paginatedProducts.length === 0 ? 0 : ((currentPage - 1) * productsPerPage + 1)} to {Math.min(currentPage * productsPerPage, paginatedProducts.length)} of {paginatedProducts.length} results
               </div>
               {/* Render phân trang */}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={Math.ceil(priceFilteredProducts.length / productsPerPage)}
-                onPageChange={page => setCurrentPage(page)}
-              />
+              {paginatedProducts.length > 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(paginatedProducts.length / productsPerPage)}
+                  onPageChange={(page) => {
+                    setCurrentPage(page);
+                    if (productListRef.current) {
+                      productListRef.current.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

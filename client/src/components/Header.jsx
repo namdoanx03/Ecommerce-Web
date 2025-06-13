@@ -307,7 +307,7 @@ const Header = () => {
                                   <a 
                                     key={subCat._id || idx} 
                                     className='flex items-center gap-2 px-4 rounded-lg hover:bg-gray-100 transition cursor-pointer'
-                                    onClick={() => navigate(`/product?subcategory=${subCat._id}`)}
+                                    href={`/product?subcategory=${subCat._id}`}
                                   >
                                     <span className="text-lg">•</span>
                                     <span className='text-[#777b83]'>{subCat.name}</span>

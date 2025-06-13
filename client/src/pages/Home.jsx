@@ -66,8 +66,8 @@ const Home = () => {
         AxiosToastError(error)
       } finally {
         const elapsed = Date.now() - start;
-        if (elapsed < 1500) {
-          setTimeout(() => setLoading(false), 1500 - elapsed);
+        if (elapsed < 1300) {
+          setTimeout(() => setLoading(false), 1300 - elapsed);
         } else {
           setLoading(false);
         }
@@ -487,14 +487,14 @@ const Home = () => {
                     <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
                     <ul className="flex flex-col gap-1">
                       {categoryData.map((cat) => (
-                        <li
+                        <a
                           key={cat._id}
                           className="relative group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition"
-                          onClick={() => navigate(`/product?category=${cat._id}`)}
+                          href={`/product?category=${cat._id}`}
                         >
                           <img src={cat.icon || cat.image} className="w-7 h-7 object-contain" />
                           <span className="text-base font-medium truncate">{cat.name}</span>
-                        </li>
+                        </a>
                       ))}
                     </ul>
                     <div className="border-t my-4"></div>
@@ -712,8 +712,9 @@ const Home = () => {
                       {loading ? (
                         <BubbleSpinner />
                       ) : (
-                        products.map((p, idx) => (
-                          <div
+                        [...products].reverse().map((p, idx) => (
+                          <a
+                            href={`/product/${p._id}`}
                             key={p._id}
                             className={
                               `flex flex-col items-stretch text-left px-4 py-4` +
@@ -726,7 +727,7 @@ const Home = () => {
                             </div>
                             <div className="flex-1 flex flex-col justify-between">
                               <div>
-                                <div className="font-semibold text-sm mb-1 leading-tight line-clamp-2" style={{ minHeight: 48, lineHeight: '1.5' }}>{p.name}</div>
+                                <div className="font-semibold text-sm mb-1 leading-tight line-clamp-2 trumcate" style={{ minHeight: 42, lineHeight: '1.5' }}>{p.name}</div>
                                 <div className="flex items-end gap-2 mb-1">
                                   <span className="text-red-600 font-bold text-lg">{pricewithDiscount(p.price, p.discount).toLocaleString("vi-VN")} đ</span>
                                   <span className="text-gray-400 line-through text-sm">{p.price.toLocaleString("vi-VN")} đ</span>
@@ -746,14 +747,11 @@ const Home = () => {
                                   <span className="text-red-500 font-semibold text-base ml-2">{p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}</span>
                                 </div>
                               </div>
-                              <button
-                                className="w-full rounded-full py-3 text-gray-600 font-semibold bg-gray-100 hover:bg-gray-200 transition mt-2"
-                                style={{ fontSize: 18, marginTop: 16 }}
-                              >
-                                Thêm vào giỏ
-                              </button>
+                              <div className='flex justify-center items-center mt-5'>
+                                <AddToCartButton data={p} />
+                              </div>
                             </div>
-                          </div>
+                          </a>
                         ))
                       )}
                     </Slider>
