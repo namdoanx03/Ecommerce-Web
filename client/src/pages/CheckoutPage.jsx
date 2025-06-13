@@ -48,8 +48,15 @@ const CheckoutPage = () => {
     }
     try {
       toast.loading("Đang chuyển hướng đến VNPay...");
-      const response = await Axios.get(
-        `http://localhost:8080/api/order/create-payment?amount=${totalPrice}`
+      const response = await Axios.post(
+        `http://localhost:8080/api/order/create-payment`,
+        {
+          amount: totalPrice,
+          list_items: cartItemsList,
+          addressId: addressList[selectAddress]?._id,
+          subTotalAmt: totalPrice,
+          totalAmt: totalPrice,
+        }
       );
       const { paymentUrl } = response.data;
       if (paymentUrl) {
@@ -61,7 +68,7 @@ const CheckoutPage = () => {
       AxiosToastError(error);
     }
   }
-  const handleCashOnDelivery = async() => {
+  const handleCashOnDelivery = async () => {
     if (!addressList[selectAddress]?._id) {
       toast.error("Vui lòng chọn địa chỉ giao hàng!");
       return;
@@ -73,30 +80,30 @@ const CheckoutPage = () => {
     try {
       const response = await Axios({
         ...SummaryApi.CashOnDeliveryOrder,
-        data : {
-          list_items : cartItemsList,
-          addressId : addressList[selectAddress]?._id,
-          subTotalAmt : totalPrice,
-          totalAmt :  totalPrice,
+        data: {
+          list_items: cartItemsList,
+          addressId: addressList[selectAddress]?._id,
+          subTotalAmt: totalPrice,
+          totalAmt: totalPrice,
         }
       })
 
-      const { data : responseData } = response
+      const { data: responseData } = response
 
-          if(responseData.success){
-              toast.success(responseData.message)
-              if(fetchCartItem){
-                fetchCartItem()
-              }
-              if(fetchOrder){
-                fetchOrder()
-              }
-              navigate('/success',{
-                state : {
-                  text : "Order"
-                }
-              })
+      if (responseData.success) {
+        toast.success(responseData.message)
+        if (fetchCartItem) {
+          fetchCartItem()
+        }
+        if (fetchOrder) {
+          fetchOrder()
+        }
+        navigate('/success', {
+          state: {
+            text: "Order"
           }
+        })
+      }
 
     } catch (error) {
       AxiosToastError(error)
@@ -114,7 +121,7 @@ const CheckoutPage = () => {
         }
         return;
       }
-      
+
       const success = await createAddress(data);
       if (success) {
         reset();
@@ -126,7 +133,7 @@ const CheckoutPage = () => {
     }
   };
 
-  const handlePaymentStripe = async()=>{
+  const handlePaymentStripe = async () => {
     if (!addressList[selectAddress]?._id) {
       toast.error("Vui lòng chọn địa chỉ giao hàng!");
       return;
@@ -138,34 +145,34 @@ const CheckoutPage = () => {
     try {
       toast.loading("Loading...")
       const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-      console.log("stripePublicKey",stripePublicKey)
+      console.log("stripePublicKey", stripePublicKey)
       const stripePromise = await loadStripe(stripePublicKey)
-     
+
       const response = await Axios({
-          ...SummaryApi.payment_url,
-          data : {
-            list_items : cartItemsList,
-            addressId : addressList[selectAddress]?._id,
-            subTotalAmt : totalPrice,
-            totalAmt :  totalPrice,
-          }
+        ...SummaryApi.payment_url,
+        data: {
+          list_items: cartItemsList,
+          addressId: addressList[selectAddress]?._id,
+          subTotalAmt: totalPrice,
+          totalAmt: totalPrice,
+        }
       })
 
-      const { data : responseData } = response
+      const { data: responseData } = response
 
-      stripePromise.redirectToCheckout({ sessionId : responseData.id })
-      
-      if(fetchCartItem){
+      stripePromise.redirectToCheckout({ sessionId: responseData.id })
+
+      if (fetchCartItem) {
         fetchCartItem()
       }
-      if(fetchOrder){
+      if (fetchOrder) {
         fetchOrder()
       }
     } catch (error) {
-        AxiosToastError(error)
+      AxiosToastError(error)
     }
   }
-  
+
 
   const handlePlaceOrder = () => {
     // Kiểm tra địa chỉ
@@ -442,7 +449,7 @@ const CheckoutPage = () => {
             </button>
           </div>
         </div>
-      </div> 
+      </div>
     </section>
   )
 }

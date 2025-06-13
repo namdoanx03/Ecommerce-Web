@@ -28,6 +28,7 @@ import HotOffers from "../pages/HotOffers";
 import SalePage from "../pages/SalePage";
 import DashboardPage from "../pages/DashboardPage";
 import ManageOrder from "../pages/ManageOrder";
+import CheckPayment from "../pages/CheckPayment";
 
 const router = createBrowserRouter([
     {
@@ -153,6 +154,10 @@ const router = createBrowserRouter([
             {
                 path : 'cancel',
                 element : <Cancel/>
+            },
+            {
+                path : "check-payment",
+                element : <CheckPayment/>
             }
         ]
     }

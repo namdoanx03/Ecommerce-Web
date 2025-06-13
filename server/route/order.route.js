@@ -8,8 +8,8 @@ orderRouter.post("/cash-on-delivery",auth,CashOnDeliveryOrderController)
 orderRouter.post('/checkout',auth,paymentController)
 orderRouter.post('/webhook',webhookStripe)
 orderRouter.get("/order-list",auth,getOrderDetailsController)
-orderRouter.get('/create-payment',auth,createPaymentController)
-orderRouter.get('/check-payment',auth,checkPaymentController)
+orderRouter.post('/create-payment',auth,createPaymentController)
+orderRouter.get('/check-payment',checkPaymentController)
 orderRouter.delete('/delete-order', auth, deleteOrderController)
 
 export default orderRouter
