@@ -15,6 +15,7 @@ export const createProductController = async(request,response)=>{
             more_details,
         } = request.body 
 
+        // Validate required fields
         if(!name || !image[0] || !category[0] || !subCategory[0] || !unit || !price || !description ){
             return response.status(400).json({
                 message : "Enter required fields",
@@ -23,9 +24,10 @@ export const createProductController = async(request,response)=>{
             })
         }
 
-        // Generate unique productId using timestamp
+        // Tạo productId unique bằng timestamp
         const productId = Date.now();
-
+        
+          // Tạo sản phẩm mới
         const product = new ProductModel({
             name,
             image,
@@ -167,7 +169,7 @@ export const getProductByCategoryAndSubCategory  = async(request,response)=>{
         if(!limit){
             limit = 10
         }
-
+        // Lọc theo cả category và subcategory
         const query = {
             category : { $in :categoryId  },
             subCategory : { $in : subCategoryId }
@@ -296,7 +298,7 @@ export const searchProduct = async(request,response)=>{
         if(!limit){
             limit  = 10
         }
-
+// Tạo query tìm kiếm
         const query = search ? {
             $text : {
                 $search : search

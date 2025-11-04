@@ -113,6 +113,7 @@ const ProductAdmin = () => {
     }
   };
 
+// Upload ảnh lên Cloudinary trước
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -121,10 +122,11 @@ const ProductAdmin = () => {
       const formData = new FormData();
       formData.append('image', file);
       const res = await Axios({
-        ...SummaryApi.uploadImage,
+        ...SummaryApi.uploadImage, // POST /api/file/upload
         data: formData,
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+      // Nếu upload thành công, lấy URL ảnh và cập nhật vào state
       if (res.data && res.data.data && res.data.data.url) {
         setEditProduct(prev => ({
           ...prev,

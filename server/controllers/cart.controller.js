@@ -13,13 +13,14 @@ export const addToCartItemController = async(request,response)=>{
                 success : false
             })
         }
-
+//check item cart
         const checkItemCart = await CartProductModel.findOne({
             userId : userId,
             productId : productId
         })
 
         if(checkItemCart){
+            // có rồi - tăng lên sl lên 1
             const updatedCartItem = await CartProductModel.findOneAndUpdate(
                 { _id: checkItemCart._id },
                 { $inc: { quantity: 1 } },
@@ -33,14 +34,14 @@ export const addToCartItemController = async(request,response)=>{
                 success : true
             })
         }
-
+// nếu chưa có - tạo mới
         const cartItem = new CartProductModel({
             quantity : 1,
             userId : userId,
             productId : productId
         })
         const save = await cartItem.save()
-
+//update vào user model
         const updateCartUser = await UserModel.updateOne({ _id : userId},{
             $push : { 
                 shopping_cart : productId

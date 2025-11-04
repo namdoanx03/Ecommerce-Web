@@ -59,7 +59,7 @@ const Login = () => {
                 const userDetails = await fetchUserDetails()
                 dispatch(setUserDetails(userDetails.data))
 
-                console.log('check response', userDetails.data)
+                // console.log('check response', userDetails.data)
 
                 setData({
                     email: "",
