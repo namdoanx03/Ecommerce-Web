@@ -178,19 +178,19 @@ const Header = () => {
           {/* Top Announcement Bar - Full Width */}
           <div className="w-full bg-[#0da487] text-white text-sm py-3">
               <div className="container mx-auto px-4 lg:px-8 flex items-center justify-between gap-4">
-                  {/* Left: Location */}
-                  <div className="hidden md:flex items-center gap-2 text-sm lg:text-sm whitespace-nowrap">
+                  {/* Left: Location - Hiển thị từ 1280px (xl) trở lên */}
+                  <div className="hidden xl:flex items-center gap-2 text-sm whitespace-nowrap">
                       <HiLocationMarker size={18} />
                       <span className='font-medium'>1418 Riverwood Drive, CA 96052, US</span>
                   </div>
-                  {/* Center: Message */}
-                  <div className="flex-1 hidden md:flex items-center justify-center text-center text-xs lg:text-sm min-w-0">
+                  {/* Center: Message - Hiển thị từ tablet (md), full text từ lg */}
+                  <div className="flex-1 hidden md:flex items-center justify-center text-center text-sm min-w-0 px-2">
                       <span className="truncate">
-                      <span className="font-semibold">Welcome to Fastkart !</span> Wrap new offers/gift every single day on Weekends. <span className="font-semibold">New Coupon Code: <span className="underline">Fast024</span></span>
+                      <span className="font-semibold">Welcome to Fastkart !</span> <span className="hidden lg:inline">Wrap new offers/gift every single day on Weekends.</span> <span className="font-semibold">New Coupon Code: <span className="underline">Fast024</span></span>
                       </span>
                   </div>
-                  {/* Right: Lang/Currency */}
-                  <div className="flex items-center gap-3 text-xs lg:text-sm whitespace-nowrap">
+                  {/* Right: Lang/Currency - Luôn hiển thị */}
+                  <div className="flex items-center gap-3 text-sm whitespace-nowrap ml-auto">
                       {/* Language Dropdown */}
                       <div className="relative" ref={languageDropdownRef}>
                           <button 
@@ -208,7 +208,8 @@ const Header = () => {
                                   alt={selectedLanguage === 'English' ? 'USA' : 'Vietnam'} 
                                   className='w-5 h-4 object-contain'
                               />
-                              <span>{selectedLanguage === 'English' ? 'US English' : 'Vietnamese'}</span>
+                              <span className="hidden md:inline">{selectedLanguage === 'English' ? 'US English' : 'Vietnamese'}</span>
+                              <span className="md:hidden">{selectedLanguage === 'English' ? 'EN' : 'VN'}</span>
                               <FaChevronDown size={10} className={`transition-transform ${openLanguageDropdown ? 'rotate-180' : ''}`} />
                           </button>
                           {openLanguageDropdown && (
@@ -247,7 +248,7 @@ const Header = () => {
                           )}
                       </div>
                       
-                      <span className="opacity-70">|</span>
+                      <span className="opacity-70 hidden md:inline">|</span>
                       
                       {/* Currency Dropdown */}
                       <div className="relative" ref={currencyDropdownRef}>
@@ -258,7 +259,7 @@ const Header = () => {
                               }}
                               className="hover:opacity-90 flex items-center gap-1.5 cursor-pointer"
                           >
-                              <span>{selectedCurrency}</span>
+                              <span className="text-sm">{selectedCurrency}</span>
                               <FaChevronDown size={10} className={`transition-transform ${openCurrencyDropdown ? 'rotate-180' : ''}`} />
                           </button>
                           {openCurrencyDropdown && (
@@ -281,7 +282,7 @@ const Header = () => {
                                               setOpenCurrencyDropdown(false);
                                           }}
                                           className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 ${
-                                              selectedCurrency === 'CAD' ? 'bg-gray-50' : ''
+                                              selectedCurrency === 'VND' ? 'bg-gray-50' : ''
                                           }`}
                                       >
                                           <span className="text-sm text-gray-700">VND</span>
@@ -296,8 +297,8 @@ const Header = () => {
 
           {/* Main Header Bar - Full Width */}
           <div className='w-full bg-white border-b border-gray-200'>
-              {
-                  !(isSearchPage && isMobile) && (
+          {
+              !(isSearchPage && isMobile) && (
                       <div className='container mx-auto px-4 lg:px-8 flex items-center justify-between py-3'>
                           {/**logo */}
                           <div className='flex items-center gap-4'>
@@ -314,33 +315,40 @@ const Header = () => {
                                       width={120}
                                       height={60}
                                       alt='logo'
-                                      className='lg:hidden'
+                                      className='hidden md:block lg:hidden'
+                                  />
+                                  <img
+                                      src={logo}
+                                      width={120}
+                                      height={60}
+                                      alt='logo'
+                                      className='md:hidden'
                                   />
                               </a>
-                              {/* Location dropdown */}
-                              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-emerald-600">
+                              {/* Location dropdown - Hiển thị từ tablet */}
+                              <div className="hidden md:flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-emerald-600">
                                   <HiLocationMarker size={20} />
-                                  <span>Your Location</span>
+                                  <span className="hidden lg:inline">Your Location</span>
                                   <FaAngleRight size={12} />
                               </div>
                           </div>
 
-                          {/**Search */}
-                          <div className='hidden lg:flex flex-1 max-w-2xl mx-8'>
-                              <Search />
+                          {/**Search - Hiển thị từ tablet */}
+                          <div className='hidden md:flex flex-1 max-w-2xl mx-8'>
+                              <Search />    
                           </div>
 
                           {/**Right side utilities */}
                           <div className='flex items-center gap-4'>
-                              {/* Phone & Delivery */}
-                              <div className="hidden xl:flex items-center gap-2 text-sm text-gray-600">
+                              {/* Phone & Delivery - Hiển thị từ tablet */}
+                              <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
                                   <FiPhone size={18} />
-                                  <span>24/7 Delivery</span>
-                                  <a href="tel:+918881042340" className="text-emerald-600 font-semibold">+91 888 104 2340</a>
+                                  <span className="hidden lg:inline">24/7 Delivery</span>
+                                  <a href="tel:+918881042340" className="text-emerald-600 font-semibold text-sm">+91 888 104 2340</a>
                               </div>
 
-                              {/* Wishlist */}
-                              <button className="hidden lg:flex relative items-center px-3 py-2 rounded text-neutral-700 hover:text-red-500">
+                              {/* Wishlist - Hiển thị từ tablet */}
+                              <button className="hidden md:flex relative items-center px-3 py-2 rounded text-neutral-700 hover:text-red-500">
                                   <HiOutlineHeart size={24} />
                               </button>
 
@@ -359,12 +367,12 @@ const Header = () => {
                                   <div className="relative flex items-center gap-2">
                                       <div onClick={() => setOpenUserMenu((preve) => !preve)} className="flex items-center gap-2 cursor-pointer select-none">
                                           <FiUser size={28} />
-                                          <span className="hidden xl:block text-sm text-gray-700">Hello, My Account</span>
+                                          <span className="hidden lg:block text-sm text-gray-700">Hello, My Account</span>
                                       </div>
                                       {openUserMenu && (
                                           <div
                                               ref={userMenuRef}
-                                              className="absolute right-0 top-12 mt-[10px]"
+                                              className="absolute right-0 top-12 mt-[10px] z-50"
                                               style={{ boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.5)" }}
                                           >
                                               <div className="bg-white rounded p-4 min-w-52 lg:shadow-lg">
@@ -380,10 +388,10 @@ const Header = () => {
                                           className="flex items-center gap-2 cursor-pointer select-none"
                                       >
                                           <FiUser size={28} />
-                                          <span className="hidden xl:block text-sm text-gray-700">Hello, My Account</span>
+                                          <span className="hidden lg:block text-sm text-gray-700">Hello, My Account</span>
                                       </div>
                                       {openUserMenu && (
-                                          <div ref={userMenuRef} className="absolute right-0 top-12">
+                                          <div ref={userMenuRef} className="absolute right-0 top-12 z-50">
                                               <div className="bg-white rounded p-4 min-w-40 lg:shadow-lg">
                                                   <button
                                                       onClick={redirectToLoginPage}
@@ -406,23 +414,23 @@ const Header = () => {
                                   </div>
                               )}
 
-                              {/* Deal Today Button */}
-                              <button className='hidden lg:flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg py-2 px-4'>
+                              {/* Deal Today Button - Hiển thị từ tablet */}
+                              <button className='hidden md:flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg py-2 px-4 text-sm'>
                                   <BsFillLightningFill size={18} />
                                   <span>Deal Today</span>
                               </button>
 
-                              {/* Mobile User Icon */}
-                              <button className='text-neutral-600 lg:hidden' onClick={handleMobileUser}>
+                              {/* Mobile User Icon - Chỉ hiển thị trên mobile */}
+                              <button className='text-neutral-600 md:hidden' onClick={handleMobileUser}>
                                   <FaRegCircleUser size={26} />
                               </button>
-                          </div>
                       </div>
-                  )
-              }
+                  </div>
+              )
+          }
 
-              {/* Mobile Search */}
-              <div className='container mx-auto px-4 lg:hidden pb-3'>
+              {/* Mobile Search - Chỉ hiển thị trên mobile */}
+              <div className='container mx-auto px-4 md:hidden pb-3'>
                   <Search />
               </div>
           </div>
@@ -492,7 +500,7 @@ const Header = () => {
             </div>
           </div>
 
-          <div className='header-nav-middle flex-1 flex justify-center'>
+          <div className='header-nav-middle flex-1 hidden lg:flex justify-center'>
             <ul className='navbar-nav flex items-center gap-8'>
               <li className='nav-item'>
                 <a href="/" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
@@ -541,15 +549,15 @@ const Header = () => {
           </div>
           <div className='header-nav-right'>
             <button
-                className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg'
+                className='hidden lg:flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg'
                 onClick={handleOpenHotOffers}
             >
                 <BsFillLightningFill size={24} className='text-[#C83C2B]' />
                 <span>Giảm giá hôm nay</span>
             </button>
           </div>
-              </div>
           </div>
+        </div>
 
         {/* Modal Hot Offers */}
         {showHotOffersModal && (
