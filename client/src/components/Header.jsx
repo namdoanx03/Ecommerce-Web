@@ -13,7 +13,11 @@ import { FiUser } from "react-icons/fi";
 import { IoCartOutline } from "react-icons/io5";
 import { FiMenu } from "react-icons/fi";
 import { FaAngleRight } from "react-icons/fa6";
+import { FaChevronDown } from "react-icons/fa";
 import { BsFillLightningFill } from "react-icons/bs";
+import { HiOutlineHeart } from "react-icons/hi";
+import { HiLocationMarker } from "react-icons/hi";
+import { FiPhone } from "react-icons/fi";
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 
@@ -37,6 +41,12 @@ const Header = () => {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
     const userMenuRef = useRef(null);
+    const [selectedLanguage, setSelectedLanguage] = useState('English');
+    const [selectedCurrency, setSelectedCurrency] = useState('VND');
+    const [openLanguageDropdown, setOpenLanguageDropdown] = useState(false);
+    const [openCurrencyDropdown, setOpenCurrencyDropdown] = useState(false);
+    const languageDropdownRef = useRef(null);
+    const currencyDropdownRef = useRef(null);
 
     const redirectToLoginPage = ()=>{
         navigate("/login")
@@ -136,6 +146,19 @@ const Header = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [openUserMenu]);
 
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (languageDropdownRef.current && !languageDropdownRef.current.contains(event.target)) {
+                setOpenLanguageDropdown(false);
+            }
+            if (currencyDropdownRef.current && !currencyDropdownRef.current.contains(event.target)) {
+                setOpenCurrencyDropdown(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     //total item and total price
     // useEffect(()=>{
     //     const qty = cartItem.reduce((preve,curr)=>{
@@ -151,46 +174,178 @@ const Header = () => {
     // },[cartItem])
 
   return (
-      <header className='lg:h-20 lg:shadow-md  top-0 z-40 flex flex-col justify-center gap-1 bg-white px-28' style={{height: "180px"}}>
-          {
-              !(isSearchPage && isMobile) && (
-                  <div className='container mx-auto flex items-center px-2 justify-between'>
-                      {/**logo */}
-                      <div className='h-full'>
-                          <a href='/' className='h-full flex justify-center items-center' onClick={e => { e.preventDefault(); window.location.href = '/' }}>
-                              <img
-                                  src={logo}
-                                  width={170}
-                                  height={60}
-                                  alt='logo'
-                                  className='hidden lg:block'
+      <header className='top-0 z-40 flex flex-col bg-white w-full'>
+          {/* Top Announcement Bar - Full Width */}
+          <div className="w-full bg-[#0da487] text-white text-sm py-3">
+              <div className="container mx-auto px-4 lg:px-8 flex items-center justify-between gap-4">
+                  {/* Left: Location */}
+                  <div className="hidden md:flex items-center gap-2 text-sm lg:text-sm whitespace-nowrap">
+                      <HiLocationMarker size={18} />
+                      <span className='font-medium'>1418 Riverwood Drive, CA 96052, US</span>
+                  </div>
+                  {/* Center: Message */}
+                  <div className="flex-1 hidden md:flex items-center justify-center text-center text-xs lg:text-sm min-w-0">
+                      <span className="truncate">
+                      <span className="font-semibold">Welcome to Fastkart !</span> Wrap new offers/gift every single day on Weekends. <span className="font-semibold">New Coupon Code: <span className="underline">Fast024</span></span>
+                      </span>
+                  </div>
+                  {/* Right: Lang/Currency */}
+                  <div className="flex items-center gap-3 text-xs lg:text-sm whitespace-nowrap">
+                      {/* Language Dropdown */}
+                      <div className="relative" ref={languageDropdownRef}>
+                          <button 
+                              onClick={() => {
+                                  setOpenLanguageDropdown(!openLanguageDropdown);
+                                  setOpenCurrencyDropdown(false);
+                              }}
+                              className="hover:opacity-90 flex items-center gap-1.5 cursor-pointer"
+                          >
+                              <img 
+                                  src={selectedLanguage === 'English' 
+                                      ? "https://themes.pixelstrap.com/fastkart/assets/images/country/united-states.png"
+                                      : "https://media.loveitopcdn.com/3807/la-co-viet-nam-dongphusongphu2.png"
+                                  } 
+                                  alt={selectedLanguage === 'English' ? 'USA' : 'Vietnam'} 
+                                  className='w-5 h-4 object-contain'
                               />
-                              <img
-                                  src={logo}
-                                  width={120}
-                                  height={60}
-                                  alt='logo'
-                                  className='lg:hidden'
-                              />
-                          </a>
-                      </div>
-
-                      {/**Search */}
-                      <div className='hidden lg:block'>
-                          <Search />
-                      </div>
-
-
-                      {/**login and my cart */}
-                      <div className=''>
-                          {/**user icons display in only mobile version**/}
-                          <button className='text-neutral-600 lg:hidden' onClick={handleMobileUser}>
-                              <FaRegCircleUser size={26} />
+                              <span>{selectedLanguage === 'English' ? 'US English' : 'Vietnamese'}</span>
+                              <FaChevronDown size={10} className={`transition-transform ${openLanguageDropdown ? 'rotate-180' : ''}`} />
                           </button>
+                          {openLanguageDropdown && (
+                              <div className="absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg min-w-[150px] z-50 border border-gray-200">
+                                  <div className="py-1">
+                                      <button
+                                          onClick={() => {
+                                              setSelectedLanguage('English');
+                                              setOpenLanguageDropdown(false);
+                                          }}
+                                          className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 ${
+                                              selectedLanguage === 'English' ? 'bg-gray-50' : ''
+                                          }`}
+                                      >
+                                          <span className="text-lg">
+                                            <img src="https://themes.pixelstrap.com/fastkart/assets/images/country/united-states.png" alt="USA" className='w-5 h-5' />
+                                          </span>
+                                          <span className="text-sm text-gray-700">English</span>
+                                      </button>
+                                      <button
+                                          onClick={() => {
+                                              setSelectedLanguage('Vietnamese');
+                                              setOpenLanguageDropdown(false);
+                                          }}
+                                          className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 ${
+                                              selectedLanguage === 'Vietnamese' ? 'bg-gray-50' : ''
+                                          }`}
+                                      >
+                                          <span className="text-lg">
+                                            <img src="https://media.loveitopcdn.com/3807/la-co-viet-nam-dongphusongphu2.png" alt="Vietnam" className='w-5 h-4' />
+                                          </span>
+                                          <span className="text-sm text-gray-700">Vietnamese</span>
+                                      </button>
+                                  </div>
+                              </div>
+                          )}
+                      </div>
+                      
+                      <span className="opacity-70">|</span>
+                      
+                      {/* Currency Dropdown */}
+                      <div className="relative" ref={currencyDropdownRef}>
+                          <button 
+                              onClick={() => {
+                                  setOpenCurrencyDropdown(!openCurrencyDropdown);
+                                  setOpenLanguageDropdown(false);
+                              }}
+                              className="hover:opacity-90 flex items-center gap-1.5 cursor-pointer"
+                          >
+                              <span>{selectedCurrency}</span>
+                              <FaChevronDown size={10} className={`transition-transform ${openCurrencyDropdown ? 'rotate-180' : ''}`} />
+                          </button>
+                          {openCurrencyDropdown && (
+                              <div className="absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg min-w-[120px] z-50 border border-gray-200">
+                                  <div className="py-1">
+                                      <button
+                                          onClick={() => {
+                                              setSelectedCurrency('USD');
+                                              setOpenCurrencyDropdown(false);
+                                          }}
+                                          className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 ${
+                                              selectedCurrency === 'USD' ? 'bg-gray-50' : ''
+                                          }`}
+                                      >
+                                          <span className="text-sm text-gray-700">USD</span>
+                                      </button>
+                                      <button
+                                          onClick={() => {
+                                              setSelectedCurrency('VND');
+                                              setOpenCurrencyDropdown(false);
+                                          }}
+                                          className={`w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-100 ${
+                                              selectedCurrency === 'CAD' ? 'bg-gray-50' : ''
+                                          }`}
+                                      >
+                                          <span className="text-sm text-gray-700">VND</span>
+                                      </button>
+                                  </div>
+                              </div>
+                          )}
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-                          {/**Desktop**/}
-                          <div className="hidden lg:flex items-center gap-3">
-                              <button onClick={() => setOpenCartSection(true)} className="relative flex items-center px-3 py-2 rounded text-neutral-700 ">
+          {/* Main Header Bar - Full Width */}
+          <div className='w-full bg-white border-b border-gray-200'>
+              {
+                  !(isSearchPage && isMobile) && (
+                      <div className='container mx-auto px-4 lg:px-8 flex items-center justify-between py-3'>
+                          {/**logo */}
+                          <div className='flex items-center gap-4'>
+                              <a href='/' className='h-full flex justify-center items-center' onClick={e => { e.preventDefault(); window.location.href = '/' }}>
+                                  <img
+                                      src={logo}
+                                      width={170}
+                                      height={60}
+                                      alt='logo'
+                                      className='hidden lg:block'
+                                  />
+                                  <img
+                                      src={logo}
+                                      width={120}
+                                      height={60}
+                                      alt='logo'
+                                      className='lg:hidden'
+                                  />
+                              </a>
+                              {/* Location dropdown */}
+                              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 cursor-pointer hover:text-emerald-600">
+                                  <HiLocationMarker size={20} />
+                                  <span>Your Location</span>
+                                  <FaAngleRight size={12} />
+                              </div>
+                          </div>
+
+                          {/**Search */}
+                          <div className='hidden lg:flex flex-1 max-w-2xl mx-8'>
+                              <Search />
+                          </div>
+
+                          {/**Right side utilities */}
+                          <div className='flex items-center gap-4'>
+                              {/* Phone & Delivery */}
+                              <div className="hidden xl:flex items-center gap-2 text-sm text-gray-600">
+                                  <FiPhone size={18} />
+                                  <span>24/7 Delivery</span>
+                                  <a href="tel:+918881042340" className="text-emerald-600 font-semibold">+91 888 104 2340</a>
+                              </div>
+
+                              {/* Wishlist */}
+                              <button className="hidden lg:flex relative items-center px-3 py-2 rounded text-neutral-700 hover:text-red-500">
+                                  <HiOutlineHeart size={24} />
+                              </button>
+
+                              {/* Cart */}
+                              <button onClick={() => setOpenCartSection(true)} className="relative flex items-center px-3 py-2 rounded text-neutral-700 hover:text-red-500">
                                   <div className="relative">
                                       <IoCartOutline size={28} />
                                       <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[22px] text-center">
@@ -199,18 +354,17 @@ const Header = () => {
                                   </div>
                               </button>
 
-                              {/* Vertical Divider */}
-                              <div className="w-px h-6 bg-gray-300 mr-[8px]"></div>
-
+                              {/* User Menu */}
                               {user?._id ? (
-                                  <div className="relative flex items-center gap-2" >
-                                      <div onClick={() => setOpenUserMenu((preve) => !preve)} className="flex items-center gap-2 cursor-pointer select-none " >
-                                          <FiUser size={32} />
+                                  <div className="relative flex items-center gap-2">
+                                      <div onClick={() => setOpenUserMenu((preve) => !preve)} className="flex items-center gap-2 cursor-pointer select-none">
+                                          <FiUser size={28} />
+                                          <span className="hidden xl:block text-sm text-gray-700">Hello, My Account</span>
                                       </div>
                                       {openUserMenu && (
                                           <div
                                               ref={userMenuRef}
-                                              className="absolute right-0 top-12 mt-[10px] mr-[-30px]"
+                                              className="absolute right-0 top-12 mt-[10px]"
                                               style={{ boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.5)" }}
                                           >
                                               <div className="bg-white rounded p-4 min-w-52 lg:shadow-lg">
@@ -225,7 +379,8 @@ const Header = () => {
                                           onClick={() => setOpenUserMenu((preve) => !preve)}
                                           className="flex items-center gap-2 cursor-pointer select-none"
                                       >
-                                          <FiUser size={35} />
+                                          <FiUser size={28} />
+                                          <span className="hidden xl:block text-sm text-gray-700">Hello, My Account</span>
                                       </div>
                                       {openUserMenu && (
                                           <div ref={userMenuRef} className="absolute right-0 top-12">
@@ -250,15 +405,26 @@ const Header = () => {
                                       )}
                                   </div>
                               )}
+
+                              {/* Deal Today Button */}
+                              <button className='hidden lg:flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg py-2 px-4'>
+                                  <BsFillLightningFill size={18} />
+                                  <span>Deal Today</span>
+                              </button>
+
+                              {/* Mobile User Icon */}
+                              <button className='text-neutral-600 lg:hidden' onClick={handleMobileUser}>
+                                  <FaRegCircleUser size={26} />
+                              </button>
                           </div>
-
                       </div>
-                  </div>
-              )
-          }
+                  )
+              }
 
-          <div className='container mx-auto px-2 lg:hidden'>
-              <Search />
+              {/* Mobile Search */}
+              <div className='container mx-auto px-4 lg:hidden pb-3'>
+                  <Search />
+              </div>
           </div>
 
           {
@@ -267,7 +433,9 @@ const Header = () => {
               )
           }
 
-        <div className='container mx-auto px-2 header-nav mt-[10px] mb-[10px] flex justify-between' >
+          {/* Navigation Bar - Full Width */}
+          <div className='w-full bg-white border-b border-gray-200'>
+              <div className='container mx-auto px-4 lg:px-8 header-nav py-3 flex justify-between items-center' >
           <div className='flex items-center justify-between header-nav-left'>
             <div className="relative">
               <div
@@ -275,9 +443,9 @@ const Header = () => {
                 onMouseEnter={() => setShowDropdown(true)}
                 onMouseLeave={() => setShowDropdown(false)}
               >
-                <button className='flex items-center gap-3 bg-[rgb(218,41,28)] hover:bg-[#b8321a] text-white font-bold rounded-md py-[11px] px-[26px] mt-[21px]'>
+                <button className='flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md py-[11px] px-[26px]'>
                   <FiMenu size={24} />
-                  <span className='text-[18px]'>Danh Mục</span>
+                  <span className='text-[18px]'>All Categories</span>
                 </button>
                 <div className="w-full" style={{ height: 12 }} />
                 <div
@@ -325,32 +493,63 @@ const Header = () => {
           </div>
 
           <div className='header-nav-middle flex-1 flex justify-center'>
-            <ul className='navbar-nav flex items-center gap-12'>
+            <ul className='navbar-nav flex items-center gap-8'>
               <li className='nav-item'>
-                <a href="/product" className='nav-link text-black font-medium text-lg'>Đi Chợ Tại Nhà</a>
+                <a href="/" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Home
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
+              </li>
+              <li className='nav-item'>
+                <a href="/product" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Shop
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
+              </li>
+              <li className='nav-item'>
+                <a href="/product" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Product
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
+              </li>
+              <li className='nav-item'>
+                <a href="#" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Mega Menu
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
+              </li>
+              <li className='nav-item'>
+                <a href="#" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Blog
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
               </li>
               <li className='nav-item flex items-center gap-2'>
-                <a href="/hot-offers" className='nav-link text-black font-medium text-lg'>Ưu Đãi Hot</a>
-                <span className='bg-red-400 text-white text-xs font-bold px-2 py-0.5 rounded'>Hot</span>
+                <a href="#" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Pages
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
+                <span className='bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded'>New</span>
               </li>
               <li className='nav-item'>
-                <a href="/sale" className='nav-link text-black font-medium text-lg'>Khuyến mãi</a>
-              </li>
-              <li className='nav-item'>
-                <a href="#" className='nav-link text-black font-medium text-lg'>Tin Tức</a>
+                <a href="#" className='nav-link text-black font-medium text-base hover:text-emerald-600 flex items-center gap-1'>
+                  Seller
+                  <FaAngleRight size={12} className='text-gray-400' />
+                </a>
               </li>
             </ul>
           </div>
           <div className='header-nav-right'>
             <button
-                className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg mt-[20px]'
+                className='flex items-center gap-2 bg-red-50 hover:bg-red-100 text-[#C83C2B] font-bold rounded-lg py-2 px-6 text-lg'
                 onClick={handleOpenHotOffers}
             >
                 <BsFillLightningFill size={24} className='text-[#C83C2B]' />
                 <span>Giảm giá hôm nay</span>
             </button>
           </div>
-        </div>
+              </div>
+          </div>
 
         {/* Modal Hot Offers */}
         {showHotOffersModal && (
