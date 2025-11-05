@@ -889,55 +889,139 @@ const Home = () => {
                       <span className="font-mono font-bold">58</span>
                     </div>
                   </div>
-                  <div className="display-product" style={{ borderRadius: '10px', border: '1px solid #ccc', overflow: 'hidden' }}>
-                    <Slider {...settings}>
-                      {loading ? (
-                        <BubbleSpinner />
-                      ) : (
-                        products.map((p, idx) => (
-                          <a
-                            href={`/product/${p._id}`}
-                            key={p._id}
-                            className={
-                              `flex flex-col items-stretch text-left px-4 py-4` +
-                              (idx !== products.length - 1 ? ' border-x border-gray-200' : '')
-                            }
-                            style={{ width: 240, minHeight: 370, background: '#fff' }}
-                          >
-                            <div className="flex justify-center items-center mb-2" style={{ height: 140 }}>
-                              <img src={p.image[0]} alt={p.name} className="object-contain h-32" style={{ maxHeight: 130, maxWidth: 130 }} />
-                            </div>
-                            <div className="flex-1 flex flex-col justify-between">
-                              <div>
-                                <div className="font-semibold text-base mb-1 leading-tight line-clamp-2 trumcate" style={{ minHeight: 48, lineHeight: '1.5' }}>{p.name}</div>
-                                <div className="flex items-end gap-2 mb-1">
-                                  <span className="text-red-600 font-bold text-lg">{pricewithDiscount(p.price, p.discount).toLocaleString("vi-VN")} đ</span>
-                                  <span className="text-gray-400 line-through text-sm">{p.price.toLocaleString("vi-VN")} đ</span>
-                                </div>
-                                <div className="flex items-center gap-1 mb-2">
-                                  {[...Array(5)].map((_, i) => (
-                                    <svg
-                                      key={i}
-                                      className="w-4 h-4 fill-current text-yellow-400"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      viewBox="0 0 20 20"
-                                      fill="currentColor"
-                                    >
-                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.922-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.389 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.973a1 1 0 00-.364-1.118L2.037 9.4c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.974z" />
-                                    </svg>
-                                  ))}
-                                  <span className="text-red-500 font-semibold text-base ml-2">{p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}</span>
-                                </div>
-                              </div>
-                              <div className='flex justify-center items-center mt-5'>
-                                <AddToCartButton data={p} />
-                              </div>
-                            </div>
-                          </a>
-                        ))
-                      )}
-                    </Slider>
-                  </div>
+                   {/* Grid layout - 5 cột giống mẫu */}
+                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-0 ">
+                     {loading ? (
+                       <div className="col-span-full flex justify-center py-20">
+                         <BubbleSpinner />
+                       </div>
+                     ) : (
+                       products.slice(0, 10).map((p, index) => {
+                         // Logic bo góc: chỉ bo góc ngoài của grid
+                         const isFirstInRow = index % 5 === 0;
+                         const isLastInRow = index % 5 === 4;
+                         const isFirstRow = index < 5;
+                         const isLastRow = index >= 5;
+                         
+                         let roundedClass = '';
+                         if (isFirstRow && isFirstInRow) roundedClass = 'rounded-tl-xl'; // Top-left
+                         else if (isFirstRow && isLastInRow) roundedClass = 'rounded-tr-xl'; // Top-right
+                         else if (isLastRow && isFirstInRow) roundedClass = 'rounded-bl-xl'; // Bottom-left
+                         else if (isLastRow && isLastInRow) roundedClass = 'rounded-br-xl'; // Bottom-right
+                         
+                         return (
+                         <div
+                           key={p._id}
+                           className={`relative bg-white border border-gray-200 overflow-hidden group ${roundedClass}`}
+                         >
+                           {/* NEW Badge */}
+                           {index % 3 === 1 && (
+                             <div className="absolute top-3 right-3 z-10">
+                               <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-sm shadow-md">NEW</span>
+                             </div>
+                           )}
+                           
+                           {/* Product Link */}
+                           <a href={`/product/${p._id}`} className="block p-4">
+                             {/* Product Image - Chỉ phóng to ảnh khi hover */}
+                             <div className="relative flex flex-col justify-center items-center mb-3">
+                               <div className="bg-gray-50 rounded-lg overflow-hidden w-full" style={{ height: 180 }}>
+                                 <img 
+                                   src={p.image[0]} 
+                                   alt={p.name} 
+                                   className="object-contain w-full h-full p-2 group-hover:scale-110 transition-transform duration-300" 
+                                   style={{ maxHeight: 160 }} 
+                                 />
+                               </div>
+                               
+                               {/* Hover Icons - xuất hiện ở dưới ảnh khi hover */}
+                               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-0 opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 z-20">
+                                 <div className="flex items-center gap-2 bg-white rounded-md shadow-lg px-2 py-1 ">
+                                   <button 
+                                     onClick={(e) => { e.preventDefault(); }}
+                                     className="p-1 hover:text-emerald-500 transition-colors"
+                                     title="Quick View"
+                                   >
+                                     <IoEyeOutline className="w-5 h-5" />
+                                   </button>
+                                   <div className="w-px h-5 bg-gray-300"></div>
+                                   <button 
+                                     onClick={(e) => { e.preventDefault(); }}
+                                     className="p-1 hover:text-emerald-500 transition-colors"
+                                     title="Compare"
+                                   >
+                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                     </svg>
+                                   </button>
+                                   <div className="w-px h-5 bg-gray-300"></div>
+                                   <button 
+                                     onClick={(e) => { e.preventDefault(); }}
+                                     className="p-1 hover:text-emerald-500 transition-colors"
+                                     title="Add to Wishlist"
+                                   >
+                                     <CiHeart className="w-5 h-5" />
+                                   </button>
+                                 </div>
+                               </div>
+                             </div>
+                             
+                             {/* Product Info */}
+                             <div className="space-y-1.5">
+                               {/* Product Name */}
+                               <h3 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 min-h-[36px] leading-tight">
+                                 {p.name}
+                               </h3>
+                               
+                               {/* Price */}
+                               <div className="flex items-baseline gap-1.5">
+                                 <span className="text-emerald-600 font-bold text-sm md:text-lg">
+                                   ${pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
+                                 </span>
+                                 <span className="text-gray-400 line-through text-[11px] md:text-xs">
+                                   ${p.price.toLocaleString("en-US")}
+                                 </span>
+                               </div>
+                               
+                               {/* Rating & Stock */}
+                               <div className="flex items-center gap-1.5 mb-2">
+                                 <div className="flex items-center gap-0.5">
+                                   {[...Array(5)].map((_, i) => (
+                                     <svg
+                                       key={i}
+                                       className={`w-3 h-3 md:w-3.5 md:h-3.5 fill-current ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`}
+                                       xmlns="http://www.w3.org/2000/svg"
+                                       viewBox="0 0 20 20"
+                                       fill="currentColor"
+                                     >
+                                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.922-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.389 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.973a1 1 0 00-.364-1.118L2.037 9.4c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.974z" />
+                                     </svg>
+                                   ))}
+                                 </div>
+                                 <span className="text-emerald-600 text-[11px] md:text-xs font-semibold">
+                                   {p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}
+                                 </span>
+                               </div>
+                             </div>
+                           </a>
+                           
+                           {/* Add to Cart Button */}
+                           <div className="px-4 pb-4 flex justify-center">
+                             <button 
+                               onClick={(e) => {
+                                 e.preventDefault();
+                                 // Add to cart logic
+                               }}
+                               className="w-[90%] px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md"
+                             >
+                               <span className="font-semibold text-sm">Thêm vào giỏ</span>
+                             </button>
+                           </div>
+                         </div>
+                         );
+                       })
+                     )}
+                   </div>
                   <div className="title flex flex-col sm:flex-row justify-between items-center my-8 gap-4">
                     <div className="text-left">
                       <h2 className="font-bold text-2xl text-black mb-1 pb-1">Danh mục nổi bật</h2>
