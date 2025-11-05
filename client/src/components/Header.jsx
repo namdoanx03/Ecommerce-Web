@@ -139,16 +139,6 @@ const Header = () => {
         }
     };
 
-    useEffect(() => {
-        if (!openUserMenu) return;
-        function handleClickOutside(event) {
-            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-                setOpenUserMenu(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [openUserMenu]);
 
     useEffect(() => {
         function handleClickOutside(event) {
@@ -321,9 +311,96 @@ const Header = () => {
           <div className='w-full bg-white '>
           {
               !(isSearchPage && isMobile) && (
-                      <div className='container mx-auto px-3 sm:px-4 lg:px-16 flex items-center justify-between py-2 sm:py-3 gap-2 sm:gap-4'>
+                      <div className='container mx-auto px-3 sm:px-4 lg:px-16 py-2 sm:py-3'>
+                          {/* Mobile Layout - Menu | Logo (center) | User */}
+                          <div className='md:hidden flex items-center justify-between relative'>
+                              {/* Left: Menu Button */}
+                              <button 
+                                  onClick={() => setOpenSidebarMenu(true)}
+                                  className='flex items-center justify-center p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors z-10'
+                                  aria-label="Toggle menu"
+                              >
+                                  <FiMenu size={24} />
+                              </button>
+                              
+                              {/* Center: Logo */}
+                              <a href='/' className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' onClick={e => { e.preventDefault(); window.location.href = '/' }}>
+                                  <img
+                                      src={logo}
+                                      width={140}
+                                      height={50}
+                                      alt='logo'
+                                      className='w-auto h-10'
+                                  />
+                              </a>
+                              
+                              {/* Right: User Icon with Dropdown Menu */}
+                              <div className="relative group z-10">
+                                  <button className='text-neutral-600 p-2'>
+                                      <FaRegCircleUser size={24} />
+                                  </button>
+                                  
+                                  {/* Invisible bridge */}
+                                  <div className="absolute top-full left-0 right-0 h-3 hidden group-hover:block"></div>
+                                  
+                                  {/* Dropdown Menu */}
+                                  <div className="absolute right-0 top-full mt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                      <div className="bg-white rounded-lg p-3 min-w-[160px] shadow-2xl border border-gray-100">
+                                          {user?._id ? (
+                                              <>
+                                                  <button
+                                                      onClick={() => navigate("/user")}
+                                                      className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                                  >
+                                                      My Profile
+                                                  </button>
+                                                  <button
+                                                      onClick={() => navigate("/myorders")}
+                                                      className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                                  >
+                                                      My Orders
+                                                  </button>
+                                                  <button
+                                                      onClick={() => {
+                                                          // Logout logic here
+                                                          navigate("/");
+                                                      }}
+                                                      className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-red-600"
+                                                  >
+                                                      Logout
+                                                  </button>
+                                              </>
+                                          ) : (
+                                              <>
+                                                  <button
+                                                      onClick={() => navigate("/login")}
+                                                      className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                                  >
+                                                      Log In
+                                                  </button>
+                                                  <button
+                                                      onClick={() => navigate("/register")}
+                                                      className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                                  >
+                                                      Register
+                                                  </button>
+                                                  <button
+                                                      onClick={() => navigate("/forgot-password")}
+                                                      className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                                  >
+                                                      Forgot Password
+                                                  </button>
+                                              </>
+                                          )}
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          {/* Tablet & Desktop Layout */}
+                          <div className='hidden md:flex items-center justify-between gap-2 md:gap-3 lg:gap-4'>
                           {/**Left side: Toggle button + Logo */}
-                          <div className='flex items-center gap-2 sm:gap-4 flex-shrink-0'>
+                          <div className='flex items-center gap-3 lg:gap-4 flex-shrink-0'>
                               {/* Navbar Toggle Button - Chỉ hiển thị <= 1024px */}
                               <button 
                                   onClick={() => setOpenSidebarMenu(true)}
@@ -347,27 +424,20 @@ const Header = () => {
                                       width={120}
                                       height={60}
                                       alt='logo'
-                                      className='hidden md:block lg:hidden w-auto h-10'
-                                  />
-                                  <img
-                                      src={logo}
-                                      width={100}
-                                      height={50}
-                                      alt='logo'
-                                      className='md:hidden w-auto h-8 sm:h-10'
+                                      className='lg:hidden w-auto h-10'
                                   />
                               </a>
                           </div>
 
                           {/**Search - Hiển thị từ tablet */}
-                          <div className='hidden md:flex flex-1 max-w-2xl mx-4 lg:mx-8'>
+                          <div className='flex flex-1 max-w-xl lg:max-w-2xl mx-3 lg:mx-8'>
                               <Search />    
                           </div>
 
                           {/**Right side utilities */}
-                          <div className='flex items-center gap-1 sm:gap-2 md:gap-4 flex-shrink-0'>
-                              {/* Phone & Delivery - Hiển thị từ tablet */}
-                              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600">
+                          <div className='flex items-center gap-2 md:gap-3 lg:gap-4 flex-shrink-0'>
+                              {/* Phone & Delivery - Ẩn dưới 1280px để tiết kiệm không gian */}
+                              <div className="hidden xl:flex items-center gap-2 text-sm text-gray-600">
                                   <FiPhone size={18} className="text-gray-600 flex-shrink-0" />
                                   <div className="flex flex-col">
                                       <span className="text-xs text-gray-600">24/7 Delivery</span>
@@ -376,94 +446,97 @@ const Header = () => {
                               </div>
 
                               {/* Vertical Divider */}
-                              <div className="hidden lg:block w-px h-8 bg-gray-300"></div>
+                              <div className="hidden xl:block w-px h-8 bg-gray-300"></div>
 
                               {/* Wishlist - Hiển thị từ tablet */}
-                              <button className="hidden md:flex relative items-center px-2 sm:px-3 py-2 rounded text-gray-600 hover:text-red-500 transition-colors">
-                                  <HiOutlineHeart size={20} className="sm:w-6 sm:h-6" />
+                              <button className="flex relative items-center px-1.5 md:px-2 lg:px-3 py-2 rounded text-gray-600 hover:text-red-500 transition-colors">
+                                  <HiOutlineHeart size={20} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
                               </button>
 
                               {/* Vertical Divider */}
-                              <div className="hidden md:block w-px h-8 bg-gray-300"></div>
+                              <div className="block w-px h-8 bg-gray-300"></div>
 
                               {/* Cart */}
-                              <button onClick={() => setOpenCartSection(true)} className="relative flex items-center px-2 sm:px-3 py-2 rounded text-gray-600 hover:text-red-500 transition-colors">
+                              <button onClick={() => setOpenCartSection(true)} className="relative flex items-center px-1.5 md:px-2 lg:px-3 py-2 rounded text-gray-600 hover:text-red-500 transition-colors">
                                   <div className="relative">
-                                      <IoCartOutline size={22} className="sm:w-7 sm:h-7" />
-                                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] sm:text-xs font-bold rounded-full px-1.5 sm:px-2 py-0.5 min-w-[18px] sm:min-w-[22px] text-center">
+                                      <IoCartOutline size={20} className="md:w-6 md:h-6 lg:w-7 lg:h-7" />
+                                      <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] md:text-xs font-bold rounded-full px-1.5 md:px-2 py-0.5 min-w-[18px] md:min-w-[22px] text-center">
                                           {cartItem.length || 0}
                                       </span>
                                   </div>
                               </button>
 
                               {/* Vertical Divider */}
-                              <div className="hidden md:block w-px h-8 bg-gray-300"></div>
+                              <div className="block w-px h-8 bg-gray-300"></div>
 
                               {/* User Menu */}
                               {user?._id ? (
-                                  <div className="relative flex items-center gap-1 sm:gap-2">
-                                      <div onClick={() => setOpenUserMenu((preve) => !preve)} className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none">
-                                          <FiUser size={22} className="text-gray-600 sm:w-7 sm:h-7" />
+                                  <div 
+                                      className="relative flex items-center gap-1 sm:gap-2 group"
+                                  >
+                                      <div className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none">
+                                          <FiUser size={20} className="text-gray-600 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                           <div className="hidden xl:flex flex-col">
                                               <span className="text-xs text-gray-600">Hello,</span>
                                               <span className="text-sm font-medium text-gray-700">My Account</span>
                                           </div>
                                       </div>
-                                      {openUserMenu && (
-                                          <div
-                                              ref={userMenuRef}
-                                              className="absolute right-0 top-12 mt-[10px] z-50"
-                                              style={{ boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.5)" }}
-                                          >
-                                              <div className="bg-white rounded p-4 min-w-52 lg:shadow-lg">
-                                                  <UserMenu close={handleCloseUserMenu} />
-                                              </div>
+                                      {/* Invisible bridge để hover không bị ngắt */}
+                                      <div className="absolute top-full left-0 right-0 h-3 hidden group-hover:block"></div>
+                                      <div
+                                          ref={userMenuRef}
+                                          className="absolute right-0 top-full mt-3 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+                                          style={{ boxShadow: "5px 5px 10px rgba(0, 0, 0, 0.5)" }}
+                                      >
+                                          <div className="bg-white rounded p-4 min-w-52 lg:shadow-lg">
+                                              <UserMenu close={handleCloseUserMenu} />
                                           </div>
-                                      )}
+                                      </div>
                                   </div>
                               ) : (
-                                  <div className="relative">
-                                      <div
-                                          onClick={() => setOpenUserMenu((preve) => !preve)}
-                                          className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none"
-                                      >
-                                          <FiUser size={22} className="text-gray-600 sm:w-7 sm:h-7" />
+                                  <div 
+                                      className="relative group"
+                                  >
+                                      <div className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none">
+                                          <FiUser size={20} className="text-gray-600 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                           <div className="hidden xl:flex flex-col">
                                               <span className="text-xs text-gray-600">Hello,</span>
                                               <span className="text-sm font-medium text-gray-700">My Account</span>
                                           </div>
                                       </div>
-                                      {openUserMenu && (
-                                          <div ref={userMenuRef} className="absolute right-0 top-12 z-50">
-                                              <div className="bg-white rounded p-4 min-w-40 lg:shadow-lg">
-                                                  <button
-                                                      onClick={redirectToLoginPage}
-                                                      className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
-                                                  >
-                                                      Login
-                                                  </button>
-                                                  <button
-                                                      onClick={() => {
-                                                          setOpenUserMenu(false);
-                                                          navigate("/register");
-                                                      }}
-                                                      className="block w-full text-left px-2 py-1 hover:bg-gray-100 rounded"
-                                                  >
-                                                      Register
-                                                  </button>
-                                              </div>
+                                      {/* Invisible bridge để hover không bị ngắt */}
+                                      <div className="absolute top-full left-0 right-0 h-3 hidden group-hover:block"></div>
+                                      <div className="absolute right-0 top-full mt-3 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                          <div className="bg-white rounded p-4 min-w-40 lg:shadow-lg shadow-2xl border border-gray-100">
+                                              <button
+                                                  onClick={redirectToLoginPage}
+                                                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                              >
+                                                  Log In
+                                              </button>
+                                              <button
+                                                  onClick={() => {
+                                                      navigate("/register");
+                                                  }}
+                                                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                              >
+                                                  Register
+                                              </button>
+                                              <button
+                                                  onClick={() => {
+                                                      navigate("/forgot-password");
+                                                  }}
+                                                  className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
+                                              >
+                                                  Forgot Password
+                                              </button>
                                           </div>
-                                      )}
+                                      </div>
                                   </div>
                               )}
-
-
-                              {/* Mobile User Icon - Chỉ hiển thị trên mobile */}
-                              <button className='text-neutral-600 md:hidden' onClick={handleMobileUser}>
-                                  <FaRegCircleUser size={22} />
-                              </button>
+                          </div>
+                          </div>
                       </div>
-                  </div>
               )
           }
 
@@ -481,7 +554,7 @@ const Header = () => {
 
           {/* Navigation Bar - Full Width */}
           <div className='w-full bg-white '>
-              <div className='container mx-auto px-3 sm:px-4 lg:px-16 header-nav py-2 sm:py-3 flex justify-between items-center gap-2 sm:gap-4' >
+              <div className='container mx-auto px-3 sm:px-4 lg:px-16 header-nav py-2 sm:py-3 flex justify-between items-center gap-2 sm:gap-3 lg:gap-4' >
           <div className='flex items-center justify-between header-nav-left flex-shrink-0'>
             <div className="relative">
               <div
@@ -489,9 +562,9 @@ const Header = () => {
                 onMouseEnter={() => setShowDropdown(true)}
                 onMouseLeave={() => setShowDropdown(false)}
               >
-                <button className='flex items-center gap-2 sm:gap-3 bg-[rgb(218,41,28)] hover:bg-[#b8321a] text-white font-bold rounded-md py-2 sm:py-[11px] px-3 sm:px-[26px]'>
-                  <FiMenu size={20} className="sm:w-6 sm:h-6" />
-                  <span className='text-sm sm:text-base lg:text-[18px] whitespace-nowrap'>Danh Mục</span>
+                <button className='flex items-center gap-2 bg-[rgb(218,41,28)] hover:bg-[#b8321a] text-white font-bold rounded-md py-2 lg:py-[11px] px-3 lg:px-[26px]'>
+                  <FiMenu size={18} className="lg:w-6 lg:h-6" />
+                  <span className='text-sm lg:text-base xl:text-[18px] whitespace-nowrap'>Danh Mục</span>
                 </button>
                 <div className="w-full" style={{ height: 12 }} />
                 <div
@@ -539,25 +612,25 @@ const Header = () => {
           </div>
 
           <div className='header-nav-middle flex-1 hidden lg:flex justify-center'>
-            <ul className='navbar-nav flex items-center gap-6 xl:gap-12'>
+            <ul className='navbar-nav flex items-center gap-4 lg:gap-6 xl:gap-12'>
               <li className='nav-item'>
-                <a href="/product" className='nav-link text-black font-medium text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
+                <a href="/product" className='nav-link text-black font-medium text-sm lg:text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
                   Đi Chợ Tại Nhà
                 </a>
               </li>
-              <li className='nav-item flex items-center gap-2'>
-                <a href="/hot-offers" className='nav-link text-black font-medium text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
+              <li className='nav-item flex items-center gap-1.5 lg:gap-2'>
+                <a href="/hot-offers" className='nav-link text-black font-medium text-sm lg:text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
                   Ưu Đãi Hot
                 </a>
-                <span className='bg-red-400 text-white text-xs font-bold px-2 py-0.5 rounded'>Hot</span>
+                <span className='bg-red-400 text-white text-[10px] lg:text-xs font-bold px-1.5 lg:px-2 py-0.5 rounded'>Hot</span>
               </li>
               <li className='nav-item'>
-                <a href="/sale" className='nav-link text-black font-medium text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
+                <a href="/sale" className='nav-link text-black font-medium text-sm lg:text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
                   Khuyến mãi
                 </a>
               </li>
               <li className='nav-item'>
-                <a href="#" className='nav-link text-black font-medium text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
+                <a href="#" className='nav-link text-black font-medium text-sm lg:text-base xl:text-lg hover:text-[#C83C2B] transition-colors whitespace-nowrap'>
                   Tin Tức
                 </a>
               </li>
@@ -565,12 +638,12 @@ const Header = () => {
           </div>
           <div className='header-nav-right flex-shrink-0'>
             <button
-                className='hidden lg:flex items-center gap-2 bg-pink-50 hover:bg-pink-100 text-[#C83C2B] font-bold rounded-lg py-2 px-4 xl:px-6 text-base xl:text-lg transition-colors whitespace-nowrap'
+                className='hidden lg:flex items-center gap-1.5 lg:gap-2 bg-pink-50 hover:bg-pink-100 text-[#C83C2B] font-bold rounded-lg py-2 px-3 lg:px-4 xl:px-6 text-sm lg:text-base xl:text-lg transition-colors whitespace-nowrap'
                 onClick={handleOpenHotOffers}
             >
-                <BsFillLightningFill size={20} className='xl:w-6 xl:h-6 text-[#C83C2B]' />
+                <BsFillLightningFill size={18} className='lg:w-5 lg:h-5 xl:w-6 xl:h-6 text-[#C83C2B]' />
                 <span className="hidden xl:inline">Giảm giá hôm nay</span>
-                <span className="xl:hidden">Giảm giá</span>
+                <span className="lg:inline xl:hidden">Giảm giá</span>
             </button>
           </div>
           </div>
