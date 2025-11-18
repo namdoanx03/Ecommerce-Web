@@ -787,7 +787,7 @@ const Home = () => {
 
           </section>
 
-          <section className="product-section bg-white pt-8 md:pt-12">
+          <section className="product-section bg-white py-8 md:pt-12">
             <div className="container mx-auto px-3 sm:px-4 lg:px-16">
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
                 <div className="hidden xl:block xl:col-span-4 2xl:col-span-3">
@@ -860,11 +860,37 @@ const Home = () => {
                     </div>
                   </div>
                   <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-10">
-                    <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
-                    
-                    <div className="my-4">Không có sản phẩm nào</div>
-                    
-                  </div>
+                     <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
+                     
+                     {products.slice(0, 4).map((p, index) => (
+                       <a
+                         key={p._id}
+                         href={`/product/${p._id}`}
+                         className="flex items-center gap-4 py-4 hover:bg-gray-100 transition-colors rounded-lg px-2"
+                         style={{ borderBottom: index < 3 ? '2px dotted #e5e7eb' : 'none' }}
+                       >
+                         <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden ">
+                           <img 
+                             src={p.image[0]} 
+                             alt={p.name} 
+                             className="w-full h-full object-contain p-1"
+                           />
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <h4 className="font-semibold text-sm text-gray-800 line-clamp-2 mb-1 leading-tight">
+                             {p.name}
+                           </h4>
+                           <p className="text-xs text-gray-500 mb-2">
+                             {p.unit || '450 G'}
+                           </p>
+                           <p className="text-emerald-600 font-bold text-base">
+                             ${pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
+                           </p>
+                         </div>
+                       </a>
+                     ))}
+                     
+                   </div>
                   </div>
                 </div>
                 <div className="xl:col-span-8 2xl:col-span-9">
@@ -1310,75 +1336,155 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="title flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 md:gap-4">
+                  <div className="title flex flex-col sm:flex-row justify-between items-center mb-6 md:mb-8 gap-3 md:gap-4">
                     <div className="text-left w-full sm:w-auto">
                       <h2 className="font-bold text-xl md:text-2xl text-black mb-1 pb-1">Sản phẩm bán chạy</h2>
                       <div className="flex gap-3 md:gap-4 mt-2 mb-2">
                         <div className="h-0.5 w-16 md:w-20 bg-red-300 rounded"></div>
                         <div className="h-0.5 w-16 md:w-20 bg-red-300 rounded"></div>
                       </div>
-                      <p className="text-sm md:text-base text-gray-500 my-2 md:my-4">Bạn không thể bỏ lỡ những sản phẩm đang được săn đón nhất tại siêu thị – xem ngay trước khi hết hàng!</p>
+                      <p className="text-sm md:text-base text-gray-500 my-2 md:my-4">Trợ lý ảo thu thập các sản phẩm từ danh sách của bạn</p>
                     </div>
-                    
                   </div>
-                  <div className="best-selling-slider"
-                    style={{  background: '#fff',  }}>
-                    <Slider
-                      infinite={true}
-                      speed={500}
-                      slidesToShow={3}
-                      slidesToScroll={1}
-                    >
-                      {productChunks.map((group, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-white border-2 border-gray-200 flex flex-col justify-between rounded-lg "
+                  
+                  {/* Grid 3 cột cho Best Seller - Giống mẫu */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                    {/* Chia products thành 3 nhóm (mỗi cột 4 sản phẩm) */}
+                    {[0, 1, 2].map((colIndex) => (
+                      <div 
+                        key={colIndex}
+                        className="bg-white border border-gray-200 rounded-lg overflow-hidden"
+                      >
+                        {products.slice(colIndex * 4, colIndex * 4 + 4).map((p, itemIndex) => (
+                          <a
+                            key={p._id}
+                            href={`/product/${p._id}`}
+                            className="block p-4 hover:bg-gray-50 transition-colors"
+                            style={{ 
+                              borderBottom: itemIndex < 3 ? '1px dotted #d1d5db' : 'none' 
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden flex items-center justify-center">
+                                <img 
+                                  src={p.image[0]} 
+                                  alt={p.name} 
+                                  className="w-full h-full object-contain p-1"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2 leading-tight">
+                                  {p.name}
+                                </h4>
+                                <p className="text-xs text-gray-500 mb-2">
+                                  {p.unit || '500 G'}
+                                </p>
+                                <p className="text-emerald-600 font-bold text-base">
+                                  $ {pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
+                                </p>
+                              </div>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Banner Rau Củ Mùa Hè */}
+                  <div 
+                    className="relative rounded-2xl overflow-hidden mb-12 flex items-center justify-center" 
+                    style={{ 
+                      minHeight: '350px',
+                      height: '350px',
+                      backgroundImage: "url('https://themes.pixelstrap.com/fastkart/assets/images/vegetable/banner/14.jpg')",
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      backgroundRepeat: 'no-repeat',
+                    }}
+                  >
+                    <div className="relative z-10 text-center px-6 py-8">
+                      <p className="text-emerald-600 font-semibold text-xs md:text-sm mb-2 tracking-[0.3em] uppercase">S U M M E R</p>
+                      <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-3">
+                        VEGETABLE
+                      </h2>
+                      <p className="text-gray-600 text-base md:text-lg mb-6">Save up to 5% OFF</p>
+                      <button 
+                        onClick={() => window.location.href = '/product'} 
+                        className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg inline-flex items-center gap-2 transition text-sm md:text-base shadow-lg"
+                      >
+                        Shop Now <span className="ml-1">→</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Newsletter Section */}
+          <section className="newsletter-section bg-white pb-12">
+            <div className="container mx-auto px-3 sm:px-4 lg:px-16">
+              <div 
+                className="relative rounded-2xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #4a5568 0%, #2d3748 100%)',
+                  minHeight: '180px',
+                }}
+              >
+                {/* Decorative pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-4 left-8 w-16 h-16 border-2 border-white rounded-lg transform rotate-12"></div>
+                  <div className="absolute top-8 right-12 w-3 h-3 bg-emerald-400 rounded-full"></div>
+                  <div className="absolute bottom-6 left-1/4 w-2 h-2 bg-orange-400 rounded-full"></div>
+                  <div className="absolute top-1/2 right-1/4 w-4 h-4 bg-white rounded-full"></div>
+                  <div className="absolute bottom-8 right-16">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-gray-500 rounded-sm"></div>
+                      <div className="w-2 h-2 bg-gray-500 rounded-sm"></div>
+                      <div className="w-2 h-2 bg-gray-500 rounded-sm"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between px-6 md:px-12 py-8 md:py-10 gap-6">
+                  {/* Left side - Text & Form */}
+                  <div className="flex-1 text-center lg:text-left">
+                    <h3 className="text-white text-2xl md:text-3xl font-bold mb-2">
+                      Join Our Newsletter And Get...
+                    </h3>
+                    <p className="text-orange-400 text-base md:text-lg font-semibold mb-4">
+                      $20 discount for your first order
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
+                      <div className="flex-1 relative">
+                        <input 
+                          type="email" 
+                          placeholder="Enter Your Email"
+                          className="w-full px-4 py-3 rounded-lg border-none outline-none text-gray-700 placeholder-gray-400 pr-10"
+                        />
+                        <svg 
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
                         >
-                          {group.map((p, i) => (
-                            <React.Fragment key={p ? p._id : `empty-${i}`}> 
-                              {p ? (
-                                <a
-                                  href={`/product/${p._id}`}
-                                  className="flex flex-row items-center justify-center gap-3 p-4 hover:bg-gray-50 transition"
-                                  style={{ minHeight: 80, minWidth: 250, textDecoration: 'none', color: 'inherit' }}
-                                >
-                                  <img
-                                    src={
-                                      p.image
-                                        ? Array.isArray(p.image)
-                                          ? p.image[0]
-                                          : p.image
-                                        : '/images/placeholder.png'
-                                    }
-                                    alt={p.name}
-                                    className="object-contain w-26 h-20"
-                                    style={{ background: '#fafafa' }}
-                                    onError={e => (e.currentTarget.src = '/images/placeholder.png')}
-                                  />
-                                  <div
-                                    className={
-                                      "flex-1 min-w-0 ml-2" +
-                                      (i !== group.length - 1 ? " border-b-2 border-dashed border-gray-300" : "")
-                                    }
-                                  >
-                                    <div className="font-semibold text-sm truncate max-w-[140px]">{p.name}</div>
-                                    <div className="text-xs text-gray-500 my-1">{p.stockStatus || (p.stock === 0 ? 'Hết hàng' : 'Còn hàng')}</div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-red-600 font-bold text-base truncate">{p.price?.toLocaleString('vi-VN')} đ</span>
-                                      {p.oldPrice && p.oldPrice !== p.price && (
-                                        <span className="text-xs line-through text-gray-400 truncate">{p.oldPrice?.toLocaleString('vi-VN')} đ</span>
-                                      )}
-                                    </div>
-                                  </div>
-                                </a>
-                              ) : (
-                                <div style={{ minHeight: 80, minWidth: 250 }} className="p-4"></div>
-                              )}
-                            </React.Fragment>
-                          ))}
-                        </div>
-                      ))}
-                    </Slider>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg inline-flex items-center justify-center gap-2 transition whitespace-nowrap">
+                        Subscribe <span>→</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right side - Illustration */}
+                  <div className="hidden lg:block flex-shrink-0">
+                    <div className="w-48 h-48 relative">
+                      {/* Newsletter illustration placeholder */}
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-6xl">💌</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
