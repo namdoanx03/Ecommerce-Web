@@ -791,6 +791,7 @@ const Home = () => {
             <div className="container mx-auto px-3 sm:px-4 lg:px-16">
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
                 <div className="hidden xl:block xl:col-span-4 2xl:col-span-3">
+                  <div className="sticky top-[10px] self-start">
                   <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-4 lg:p-6">
                     <h3 className="font-bold text-lg lg:text-xl mb-3 lg:mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
                     <ul className="flex flex-col gap-1">
@@ -858,13 +859,13 @@ const Home = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-40">
+                  <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-10">
                     <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
                     
                     <div className="my-4">Không có sản phẩm nào</div>
                     
                   </div>
-
+                  </div>
                 </div>
                 <div className="xl:col-span-8 2xl:col-span-9">
                   <div className="title flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-3 md:gap-4">
