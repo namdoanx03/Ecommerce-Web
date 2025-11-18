@@ -792,105 +792,105 @@ const Home = () => {
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 lg:gap-6">
                 <div className="hidden xl:block xl:col-span-4 2xl:col-span-3">
                   <div className="sticky top-[10px] self-start">
-                  <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-4 lg:p-6">
-                    <h3 className="font-bold text-lg lg:text-xl mb-3 lg:mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
-                    <ul className="flex flex-col gap-1">
-                      {categoryData.map((cat) => (
-                        <a
-                          key={cat._id}
-                          className="relative group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition"
-                          href={`/product?category=${cat._id}`}
+                    <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-4 lg:p-6">
+                      <h3 className="font-bold text-lg lg:text-xl mb-3 lg:mb-4 border-b-2 border-red-500 w-fit pb-1">Danh Mục</h3>
+                      <ul className="flex flex-col gap-1">
+                        {categoryData.map((cat) => (
+                          <a
+                            key={cat._id}
+                            className="relative group flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer transition"
+                            href={`/product?category=${cat._id}`}
+                          >
+                            <img src={cat.icon || cat.image} className="w-7 h-7 object-contain" />
+                            <span className="text-base font-medium truncate">{cat.name}</span>
+                          </a>
+                        ))}
+                      </ul>
+                      <div className="border-t my-4"></div>
+                      <ul className="flex flex-col gap-2">
+                        <li className="px-3 py-2 text-gray-600 hover:text-red-500 cursor-pointer">50 Ưu đãi hàng đầu</li>
+                        <li className="px-3 py-2 text-gray-600 hover:text-red-500 cursor-pointer">Hàng mới về</li>
+                      </ul>
+                    </div>
+                    <div className="relative aspect-w-16 aspect-h-9 section-t-space mt-10">
+                      <div className="home-container">
+                        <div
+                          className="bg-white rounded-2xl shadow p-6 flex flex-col items-start w-full max-w-xs mx-auto"
+                          style={{
+                            minHeight: 470,
+                            backgroundImage: `url(${banner8})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }}
                         >
-                          <img src={cat.icon || cat.image} className="w-7 h-7 object-contain" />
-                          <span className="text-base font-medium truncate">{cat.name}</span>
+                          <span className="text-yellow-500 text-sm font-semibold mb-1">Các sản phẩm</span>
+                          <h3 className="text-2xl font-bold uppercase mb-1">
+                            HẢI SẢN TƯƠI MỚI <span className="text-[#d94c3a]">MỖI GIỜ</span>
+                          </h3>
+                          <div className="text-gray-700 text-lg mb-4">mỗi ngày</div>
+                          <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
+                            Mua ngay <span className="ml-1">→</span>
+                          </button>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative aspect-w-16 aspect-h-9 section-t-space mt-10">
+                      <div className="home-container">
+                        <div
+                          className="bg-white rounded-2xl shadow p-6 flex flex-col items-start w-full max-w-xs mx-auto"
+                          style={{
+                            minHeight: 780,
+                            backgroundImage: `url(${banner11})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                          }}
+                        >
+                          <span className="text-yellow-500 text-lg font-bold mb-1 ">Rau</span>
+                          <h3 className="text-4xl text-[#d94c3a] font-bold uppercase mb-1">
+                            TƯƠI   <br />
+                            <span className="text-gray-700 font-medium">HỮU CƠ</span>
+                          </h3>
+                          <div className="text-gray-700 text-base mb-4">Siêu khuyến mại giảm giá tới 50%</div>
+                          <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
+                            Mua ngay <span className="ml-1">→</span>
+                          </button>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-10">
+                      <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
+                      
+                      {products.slice(0, 4).map((p, index) => (
+                        <a
+                          key={p._id}
+                          href={`/product/${p._id}`}
+                          className="flex items-center gap-4 py-4 hover:bg-gray-100 transition-colors rounded-lg px-2"
+                          style={{ borderBottom: index < 3 ? '2px dotted #e5e7eb' : 'none' }}
+                        >
+                          <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden">
+                            <img 
+                              src={p.image[0]} 
+                              alt={p.name} 
+                              className="w-full h-full object-contain p-1"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm text-gray-800 line-clamp-2 mb-1 leading-tight">
+                              {p.name}
+                            </h4>
+                            <p className="text-xs text-gray-500 mb-2">
+                              {p.unit || '450 G'}
+                            </p>
+                            <p className="text-emerald-600 font-bold text-base">
+                              ${pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
+                            </p>
+                          </div>
                         </a>
                       ))}
-                    </ul>
-                    <div className="border-t my-4"></div>
-                    <ul className="flex flex-col gap-2">
-                      <li className="px-3 py-2 text-gray-600 hover:text-red-500 cursor-pointer">50 Ưu đãi hàng đầu</li>
-                      <li className="px-3 py-2 text-gray-600 hover:text-red-500 cursor-pointer">Hàng mới về</li>
-                    </ul>
-                  </div>
-                  <div className="relative aspect-w-16 aspect-h-9 section-t-space mt-10">
-                    <div className="home-container">
-                      <div
-                        className="bg-white rounded-2xl shadow p-6 flex flex-col items-start w-full max-w-xs mx-auto"
-                        style={{
-                          minHeight: 470,
-                          backgroundImage: `url(${banner8})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                        }}
-                      >
-                        <span className="text-yellow-500 text-sm font-semibold mb-1">Các sản phẩm</span>
-                        <h3 className="text-2xl font-bold uppercase mb-1">
-                          HẢI SẢN TƯƠI MỚI <span className="text-[#d94c3a]">MỖI GIỜ</span>
-                        </h3>
-                        <div className="text-gray-700 text-lg mb-4">mỗi ngày</div>
-                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
-                          Mua ngay <span className="ml-1">→</span>
-                        </button>
-                        
-                      </div>
+                      
                     </div>
-                  </div>
-                  <div className="relative aspect-w-16 aspect-h-9 section-t-space mt-10">
-                    <div className="home-container">
-                      <div
-                        className="bg-white rounded-2xl shadow p-6 flex flex-col items-start w-full max-w-xs mx-auto"
-                        style={{
-                          minHeight: 780,
-                          backgroundImage: `url(${banner11})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                        }}
-                      >
-                        <span className="text-yellow-500 text-lg font-bold mb-1 ">Rau</span>
-                        <h3 className="text-4xl text-[#d94c3a] font-bold uppercase mb-1">
-                          TƯƠI   <br />
-                          <span className="text-gray-700 font-medium">HỮU CƠ</span>
-                        </h3>
-                        <div className="text-gray-700 text-base mb-4">Siêu khuyến mại giảm giá tới 50%</div>
-                        <button  onClick={() => window.location.href = '/product'} className="bg-[#e76a5b] hover:bg-[#d94c3a] text-white font-semibold px-6 py-2 rounded-lg flex items-center gap-2 transition mb-4">
-                          Mua ngay <span className="ml-1">→</span>
-                        </button>
-                        
-                      </div>
-                    </div>
-                  </div>
-                  <div className="category-menu bg-[#F8F8F8] rounded-xl shadow flex flex-col p-6 mt-10 mb-10">
-                     <h3 className="font-bold text-xl mb-4 border-b-2 border-red-500 w-fit pb-1">Sản phẩm thịnh hành</h3>
-                     
-                     {products.slice(0, 4).map((p, index) => (
-                       <a
-                         key={p._id}
-                         href={`/product/${p._id}`}
-                         className="flex items-center gap-4 py-4 hover:bg-gray-100 transition-colors rounded-lg px-2"
-                         style={{ borderBottom: index < 3 ? '2px dotted #e5e7eb' : 'none' }}
-                       >
-                         <div className="flex-shrink-0 w-20 h-20 bg-white rounded-lg overflow-hidden ">
-                           <img 
-                             src={p.image[0]} 
-                             alt={p.name} 
-                             className="w-full h-full object-contain p-1"
-                           />
-                         </div>
-                         <div className="flex-1 min-w-0">
-                           <h4 className="font-semibold text-sm text-gray-800 line-clamp-2 mb-1 leading-tight">
-                             {p.name}
-                           </h4>
-                           <p className="text-xs text-gray-500 mb-2">
-                             {p.unit || '450 G'}
-                           </p>
-                           <p className="text-emerald-600 font-bold text-base">
-                             ${pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
-                           </p>
-                         </div>
-                       </a>
-                     ))}
-                     
-                   </div>
                   </div>
                 </div>
                 <div className="xl:col-span-8 2xl:col-span-9">
@@ -1394,25 +1394,25 @@ const Home = () => {
                   <div 
                     className="relative rounded-2xl overflow-hidden mb-12 flex items-center justify-center" 
                     style={{ 
-                      minHeight: '350px',
-                      height: '350px',
+                      // minHeight: '350px',
+                      // height: '350px',
                       backgroundImage: "url('https://themes.pixelstrap.com/fastkart/assets/images/vegetable/banner/14.jpg')",
                       backgroundSize: 'cover',
-                      backgroundPosition: 'center',
+                      // backgroundPosition: 'center',
                       backgroundRepeat: 'no-repeat',
                     }}
                   >
                     <div className="relative z-10 text-center px-6 py-8">
-                      <p className="text-emerald-600 font-semibold text-xs md:text-sm mb-2 tracking-[0.3em] uppercase">S U M M E R</p>
+                      <p className="text-emerald-600 font-semibold text-xs md:text-sm mb-2 tracking-[0.3em] uppercase">M Ù A HÈ</p>
                       <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-3">
-                        VEGETABLE
+                        RAU CỦ
                       </h2>
-                      <p className="text-gray-600 text-base md:text-lg mb-6">Save up to 5% OFF</p>
+                      <p className="text-gray-600 text-base md:text-lg mb-6">Tiết kiệm tới 5%</p>
                       <button 
                         onClick={() => window.location.href = '/product'} 
                         className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg inline-flex items-center gap-2 transition text-sm md:text-base shadow-lg"
                       >
-                        Shop Now <span className="ml-1">→</span>
+                        Mua Ngay <span className="ml-1">→</span>
                       </button>
                     </div>
                   </div>
@@ -1450,16 +1450,16 @@ const Home = () => {
                   {/* Left side - Text & Form */}
                   <div className="flex-1 text-center lg:text-left">
                     <h3 className="text-white text-2xl md:text-3xl font-bold mb-2">
-                      Join Our Newsletter And Get...
+                    Đăng ký nhận Bản tin của chúng tôi và nhận...
                     </h3>
                     <p className="text-orange-400 text-base md:text-lg font-semibold mb-4">
-                      $20 discount for your first order
+                    Giảm giá $20 cho đơn hàng đầu tiên của bạn
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
                       <div className="flex-1 relative">
                         <input 
                           type="email" 
-                          placeholder="Enter Your Email"
+                          placeholder="Nhập Email của bạn"
                           className="w-full px-4 py-3 rounded-lg border-none outline-none text-gray-700 placeholder-gray-400 pr-10"
                         />
                         <svg 
@@ -1472,7 +1472,7 @@ const Home = () => {
                         </svg>
                       </div>
                       <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg inline-flex items-center justify-center gap-2 transition whitespace-nowrap">
-                        Subscribe <span>→</span>
+                      Đăng ký <span>→</span>
                       </button>
                     </div>
                   </div>
