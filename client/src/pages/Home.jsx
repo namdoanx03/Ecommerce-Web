@@ -488,7 +488,7 @@ const Home = () => {
               {/* Slider cho màn hình < 1280px */}
               <div className="block xl:hidden">
                 <Slider
-                  dots={true}
+                  dots={false}
                   infinite={true}
                   speed={500}
                   slidesToShow={3}
@@ -889,107 +889,225 @@ const Home = () => {
                       <span className="font-mono font-bold">58</span>
                     </div>
                   </div>
-                   {/* Grid layout - 5 cột giống mẫu */}
-                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-0 ">
+                   {/* Slider cho Mobile - 2 hàng x 2 cột */}
+                   <div className="block md:hidden">
+                     {loading ? (
+                       <div className="flex justify-center py-20">
+                         <BubbleSpinner />
+                       </div>
+                     ) : (
+                       <Slider
+                         dots={false}
+                         infinite={false}
+                         speed={500}
+                         slidesToShow={1}
+                         slidesToScroll={1}
+                         swipe={true}
+                         draggable={true}
+                         arrows={false}
+                       >
+                         {/* Chia products thành các nhóm 4 (2x2) */}
+                         {Array.from({ length: Math.ceil(products.length / 4) }, (_, slideIndex) => (
+                           <div key={slideIndex} className="px-1">
+                             <div className="grid grid-cols-2 gap-0">
+                               {products.slice(slideIndex * 4, slideIndex * 4 + 4).map((p, index) => {
+                                 const actualIndex = slideIndex * 4 + index;
+                                 return (
+                                   <div
+                                     key={p._id}
+                                     className="relative bg-white border border-gray-200 overflow-hidden group"
+                                   >
+                                     {/* NEW Badge */}
+                                     {actualIndex % 3 === 1 && (
+                                       <div className="absolute top-2 right-2 z-10">
+                                         <span className="bg-yellow-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-sm shadow-md">NEW</span>
+                                       </div>
+                                     )}
+                                     
+                                     <a href={`/product/${p._id}`} className="block p-2">
+                                       <div className="flex justify-center items-center mb-2 bg-gray-50 rounded-lg overflow-hidden" style={{ height: '140px' }}>
+                                         <img 
+                                           src={p.image[0]} 
+                                           alt={p.name} 
+                                           className="object-contain w-full h-full p-2" 
+                                         />
+                                       </div>
+                                       
+                                       <div className="space-y-1">
+                                         <h3 className="text-[11px] font-semibold text-gray-800 line-clamp-2 min-h-[32px] leading-tight">
+                                           {p.name}
+                                         </h3>
+                                         
+                                         <div className="flex items-baseline gap-1">
+                                           <span className="text-emerald-600 font-bold text-sm">
+                                             ${pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
+                                           </span>
+                                           <span className="text-gray-400 line-through text-[10px]">
+                                             ${p.price.toLocaleString("en-US")}
+                                           </span>
+                                         </div>
+                                         
+                                         <div className="flex items-center gap-1 mb-1">
+                                           <div className="flex items-center gap-0.5">
+                                             {[...Array(5)].map((_, i) => (
+                                               <svg
+                                                 key={i}
+                                                 className={`w-2.5 h-2.5 fill-current ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`}
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 viewBox="0 0 20 20"
+                                                 fill="currentColor"
+                                               >
+                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.922-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.389 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.973a1 1 0 00-.364-1.118L2.037 9.4c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.974z" />
+                                               </svg>
+                                             ))}
+                                           </div>
+                                           <span className="text-emerald-600 text-[10px] font-semibold">
+                                             {p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}
+                                           </span>
+                                         </div>
+                                       </div>
+                                     </a>
+                                     
+                                     <div className="px-2 pb-2 flex justify-center">
+                                       <button 
+                                         onClick={(e) => {
+                                           e.preventDefault();
+                                         }}
+                                         className="w-[90%] px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md text-xs font-semibold"
+                                       >
+                                         Thêm vào giỏ
+                                       </button>
+                                     </div>
+                                   </div>
+                                 );
+                               })}
+                             </div>
+                           </div>
+                         ))}
+                       </Slider>
+                     )}
+                   </div>
+
+                   {/* Grid cho Tablet & Desktop */}
+                   <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-0">
                      {loading ? (
                        <div className="col-span-full flex justify-center py-20">
                          <BubbleSpinner />
                        </div>
                      ) : (
-                       products.slice(0, 10).map((p, index) => {
-                         // Logic bo góc: chỉ bo góc ngoài của grid
-                         const isFirstInRow = index % 5 === 0;
-                         const isLastInRow = index % 5 === 4;
-                         const isFirstRow = index < 5;
-                         const isLastRow = index >= 5;
-                         
-                         let roundedClass = '';
-                         if (isFirstRow && isFirstInRow) roundedClass = 'rounded-tl-xl'; // Top-left
-                         else if (isFirstRow && isLastInRow) roundedClass = 'rounded-tr-xl'; // Top-right
-                         else if (isLastRow && isFirstInRow) roundedClass = 'rounded-bl-xl'; // Bottom-left
-                         else if (isLastRow && isLastInRow) roundedClass = 'rounded-br-xl'; // Bottom-right
+                       (() => {
+                         // Tính số sản phẩm hiển thị: 2 hàng x số cột tương ứng
+                         // md: 3 cột x 2 = 6, lg: 4 cột x 2 = 8, xl: 4 cột x 2 = 8, 2xl: 5 cột x 2 = 10
+                         const displayProducts = products.slice(0, 10);
+                         return displayProducts.map((p, index) => {
+                           // Logic bo góc động theo breakpoint
+                           const getRoundedClass = () => {
+                             // Cho 2xl: 5 cột
+                             if (index === 0) return '2xl:rounded-tl-xl xl:rounded-tl-xl lg:rounded-tl-xl md:rounded-tl-xl';
+                             if (index === 4) return '2xl:rounded-tr-xl';
+                             if (index === 5) return '2xl:rounded-bl-xl';
+                             if (index === 9) return '2xl:rounded-br-xl';
+                             
+                             // Cho xl: 4 cột (chỉ hiển thị 8 sản phẩm)
+                             if (index === 3) return 'xl:rounded-tr-xl 2xl:rounded-none lg:rounded-tr-xl';
+                             if (index === 4) return 'xl:rounded-bl-xl 2xl:rounded-none lg:rounded-bl-xl';
+                             if (index === 7) return 'xl:rounded-br-xl 2xl:rounded-none lg:rounded-br-xl';
+                             
+                             // Cho md: 3 cột (chỉ hiển thị 6 sản phẩm)
+                             if (index === 2) return 'md:rounded-tr-xl lg:rounded-none xl:rounded-none';
+                             if (index === 3) return 'md:rounded-bl-xl lg:rounded-none xl:rounded-none';
+                             if (index === 5) return 'md:rounded-br-xl lg:rounded-none xl:rounded-none';
+                             
+                             return '';
+                           };
+                           
+                           // Ẩn sản phẩm thừa ở các breakpoint nhỏ hơn
+                           let hideClass = '';
+                           if (index >= 8) hideClass += ' hidden 2xl:block'; // Ẩn sản phẩm 9-10 ở màn XL trở xuống
+                           else if (index >= 6) hideClass += ' hidden lg:block'; // Ẩn sản phẩm 7-8 ở màn md
+                           
+                           const roundedClass = getRoundedClass();
                          
                          return (
                          <div
                            key={p._id}
-                           className={`relative bg-white border border-gray-200 overflow-hidden group ${roundedClass}`}
+                           className={`relative bg-white border border-gray-200 overflow-hidden group ${roundedClass}${hideClass}`}
                          >
                            {/* NEW Badge */}
                            {index % 3 === 1 && (
-                             <div className="absolute top-3 right-3 z-10">
-                               <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-sm shadow-md">NEW</span>
+                             <div className="absolute top-3 xl:top-4 right-3 xl:right-4 z-10">
+                               <span className="bg-yellow-500 text-white text-xs xl:text-sm font-bold px-3 xl:px-4 py-1 xl:py-1.5 rounded-sm shadow-md">NEW</span>
                              </div>
                            )}
                            
                            {/* Product Link */}
-                           <a href={`/product/${p._id}`} className="block p-4">
+                           <a href={`/product/${p._id}`} className="block p-3 md:p-4 xl:p-5">
                              {/* Product Image - Chỉ phóng to ảnh khi hover */}
-                             <div className="relative flex flex-col justify-center items-center mb-3">
-                               <div className="bg-gray-50 rounded-lg overflow-hidden w-full" style={{ height: 180 }}>
+                             <div className="relative flex flex-col justify-center items-center mb-3 md:mb-4">
+                               <div className="bg-gray-50 rounded-lg overflow-hidden w-full h-[160px] md:h-[180px] xl:h-[200px]">
                                  <img 
                                    src={p.image[0]} 
                                    alt={p.name} 
-                                   className="object-contain w-full h-full p-2 group-hover:scale-110 transition-transform duration-300" 
-                                   style={{ maxHeight: 160 }} 
+                                   className="object-contain w-full h-full p-2 xl:p-3 group-hover:scale-110 transition-transform duration-300" 
                                  />
                                </div>
                                
-                               {/* Hover Icons - xuất hiện ở dưới ảnh khi hover */}
-                               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-0 opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 z-20">
-                                 <div className="flex items-center gap-2 bg-white rounded-md shadow-lg px-2 py-1 ">
+                               {/* Hover Icons - xuất hiện ở dưới ảnh khi hover - Ẩn trên mobile */}
+                               <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-0 opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 transition-all duration-300 z-20">
+                                 <div className="flex items-center gap-2 xl:gap-2.5 bg-white rounded-md shadow-lg px-2 xl:px-3 py-1 xl:py-1.5">
                                    <button 
                                      onClick={(e) => { e.preventDefault(); }}
-                                     className="p-1 hover:text-emerald-500 transition-colors"
+                                     className="p-1 xl:p-1.5 hover:text-emerald-500 transition-colors"
                                      title="Quick View"
                                    >
-                                     <IoEyeOutline className="w-5 h-5" />
+                                     <IoEyeOutline className="w-5 h-5 xl:w-6 xl:h-6" />
                                    </button>
-                                   <div className="w-px h-5 bg-gray-300"></div>
+                                   <div className="w-px h-5 xl:h-6 bg-gray-300"></div>
                                    <button 
                                      onClick={(e) => { e.preventDefault(); }}
-                                     className="p-1 hover:text-emerald-500 transition-colors"
+                                     className="p-1 xl:p-1.5 hover:text-emerald-500 transition-colors"
                                      title="Compare"
                                    >
-                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <svg className="w-5 h-5 xl:w-6 xl:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                      </svg>
                                    </button>
-                                   <div className="w-px h-5 bg-gray-300"></div>
+                                   <div className="w-px h-5 xl:h-6 bg-gray-300"></div>
                                    <button 
                                      onClick={(e) => { e.preventDefault(); }}
-                                     className="p-1 hover:text-emerald-500 transition-colors"
+                                     className="p-1 xl:p-1.5 hover:text-emerald-500 transition-colors"
                                      title="Add to Wishlist"
                                    >
-                                     <CiHeart className="w-5 h-5" />
+                                     <CiHeart className="w-5 h-5 xl:w-6 xl:h-6" />
                                    </button>
                                  </div>
                                </div>
                              </div>
                              
                              {/* Product Info */}
-                             <div className="space-y-1.5">
+                             <div className="space-y-1.5 md:space-y-2 xl:space-y-2.5">
                                {/* Product Name */}
-                               <h3 className="text-xs md:text-sm font-semibold text-gray-800 line-clamp-2 min-h-[36px] leading-tight">
+                               <h3 className="text-xs md:text-sm xl:text-base font-semibold text-gray-800 line-clamp-2 min-h-[36px] md:min-h-[40px] xl:min-h-[44px] leading-tight">
                                  {p.name}
                                </h3>
                                
                                {/* Price */}
-                               <div className="flex items-baseline gap-1.5">
-                                 <span className="text-emerald-600 font-bold text-sm md:text-lg">
+                               <div className="flex items-baseline gap-1.5 xl:gap-2">
+                                 <span className="text-emerald-600 font-bold text-base md:text-lg xl:text-xl">
                                    ${pricewithDiscount(p.price, p.discount).toLocaleString("en-US")}
                                  </span>
-                                 <span className="text-gray-400 line-through text-[11px] md:text-xs">
+                                 <span className="text-gray-400 line-through text-[11px] md:text-xs xl:text-sm">
                                    ${p.price.toLocaleString("en-US")}
                                  </span>
                                </div>
                                
                                {/* Rating & Stock */}
-                               <div className="flex items-center gap-1.5 mb-2">
+                               <div className="flex items-center gap-1.5 xl:gap-2 mb-2">
                                  <div className="flex items-center gap-0.5">
                                    {[...Array(5)].map((_, i) => (
                                      <svg
                                        key={i}
-                                       className={`w-3 h-3 md:w-3.5 md:h-3.5 fill-current ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`}
+                                       className={`w-3 h-3 md:w-3.5 md:h-3.5 xl:w-4 xl:h-4 fill-current ${i < 4 ? 'text-yellow-400' : 'text-gray-300'}`}
                                        xmlns="http://www.w3.org/2000/svg"
                                        viewBox="0 0 20 20"
                                        fill="currentColor"
@@ -998,7 +1116,7 @@ const Home = () => {
                                      </svg>
                                    ))}
                                  </div>
-                                 <span className="text-emerald-600 text-[11px] md:text-xs font-semibold">
+                                 <span className="text-emerald-600 text-[11px] md:text-xs xl:text-sm font-semibold">
                                    {p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}
                                  </span>
                                </div>
@@ -1006,20 +1124,21 @@ const Home = () => {
                            </a>
                            
                            {/* Add to Cart Button */}
-                           <div className="px-4 pb-4 flex justify-center">
+                           <div className="px-3 md:px-4 xl:px-5 pb-3 md:pb-4 xl:pb-5 flex justify-center">
                              <button 
                                onClick={(e) => {
                                  e.preventDefault();
                                  // Add to cart logic
                                }}
-                               className="w-[90%] px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md"
+                               className="w-[90%] px-4 py-2.5 md:py-3 xl:py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md text-sm md:text-base xl:text-base font-semibold"
                              >
-                               <span className="font-semibold text-sm">Thêm vào giỏ</span>
+                               Thêm vào giỏ
                              </button>
                            </div>
                          </div>
                          );
-                       })
+                       });
+                       })()
                      )}
                    </div>
                   <div className="title flex flex-col sm:flex-row justify-between items-center my-8 gap-4">
