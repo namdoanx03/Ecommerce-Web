@@ -220,7 +220,7 @@ const Login = () => {
                                         {/* Login Button */}
                                         <div className="col-12">
                                             <button
-                                                className="btn btn-animation w-100 justify-content-center w-full bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-md transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center justify-center"
+                                                className="btn btn-animation w-100 justify-content-center w-full bg-[#FF6A6A] hover:bg-[#ff4f4f] disabled:bg-[#FF6A6A] disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-md transition duration-150 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center justify-center"
                                                 type="submit"
                                                 disabled={!valideValue}
                                             >
