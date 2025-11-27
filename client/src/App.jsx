@@ -68,9 +68,7 @@ function App() {
     // fetchCartItem()
   }, [])
 
-  const isAuthPage = location.pathname === '/forgot-password' ||
-    location.pathname === '/verification-otp' ||
-    location.pathname === '/reset-password' ||
+  const isAuthPage = location.pathname === '/reset-password' ||
     location.pathname === '/profile' ||
     location.pathname === '/myorders'
   const isDashboard = location.pathname.startsWith('/dashboard')
