@@ -44,3 +44,108 @@ body{
   scrollbar-width: thin;
   scrollbar-color: #e5e7eb transparent;
 }
+
+/* Login/Register Section Styles */
+.log-in-section {
+  position: relative;
+}
+
+.background-image-2 {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.section-b-space {
+  padding-bottom: 2rem;
+}
+
+.image-contain {
+  position: relative;
+}
+
+.log-in-box {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.log-in-title h3 {
+  font-weight: 700;
+  color: #111827;
+}
+
+.log-in-title h4 {
+  color: #6b7280;
+}
+
+.form-floating {
+  position: relative;
+}
+
+.theme-form-floating input:focus ~ label,
+.theme-form-floating input:not(:placeholder-shown) ~ label {
+  top: 0.5rem;
+  font-size: 0.75rem;
+  color: #10b981;
+}
+
+.forgot-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remember-box {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox_animated {
+  cursor: pointer;
+}
+
+.other-log-in h6 {
+  position: relative;
+  text-align: center;
+  color: #6b7280;
+}
+
+.other-log-in h6::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #d1d5db;
+  z-index: 0;
+}
+
+.other-log-in h6 span {
+  position: relative;
+  background: white;
+  padding: 0 1rem;
+}
+
+.log-in-button ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.sign-up-box h4 {
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.sign-up-box a {
+  color: #10b981;
+  font-weight: 500;
+}
