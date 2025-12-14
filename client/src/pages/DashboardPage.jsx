@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import UserAnalyticsChart from '../components/RevenueAnalyticsChart';
+import OrdersBarChart from '../components/OrdersBarChart';
+import VisitorsDonutChart from '../components/VisitorsDonutChart';
+import CategoryPieChart from '../components/CategoryPieChart';
+import DatePickerFilter from '../components/DatePickerFilter';
 import { FiDollarSign, FiShoppingBag, FiPackage, FiUsers } from "react-icons/fi";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -12,12 +16,25 @@ const DashboardPage = () => {
     const [products, setProducts] = useState([]);
     const [bestSellingProducts, setBestSellingProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [dateRange, setDateRange] = useState({ startDate: null, endDate: null, filterType: null });
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setLoading(true);
+                // Prepare API params with date range if available
+                const summaryParams = dateRange.startDate && dateRange.endDate
+                    ? { 
+                        startDate: dateRange.startDate.toISOString(),
+                        endDate: dateRange.endDate.toISOString()
+                      }
+                    : {};
+
                 const [summaryRes, categoryRes, productRes] = await Promise.all([
-                    Axios({ ...SummaryApi.dashboardSummary }),
+                    Axios({ 
+                        ...SummaryApi.dashboardSummary,
+                        params: summaryParams
+                    }),
                     Axios({ ...SummaryApi.getCategory }),
                     Axios({ ...SummaryApi.getProduct, data: { limit: 100 } })
                 ]);
@@ -26,8 +43,17 @@ const DashboardPage = () => {
                 if (categoryRes.data.success) setCategories(categoryRes.data.data);
                 if (productRes.data.success) {
                     setProducts(productRes.data.data);
+                    // Filter products by date range if available
+                    let filteredProducts = productRes.data.data;
+                    if (dateRange.startDate && dateRange.endDate) {
+                        filteredProducts = productRes.data.data.filter(p => {
+                            if (!p.createdAt) return false;
+                            const productDate = new Date(p.createdAt);
+                            return productDate >= dateRange.startDate && productDate <= dateRange.endDate;
+                        });
+                    }
                     // Mock best selling products - in real app, get from orders
-                    const topProducts = productRes.data.data.slice(0, 3).map((p, idx) => ({
+                    const topProducts = filteredProducts.slice(0, 3).map((p, idx) => ({
                         ...p,
                         orders: 62 - idx * 5,
                         amount: (62 - idx * 5) * (p.price || 29)
@@ -41,7 +67,7 @@ const DashboardPage = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [dateRange]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-US', {
@@ -58,8 +84,20 @@ const DashboardPage = () => {
         return num.toString();
     };
 
+    const handleDateChange = (startDate, endDate, filterType) => {
+        setDateRange({ startDate, endDate, filterType });
+    };
+
     return (
         <div className='p-4 sm:p-6 bg-[#F8F8F8] min-h-screen overflow-x-hidden max-w-full'>
+            {/* Date Filter Section */}
+            <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <h2 className="text-lg font-semibold text-gray-800">Lọc dữ liệu theo thời gian</h2>
+                </div>
+                <DatePickerFilter onDateChange={handleDateChange} />
+            </div>
+
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 {/* Total Revenue */}
@@ -178,8 +216,8 @@ const DashboardPage = () => {
                 </div>
             </div>
 
-            {/* Charts and Best Selling */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Charts Section - Row 1 */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Revenue Report */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <h2 className="text-lg font-semibold text-gray-800 mb-4">Revenue Report</h2>
@@ -227,6 +265,27 @@ const DashboardPage = () => {
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+
+            {/* Charts Section - Row 2 */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Orders Bar Chart */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Orders by Day</h2>
+                    <OrdersBarChart />
+                </div>
+
+                {/* Visitors Donut Chart */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Visitors</h2>
+                    <VisitorsDonutChart />
+                </div>
+
+                {/* Category Pie Chart */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Sales by Category</h2>
+                    <CategoryPieChart />
                 </div>
             </div>
         </div>

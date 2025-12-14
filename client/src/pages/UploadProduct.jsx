@@ -141,15 +141,17 @@ const UploadProduct = () => {
   }
 
   return (
-    <div className=''>
-      <div className='dashboard px-2 bg-[#F8F8F8] min-h-[88vh] sticky top-0'>
-        <div className='flex items-center justify-between pt-3 p-4'>
-          <h1 className=" text-2xl font-semibold text-black ">Thêm sản phẩm</h1>
+    <div className='min-h-screen p-4 sm:p-6'>
+      {/* Main Content Container - White Background */}
+      <div className='bg-white rounded-lg shadow-sm p-4 sm:p-6'>
+        {/* Header Section */}
+        <div className='mb-6'>
+          <h1 className="text-2xl font-semibold text-gray-800">Add Product</h1>
         </div>
-        <div className=''>
-          <div className='bg-white rounded-xl shadow'>
-            <div className='grid p-3'>
-              <form className='grid gap-4' onSubmit={handleSubmit}>
+
+        {/* Form Section */}
+        <div className='bg-white'>
+          <form className='grid gap-4' onSubmit={handleSubmit}>
                 <div className='grid gap-1'>
                   <label htmlFor='name' className='font-medium'>Tên sản phẩm</label>
                   <input
@@ -160,7 +162,7 @@ const UploadProduct = () => {
                     value={data.name}
                     onChange={handleChange}
                     required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                    className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg'
                   />
                 </div>
                 <div className='grid gap-1'>
@@ -175,13 +177,13 @@ const UploadProduct = () => {
                     required
                     multiple
                     rows={3}
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded resize-none'
+                    className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg resize-none'
                   />
                 </div>
                 <div>
                   <p className='font-medium'>Ảnh sản phẩm</p>
                   <div>
-                    <label htmlFor='productImage' className='bg-blue-50 h-24 border rounded flex justify-center items-center cursor-pointer'>
+                    <label htmlFor='productImage' className='bg-gray-50 h-24 border border-gray-300 rounded-lg flex justify-center items-center cursor-pointer hover:bg-gray-100 transition-colors'>
                       <div className='text-center flex justify-center items-center flex-col'>
                         {
                           imageLoading ? <Loading /> : (
@@ -206,7 +208,7 @@ const UploadProduct = () => {
                       {
                         data.image.map((img, index) => {
                           return (
-                            <div key={img + index} className='h-20 mt-1 w-20 min-w-20 bg-blue-50 border relative group'>
+                            <div key={img + index} className='h-20 mt-1 w-20 min-w-20 bg-gray-50 border border-gray-300 rounded-lg relative group'>
                               <img
                                 src={img}
                                 alt={img}
@@ -228,7 +230,7 @@ const UploadProduct = () => {
                   <label className='font-medium'>Category</label>
                   <div>
                     <select
-                      className='bg-blue-50 border w-full p-2 rounded'
+                      className='bg-white border border-gray-300 w-full p-2 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
                       value={selectCategory}
                       onChange={(e) => {
                         const value = e.target.value
@@ -247,7 +249,7 @@ const UploadProduct = () => {
                       {
                         allCategory.map((c, index) => {
                           return (
-                            <option value={c?._id}>{c.name}</option>
+                            <option key={c._id || index} value={c?._id}>{c.name}</option>
                           )
                         })
                       }
@@ -256,10 +258,10 @@ const UploadProduct = () => {
                       {
                         data.category.map((c, index) => {
                           return (
-                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
-                              <p>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer' onClick={() => handleRemoveCategory(index)}>
-                                <IoClose size={20} />
+                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg mt-2 border border-gray-200'>
+                              <p className='text-gray-700'>{c.name}</p>
+                              <div className='hover:text-red-500 cursor-pointer transition-colors' onClick={() => handleRemoveCategory(index)}>
+                                <IoClose size={18} />
                               </div>
                             </div>
                           )
@@ -272,7 +274,7 @@ const UploadProduct = () => {
                   <label className='font-medium'>Sub Category</label>
                   <div>
                     <select
-                      className='bg-blue-50 border w-full p-2 rounded'
+                      className='bg-white border border-gray-300 w-full p-2 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
                       value={selectSubCategory}
                       onChange={(e) => {
                         const value = e.target.value
@@ -291,7 +293,7 @@ const UploadProduct = () => {
                       {
                         allSubCategory.map((c, index) => {
                           return (
-                            <option value={c?._id}>{c.name}</option>
+                            <option key={c._id || index} value={c?._id}>{c.name}</option>
                           )
                         })
                       }
@@ -300,10 +302,10 @@ const UploadProduct = () => {
                       {
                         data.subCategory.map((c, index) => {
                           return (
-                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-blue-50 mt-2'>
-                              <p>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer' onClick={() => handleRemoveSubCategory(index)}>
-                                <IoClose size={20} />
+                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg mt-2 border border-gray-200'>
+                              <p className='text-gray-700'>{c.name}</p>
+                              <div className='hover:text-red-500 cursor-pointer transition-colors' onClick={() => handleRemoveSubCategory(index)}>
+                                <IoClose size={18} />
                               </div>
                             </div>
                           )
@@ -323,7 +325,7 @@ const UploadProduct = () => {
                     value={data.unit}
                     onChange={handleChange}
                     required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                    className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg'
                   />
                 </div>
 
@@ -337,7 +339,7 @@ const UploadProduct = () => {
                     value={data.stock}
                     onChange={handleChange}
                     required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                    className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg'
                   />
                 </div>
 
@@ -351,7 +353,7 @@ const UploadProduct = () => {
                     value={data.price}
                     onChange={handleChange}
                     required
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                    className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg'
                   />
                 </div>
 
@@ -364,7 +366,7 @@ const UploadProduct = () => {
                     name='discount'
                     value={data.discount}
                     onChange={handleChange}
-                    className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                    className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg'
                   />
                 </div>
 
@@ -373,7 +375,7 @@ const UploadProduct = () => {
                 {
                   Object?.keys(data?.more_details)?.map((k, index) => {
                     return (
-                      <div className='grid gap-1'>
+                      <div key={k + index} className='grid gap-1'>
                         <label htmlFor={k} className='font-medium'>{k}</label>
                         <input
                           id={k}
@@ -392,45 +394,40 @@ const UploadProduct = () => {
                             })
                           }}
                           required
-                          className='bg-blue-50 p-2 outline-none border focus-within:border-primary-200 rounded'
+                          className='bg-white p-2 outline-none border border-gray-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 rounded-lg'
                         />
                       </div>
                     )
                   })
                 }
 
-                {/* <div onClick={() => setOpenAddField(true)} className=' hover:bg-primary-200 bg-white py-1 px-3 w-32 text-center font-semibold border border-primary-200 hover:text-neutral-900 cursor-pointer rounded'>
-                  Add Fields
-                </div> */}
-
                 <button
-                  className='bg-primary-100 hover:bg-primary-200 py-2 rounded font-semibold'
+                  type='submit'
+                  className='bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg font-semibold transition-colors'
                 >
                   Submit
                 </button>
               </form>
-            </div>
-
-            {
-              ViewImageURL && (
-                <ViewImage url={ViewImageURL} close={() => setViewImageURL("")} />
-              )
-            }
-
-            {
-              openAddField && (
-                <AddFieldComponent
-                  value={fieldName}
-                  onChange={(e) => setFieldName(e.target.value)}
-                  submit={handleAddField}
-                  close={() => setOpenAddField(false)}
-                />
-              )
-            }
-          </div>
-
         </div>
       </div>
+
+      {/* Modals */}
+      {
+        ViewImageURL && (
+          <ViewImage url={ViewImageURL} close={() => setViewImageURL("")} />
+        )
+      }
+
+      {
+        openAddField && (
+          <AddFieldComponent
+            value={fieldName}
+            onChange={(e) => setFieldName(e.target.value)}
+            submit={handleAddField}
+            close={() => setOpenAddField(false)}
+          />
+        )
+      }
     </div>
   )
 }
