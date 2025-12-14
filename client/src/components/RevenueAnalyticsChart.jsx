@@ -1,38 +1,39 @@
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip } from 'chart.js';
+import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip, Filler } from 'chart.js';
 
-ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip);
+ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Legend, Tooltip, Filler);
 
 const data = {
-  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  labels: ['Jan', 'Feb', 'Mar', 'April', 'May', 'June'],
   datasets: [
     {
-      label: 'Doanh thu',
-      data: [4200, 5100, 4000, 5500, 6700, 7300, 7000],
-      borderColor: '#8b5cf6',
-      backgroundColor: 'rgba(139,92,246,0.1)',
+      label: 'Revenue',
+      data: [20, 100, 80, 40, 60, 120],
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
       tension: 0.4,
-      pointRadius: 6,
-      pointBackgroundColor: '#8b5cf6',
-      fill: false,
+      pointRadius: 4,
+      pointBackgroundColor: '#10b981',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      fill: true,
     },
   ],
 };
 
 const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
-      display: true,
-      position: 'bottom',
-      labels: {
-        usePointStyle: true,
-        // padding: 20,
-        font: { size: 14 }
-      }
+      display: false,
     },
     tooltip: {
       enabled: true,
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      padding: 12,
+      titleFont: { size: 14 },
+      bodyFont: { size: 12 },
       callbacks: {
         label: function(context) {
           return `$ ${context.parsed.y.toLocaleString()}`;
@@ -41,10 +42,26 @@ const options = {
     },
   },
   scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        font: { size: 12 },
+        color: '#6b7280'
+      }
+    },
     y: {
       beginAtZero: true,
+      max: 120,
       ticks: {
-        callback: function(value) { return '$ ' + value.toLocaleString(); }
+        stepSize: 20,
+        callback: function(value) { return '$' + value; },
+        font: { size: 12 },
+        color: '#6b7280'
+      },
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
       }
     }
   }
@@ -52,9 +69,8 @@ const options = {
 
 export default function UserAnalyticsChart() {
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="font-semibold text-lg mb-2">Thanh thu theo tháng</h2>
-      <Line data={data} options={options} height={280} width={500}/>
+    <div style={{ height: '280px' }}>
+      <Line data={data} options={options} />
     </div>
   );
 } 

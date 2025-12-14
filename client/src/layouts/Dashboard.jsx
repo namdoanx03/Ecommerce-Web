@@ -1,70 +1,160 @@
 import React, { useState } from 'react'
-import UserMenu from '../components/UserMenu'
-import { Outlet, Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { RiMenu5Fill } from "react-icons/ri";
-import { CiLogout } from "react-icons/ci";
-import { FiUser, FiCreditCard, FiShoppingCart, FiMessageCircle } from "react-icons/fi";
+import { Outlet, Link, useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
 import { IoSearch } from "react-icons/io5";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { MdOutlineDarkMode } from "react-icons/md";
+import { FaChevronDown, FaBars, FaChevronLeft } from "react-icons/fa";
 import LeftDashboard from '../pages/LeftDashboard'
-import { FaHome } from "react-icons/fa";
-
+import SummaryApi from '../common/SummaryApi'
+import Axios from '../utils/Axios'
+import { logout } from '../store/userSlice'
+import toast from 'react-hot-toast'
 
 const Dashboard = () => {
   const user = useSelector(state => state.user)
-  const [showOptions, setShowOptions] = useState(false);
-  const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  console.log("user dashboard", user)
+  const handleLogout = async () => {
+    try {
+      const response = await Axios({
+        ...SummaryApi.logout
+      })
+      if (response.data.success) {
+        dispatch(logout())
+        localStorage.clear()
+        toast.success(response.data.message)
+        navigate("/login")
+      }
+    } catch (error) {
+      toast.error("Logout failed")
+    }
+  }
+
   return (
-    <section className='bg-white '>
-      <div className='container flex '>
+    <div className='bg-[#F8F8F8] min-h-screen overflow-x-hidden'>
+      <div className='flex w-full max-w-full'>
         {/**left for menu */}
-        <LeftDashboard />
+        <LeftDashboard isCollapsed={isSidebarCollapsed} />
 
         {/**right for content */}
-        <div className='bg-white w-full border-l-2 border-dotted border-gray-300'>
-          <header className="w-full bg-white py-5 px-8 flex items-center justify-between shadow-sm border-b-2 border-gray-200 sticky top-0 min-h-[10vh] z-20">
-            <div className='comback-home flex items-center gap-2'>
-              <Link to="/">
-                <span className='text-base font-medium text-gray-800'><FaHome className='text-2xl' /></span>
-              </Link>
-            </div>
-            {/* Search box */}
-            <div className="flex-1 flex justify-center">
-              <div className="relative w-full max-w-xl">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-500">
-                  <IoSearch size={20} />
-                </span>
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm cái gì đó ?"
-                  className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-200 bg-white text-gray-700 shadow-sm"
-                />
+        <div className='flex-1 flex flex-col min-w-0 overflow-x-hidden'>
+          {/* Header */}
+          <header className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div className="px-4 sm:px-6 py-4 flex items-center justify-between gap-2">
+              {/* Logo with Toggle Button */}
+              <div className="flex items-center gap-3">
+                {/* Toggle Sidebar Button */}
+                <button
+                  onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-teal-600"
+                  aria-label="Toggle sidebar"
+                  title={isSidebarCollapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
+                >
+                  {isSidebarCollapsed ? (
+                    <FaBars size={20} />
+                  ) : (
+                    <FaChevronLeft size={20} />
+                  )}
+                </button>
+                {/* Logo */}
+                
+              </div>
+
+              {/* Search box */}
+              <div className="flex-1 flex justify-center max-w-2xl mx-2 sm:mx-4 min-w-0">
+                <div className="flex items-center w-full gap-0">
+                  <input
+                    type="text"
+                    placeholder="Search Fastkart.."
+                    className="flex-1 px-4 py-2.5 rounded-l-lg border-none focus:outline-none bg-[#f9f9f6] text-gray-700 placeholder-gray-500"
+                  />
+                  <button
+                    type="button"
+                    className="px-4 py-2.5 bg-orange-500 hover:bg-orange-600 rounded-r-lg transition-colors flex items-center justify-center"
+                    aria-label="Search"
+                  >
+                    <IoSearch className="text-white" size={24} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Right icons */}
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                {/* Notifications */}
+                <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                  <IoMdNotificationsOutline className="text-gray-600" size={22} />
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">4</span>
+                </button>
+
+                {/* Dark mode toggle */}
+                <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                  <MdOutlineDarkMode className="text-gray-600" size={22} />
+                </button>
+
+                {/* User profile */}
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <img 
+                      src={user.avatar || "https://via.placeholder.com/40"} 
+                      alt="avatar" 
+                      className="w-9 h-9 rounded-full object-cover border-2 border-gray-200" 
+                    />
+                    <div className="text-left hidden md:block">
+                      <div className="text-sm font-semibold text-gray-800">{user.name || "Admin"}</div>
+                      <div className="text-xs text-gray-500">Admin</div>
+                    </div>
+                    <FaChevronDown className="text-gray-500 text-xs" />
+                  </button>
+
+                  {/* User dropdown menu */}
+                  {showUserMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <Link 
+                        to="/dashboard/profile" 
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link 
+                        to="/" 
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Settings
+                      </Link>
+                      <div className="border-t border-gray-200 my-1"></div>
+                      <button 
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        onClick={() => {
+                          setShowUserMenu(false)
+                          handleLogout()
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-            {/* Right icons */}
-            <div className="flex items-center gap-4 ml-8">
-              {/* Giao diện (theme) icon */}
-              <button className="p-2 rounded-lg bg-purple-50 hover:bg-purple-100">
-                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-purple-500"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z"></path></svg>
-              </button>
-              {/* Thông báo icon */}
-              <button className="relative p-2 rounded-lg hover:bg-gray-100">
-                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" className="text-purple-500"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 01-3.46 0"></path></svg>
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-              {/* Avatar user */}
-              <img src={user.avatar} alt="avatar" className="w-9 h-9 rounded-full object-cover border-2 border-white shadow" />
-            </div>
           </header>
-          <Outlet />
-          <div>
-          </div>
 
+          {/* Main content */}
+          <div className="flex-1">
+            <Outlet />
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }
 

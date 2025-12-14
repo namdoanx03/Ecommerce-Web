@@ -1,81 +1,235 @@
 import { useEffect, useState } from "react";
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
-import { HiUserGroup } from "react-icons/hi2";
 import UserAnalyticsChart from '../components/RevenueAnalyticsChart';
-import TopProductsDoughnutChart from '../components/TopProductsDoughnutChart';
-import { FiCreditCard, FiShoppingCart, FiMessageCircle } from "react-icons/fi";
+import { FiDollarSign, FiShoppingBag, FiPackage, FiUsers } from "react-icons/fi";
+import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const DashboardPage = () => {
     const [summary, setSummary] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [bestSellingProducts, setBestSellingProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchSummary = async () => {
+        const fetchData = async () => {
             try {
-                const res = await Axios({ ...SummaryApi.dashboardSummary });
-                if (res.data.success) setSummary(res.data.data);
+                const [summaryRes, categoryRes, productRes] = await Promise.all([
+                    Axios({ ...SummaryApi.dashboardSummary }),
+                    Axios({ ...SummaryApi.getCategory }),
+                    Axios({ ...SummaryApi.getProduct, data: { limit: 100 } })
+                ]);
+
+                if (summaryRes.data.success) setSummary(summaryRes.data.data);
+                if (categoryRes.data.success) setCategories(categoryRes.data.data);
+                if (productRes.data.success) {
+                    setProducts(productRes.data.data);
+                    // Mock best selling products - in real app, get from orders
+                    const topProducts = productRes.data.data.slice(0, 3).map((p, idx) => ({
+                        ...p,
+                        orders: 62 - idx * 5,
+                        amount: (62 - idx * 5) * (p.price || 29)
+                    }));
+                    setBestSellingProducts(topProducts);
+                }
             } catch (err) {
-                setSummary(null);
+                console.error(err);
             } finally {
                 setLoading(false);
             }
         };
-        fetchSummary();
+        fetchData();
     }, []);
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0
+        }).format(amount);
+    };
+
+    const formatNumber = (num) => {
+        if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'k';
+        }
+        return num.toString();
+    };
+
     return (
-        <>
-        <div className='dashboard px-2 bg-[#F8F8F8] min-h-[88vh]'>
-            <h1 className="pt-3 pl-4 text-2xl font-semibold text-black sticky top-0">Thống kê</h1>
-            <div className="card-item flex flex-wrap gap-6 mt-3 px-4">
-              {/* Total customers */}
-              <div className="flex-1 min-w-[220px] max-w-xs bg-white rounded-xl shadow p-6 flex items-center gap-4">
-                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-orange-50">
-                  <HiUserGroup className="text-2xl text-orange-500" />
-                </span>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">Tổng số khách hàng</div>
-                  <div className="text-2xl font-semibold text-gray-800 text-center">{loading ? '...' : summary?.totalUsers ?? 0}</div>
+        <div className='p-4 sm:p-6 bg-[#F8F8F8] min-h-screen overflow-x-hidden max-w-full'>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                {/* Total Revenue */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
+                            <h3 className="text-2xl font-bold text-gray-800">
+                                {loading ? '...' : formatCurrency(summary?.totalRevenue || 0)}
+                            </h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center">
+                            <FiDollarSign className="text-green-600" size={24} />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center text-green-600">
+                            <FaArrowUp size={12} />
+                            <span className="ml-1">8.5%</span>
+                        </div>
+                        <span className="text-gray-500">vs last month</span>
+                    </div>
                 </div>
-              </div>
-              {/* Total income */}
-              <div className="flex-1 min-w-[220px] max-w-xs bg-white rounded-xl shadow p-6 flex items-center gap-4">
-                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-green-50">
-                  <FiCreditCard className="text-2xl text-green-600" />
-                </span>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">Tổng số doanh thu</div>
-                  <div className="text-2xl font-semibold text-gray-800 text-center">{loading ? '...' : `${Number(summary?.totalRevenue ?? 0).toLocaleString()} đ`}</div>
+
+                {/* Total Orders */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <p className="text-sm text-gray-500 mb-1">Total Orders</p>
+                            <h3 className="text-2xl font-bold text-gray-800">
+                                {loading ? '...' : (summary?.totalOrders || 0).toLocaleString()}
+                            </h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center">
+                            <FiShoppingBag className="text-blue-600" size={24} />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center text-red-600">
+                            <FaArrowDown size={12} />
+                            <span className="ml-1">8.5%</span>
+                        </div>
+                        <span className="text-gray-500">vs last month</span>
+                    </div>
                 </div>
-              </div>
-              {/* New Orders */}
-              <div className="flex-1 min-w-[220px] max-w-xs bg-white rounded-xl shadow p-6 flex items-center gap-4">
-                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-blue-50">
-                  <FiShoppingCart className="text-2xl text-blue-500" />
-                </span>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">Đơn hàng mới(hôm nay)</div>
-                  <div className="text-2xl font-semibold text-gray-800 text-center">{loading ? '...' : summary?.newOrders ?? 0}</div>
+
+                {/* Total Products */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <p className="text-sm text-gray-500 mb-1">Total Products</p>
+                            <h3 className="text-2xl font-bold text-gray-800">
+                                {loading ? '...' : products.length}
+                            </h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+                            <FiPackage className="text-purple-600" size={24} />
+                        </div>
+                    </div>
+                    <Link to="/dashboard/upload-product">
+                        <button className="text-sm text-teal-600 font-medium hover:text-teal-700">
+                            ADD NEW
+                        </button>
+                    </Link>
                 </div>
-              </div>
-              {/* Total Orders */}
-              <div className="flex-1 min-w-[220px] max-w-xs bg-white rounded-xl shadow p-6 flex items-center gap-4">
-                <span className="flex items-center justify-center w-14 h-14 rounded-full bg-cyan-50">
-                  <FiMessageCircle className="text-2xl text-cyan-600" />
-                </span>
-                <div>
-                  <div className="text-sm text-gray-500 font-medium mb-1">Tổng số đơn hàng</div>
-                  <div className="text-2xl font-semibold text-gray-800 text-center">{loading ? '...' : summary?.totalOrders ?? 0}</div>
+
+                {/* Total Customers */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <p className="text-sm text-gray-500 mb-1">Total Customers</p>
+                            <h3 className="text-2xl font-bold text-gray-800">
+                                {loading ? '...' : formatNumber(summary?.totalUsers || 0)}
+                            </h3>
+                        </div>
+                        <div className="w-12 h-12 rounded-lg bg-orange-50 flex items-center justify-center">
+                            <FiUsers className="text-orange-600" size={24} />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center text-red-600">
+                            <FaArrowDown size={12} />
+                            <span className="ml-1">8.5%</span>
+                        </div>
+                        <span className="text-gray-500">vs last month</span>
+                    </div>
                 </div>
-              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6  px-4">
-              <UserAnalyticsChart />
-              <TopProductsDoughnutChart />
+
+            {/* Category Section */}
+            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">Category</h2>
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    {categories.length > 0 ? (
+                        categories.map((category, index) => (
+                            <div
+                                key={category._id || index}
+                                className="flex-shrink-0 w-32 h-32 bg-gray-50 rounded-lg p-4 flex flex-col items-center justify-center border border-gray-200 hover:border-teal-300 transition-colors cursor-pointer"
+                            >
+                                <img
+                                    src={category.icon || category.image || "https://via.placeholder.com/40"}
+                                    alt={category.name}
+                                    className="w-12 h-12 object-contain mb-2"
+                                    onError={(e) => {
+                                        e.target.src = "https://via.placeholder.com/40"
+                                    }}
+                                />
+                                <span className="text-xs font-medium text-gray-700 text-center truncate w-full">
+                                    {category.name}
+                                </span>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-sm text-gray-500">No categories available</p>
+                    )}
+                </div>
             </div>
-          </div>
-        </>
+
+            {/* Charts and Best Selling */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue Report */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Revenue Report</h2>
+                    <UserAnalyticsChart />
+                </div>
+
+                {/* Best Selling Product */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold text-gray-800">Best Selling Product</h2>
+                        <select className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-200">
+                            <option>Today</option>
+                            <option>This Week</option>
+                            <option>This Month</option>
+                        </select>
+                    </div>
+                    <div className="space-y-4">
+                        {bestSellingProducts.map((product, index) => (
+                            <div key={product._id || index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <img
+                                    src={product.image?.[0] || "https://via.placeholder.com/60"}
+                                    alt={product.name}
+                                    className="w-16 h-16 object-cover rounded-lg"
+                                />
+                                <div className="flex-1">
+                                    <h4 className="font-medium text-gray-800 mb-1">{product.name}</h4>
+                                    <p className="text-xs text-gray-500">
+                                        {new Date(product.createdAt || Date.now()).toLocaleDateString('vi-VN', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-semibold text-gray-800">{formatCurrency(product.price || 29)}</p>
+                                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                                        <span>Orders: {product.orders}</span>
+                                        <span>Stock: {product.stock || 510}</span>
+                                    </div>
+                                    <p className="text-sm font-medium text-teal-600 mt-1">
+                                        {formatCurrency(product.amount || 1798)}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }
 
