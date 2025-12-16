@@ -15,7 +15,11 @@ const orderSchema = new mongoose.Schema({
         ref : "product"
     }],
     product_details : [{
-        name : String
+        name : String,
+        qty : Number,
+        price : Number,
+        image : String,
+        productId : String
     }],
     paymentId : {
         type : String,

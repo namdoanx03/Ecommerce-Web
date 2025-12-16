@@ -46,6 +46,8 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setProductMenuOpen(true);
         } else if (location.pathname.includes('/users')) {
             setUsersMenuOpen(true);
+        } else if (location.pathname.includes('/manage-order')) {
+            setOrdersMenuOpen(true);
         }
     }, [location.pathname]);
 
@@ -131,6 +133,9 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             icon: FaShoppingCart,
             path: '/dashboard/manage-order',
             hasSubmenu: true,
+            submenu: [
+                { name: 'Orders List', path: '/dashboard/manage-order' }
+            ],
             open: ordersMenuOpen,
             setOpen: setOrdersMenuOpen
         },
@@ -210,6 +215,8 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                             active = location.pathname === '/dashboard/category' || location.pathname === '/dashboard/upload-category';
                         } else if (item.name === 'Sub Category') {
                             active = location.pathname === '/dashboard/subcategory' || location.pathname === '/dashboard/upload-subcategory';
+                        } else if (item.name === 'Orders') {
+                            active = location.pathname === '/dashboard/manage-order';
                         } else {
                             active = isActive(item.path);
                         }
@@ -219,7 +226,13 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                 {item.hasSubmenu ? (
                                     <>
                                         <button
-                                            onClick={() => item.setOpen(!item.open)}
+                                            onClick={() => {
+                                                item.setOpen(!item.open)
+                                                // If clicking on Orders, also navigate to the page
+                                                if (item.name === 'Orders' && item.path) {
+                                                    navigate(item.path)
+                                                }
+                                            }}
                                             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors relative ${
                                                 active
                                                     ? 'bg-white/20 text-white' 

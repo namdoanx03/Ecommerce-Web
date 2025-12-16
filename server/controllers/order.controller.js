@@ -222,7 +222,11 @@ export async function CashOnDeliveryOrderController(request, response) {
             orderId: `ORD-${new mongoose.Types.ObjectId()}`,
             productId: list_items.map(el => el.productId._id),
             product_details: list_items.map(el => ({
-                name: el.productId.name
+                name: el.productId.name,
+                qty: el.qty || 1,
+                price: el.productId.price || 0,
+                image: el.productId.image && el.productId.image[0] ? el.productId.image[0] : '',
+                productId: el.productId._id.toString()
             })),
             paymentId: "",
             payment_status: "CASH ON DELIVERY",
@@ -396,14 +400,40 @@ export async function webhookStripe(request, response) {
 
 export async function getOrderDetailsController(request, response) {
     try {
-        const userId = request.userId // order id
+        const userId = request.userId
 
-        // Nếu là admin thì không lọc theo userId
-        const query = request.user && request.user.role === 'admin' ? {} : { userId: userId };
+        if (!userId) {
+            return response.status(401).json({
+                message: "User ID not found",
+                error: true,
+                success: false
+            })
+        }
+
+        // Get user to check role
+        const user = await UserModel.findById(userId).select('role');
+        
+        if (!user) {
+            return response.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false
+            })
+        }
+
+        // Nếu là admin thì không lọc theo userId, lấy tất cả orders
+        const query = user.role === 'ADMIN' ? {} : { userId: userId };
 
         const orderlist = await OrderModel.find(query)
             .sort({ createdAt: -1 })
-            .populate('delivery_address');
+            .populate({
+                path: 'delivery_address',
+                select: 'name mobile email address_line ward district province'
+            })
+            .populate({
+                path: 'productId',
+                select: 'name image price'
+            });
 
         return response.json({
             message: "order list",
@@ -412,8 +442,9 @@ export async function getOrderDetailsController(request, response) {
             success: true
         })
     } catch (error) {
+        console.error('Error in getOrderDetailsController:', error)
         return response.status(500).json({
-            message: error.message || error,
+            message: error.message || "Internal server error",
             error: true,
             success: false
         })
