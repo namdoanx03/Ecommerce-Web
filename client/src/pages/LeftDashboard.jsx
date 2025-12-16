@@ -44,6 +44,8 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setCategoryMenuOpen(false);
         } else if (location.pathname.includes('/product')) {
             setProductMenuOpen(true);
+        } else if (location.pathname.includes('/users')) {
+            setUsersMenuOpen(true);
         }
     }, [location.pathname]);
 
@@ -116,8 +118,11 @@ const LeftDashboard = ({ isCollapsed = false }) => {
         {
             name: 'Users',
             icon: FaUser,
-            path: '#',
+            path: '/dashboard/users',
             hasSubmenu: true,
+            submenu: [
+                { name: 'Users List', path: '/dashboard/users' }
+            ],
             open: usersMenuOpen,
             setOpen: setUsersMenuOpen
         },

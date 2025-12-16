@@ -165,6 +165,10 @@ const SummaryApi = {
     dashboardSummary: {
         url: '/api/user/dashboard-summary',
         method: 'get'
+    },
+    getAllUsers: {
+        url: '/api/user/get-all-users',
+        method: 'get'
     }
 }
 

@@ -1,8 +1,9 @@
 import { Router } from 'express'
-import { forgotPasswordController, loginController, logoutController, refreshToken, registerUserController, resetpassword, updateUserDetails, uploadAvatar, userDetails, verifyEmailController, verifyForgotPasswordOtp } from '../controllers/user.controller.js'
+import { forgotPasswordController, loginController, logoutController, refreshToken, registerUserController, resetpassword, updateUserDetails, uploadAvatar, userDetails, verifyEmailController, verifyForgotPasswordOtp, getAllUsers } from '../controllers/user.controller.js'
 import auth from '../middleware/auth.js'
 import upload from '../middleware/multer.js'
 import { getDashboardSummary } from '../controllers/summary.controller.js'
+import { admin } from '../middleware/Admin.js'
 
 const userRouter = Router()
 
@@ -18,5 +19,6 @@ userRouter.put('/reset-password',resetpassword)
 userRouter.post('/refresh-token',refreshToken)
 userRouter.get('/user-details',auth,userDetails)
 userRouter.get('/dashboard-summary', getDashboardSummary)
+userRouter.get('/get-all-users',auth,admin,getAllUsers)
 
 export default userRouter

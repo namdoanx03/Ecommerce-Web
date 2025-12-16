@@ -521,3 +521,23 @@ export async function userDetails(request,response){
         })
     }
 }
+
+//get all users (admin only)
+export async function getAllUsers(request,response){
+    try {
+        const users = await UserModel.find({}).select('-password -refresh_token -forgot_password_otp -forgot_password_expiry').sort({ createdAt: -1 })
+
+        return response.json({
+            message : 'All users',
+            data : users,
+            error : false,
+            success : true
+        })
+    } catch (error) {
+        return response.status(500).json({
+            message : "Something is wrong",
+            error : true,
+            success : false
+        })
+    }
+}

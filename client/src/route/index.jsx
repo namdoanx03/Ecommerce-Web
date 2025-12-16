@@ -31,6 +31,7 @@ import SalePage from "../pages/SalePage";
 import DashboardPage from "../pages/DashboardPage";
 import ManageOrder from "../pages/ManageOrder";
 import CheckPayment from "../pages/CheckPayment";
+import UserAdmin from "../pages/UserAdmin";
 
 const router = createBrowserRouter([
     {
@@ -129,6 +130,10 @@ const router = createBrowserRouter([
                     {
                         path : 'product',
                         element : <AdminPermision><ProductAdmin/></AdminPermision>
+                    },
+                    {
+                        path : 'users',
+                        element : <AdminPermision><UserAdmin/></AdminPermision>
                     }
                 ]
             },
