@@ -68,28 +68,34 @@ const UploadProduct = () => {
     setImageLoading(false)
   }
 
-  const handleDeleteImage = async (index) => {
-    data.image.splice(index, 1)
+  const handleDeleteImage = (index) => {
     setData((preve) => {
+      const newImages = [...preve.image]
+      newImages.splice(index, 1)
       return {
-        ...preve
+        ...preve,
+        image: newImages
       }
     })
   }
 
-  const handleRemoveCategory = async (index) => {
-    data.category.splice(index, 1)
+  const handleRemoveCategory = (index) => {
     setData((preve) => {
+      const newCategory = [...preve.category]
+      newCategory.splice(index, 1)
       return {
-        ...preve
+        ...preve,
+        category: newCategory
       }
     })
   }
-  const handleRemoveSubCategory = async (index) => {
-    data.subCategory.splice(index, 1)
+  const handleRemoveSubCategory = (index) => {
     setData((preve) => {
+      const newSubCategory = [...preve.subCategory]
+      newSubCategory.splice(index, 1)
       return {
-        ...preve
+        ...preve,
+        subCategory: newSubCategory
       }
     })
   }
@@ -143,7 +149,7 @@ const UploadProduct = () => {
   return (
     <div className='min-h-screen p-4 sm:p-6'>
       {/* Main Content Container - White Background */}
-      <div className='bg-white rounded-lg shadow-sm p-4 sm:p-6'>
+      <div className='bg-white rounded-lg shadow-sm p-4 sm:p-6 max-w-4xl mx-auto'>
         {/* Header Section */}
         <div className='mb-6'>
           <h1 className="text-2xl font-semibold text-gray-800">Add Product</h1>
@@ -181,68 +187,120 @@ const UploadProduct = () => {
                   />
                 </div>
                 <div>
-                  <p className='font-medium'>Ảnh sản phẩm</p>
-                  <div>
-                    <label htmlFor='productImage' className='bg-gray-50 h-24 border border-gray-300 rounded-lg flex justify-center items-center cursor-pointer hover:bg-gray-100 transition-colors'>
-                      <div className='text-center flex justify-center items-center flex-col'>
-                        {
-                          imageLoading ? <Loading /> : (
-                            <>
-                              <FaCloudUploadAlt size={35} />
-                              <p>Tải ảnh sản phẩm</p>
-                            </>
-                          )
-                        }
-                      </div>
-                      <input
-                        type='file'
-                        id='productImage'
-                        className='hidden'
-                        accept='image/*'
-                        multiple
-                        onChange={handleUploadImages}
-                      />
-                    </label>
-                    {/**display uploded image*/}
-                    <div className='flex flex-wrap gap-4'>
-                      {
-                        data.image.map((img, index) => {
+                  <p className='font-medium mb-1'>Ảnh sản phẩm</p>
+                  <div className='bg-gray-50 min-h-24 border border-gray-300 rounded-lg relative'>
+                    {data.image.length > 0 ? (
+                      <div className='w-full p-2 flex flex-wrap gap-2'>
+                        {data.image.map((img, index) => {
                           return (
-                            <div key={img + index} className='h-20 mt-1 w-20 min-w-20 bg-gray-50 border border-gray-300 rounded-lg relative group'>
+                            <div key={img + index} className='h-20 w-20 min-w-20 bg-white border border-gray-300 rounded-lg relative group'>
                               <img
                                 src={img}
                                 alt={img}
-                                className='w-full h-full object-scale-down cursor-pointer'
+                                className='w-full h-full object-cover rounded-lg cursor-pointer'
                                 onClick={() => setViewImageURL(img)}
                               />
-                              <div onClick={() => handleDeleteImage(index)} className='absolute bottom-0 right-0 p-1 bg-red-600 hover:bg-red-600 rounded text-white hidden group-hover:block cursor-pointer'>
-                                <MdDelete />
-                              </div>
+                              <button
+                                type='button'
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  e.stopPropagation()
+                                  handleDeleteImage(index)
+                                }}
+                                className='absolute top-0 right-0 p-1 bg-red-600 hover:bg-red-700 rounded-full text-white cursor-pointer z-10'
+                              >
+                                <IoClose size={14} />
+                              </button>
                             </div>
                           )
-                        })
-                      }
-                    </div>
+                        })}
+                        <label htmlFor='productImage' className='h-20 w-20 min-w-20 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex flex-col justify-center items-center cursor-pointer hover:bg-gray-200 transition-colors'>
+                          {imageLoading ? (
+                            <Loading />
+                          ) : (
+                            <>
+                              <FaCloudUploadAlt size={24} className='text-gray-400' />
+                              <p className='text-xs text-gray-500 mt-1'>Thêm</p>
+                            </>
+                          )}
+                          <input
+                            type='file'
+                            id='productImage'
+                            className='hidden'
+                            accept='image/*'
+                            multiple
+                            onChange={handleUploadImages}
+                          />
+                        </label>
+                      </div>
+                    ) : (
+                      <label htmlFor='productImage' className='w-full h-full flex justify-center items-center cursor-pointer hover:bg-gray-100 transition-colors py-4'>
+                        <div className='text-center flex justify-center items-center flex-col'>
+                          {imageLoading ? (
+                            <Loading />
+                          ) : (
+                            <>
+                              <FaCloudUploadAlt size={35} className='text-gray-400' />
+                              <p className='text-gray-600 mt-2'>Tải ảnh sản phẩm</p>
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type='file'
+                          id='productImage'
+                          className='hidden'
+                          accept='image/*'
+                          multiple
+                          onChange={handleUploadImages}
+                        />
+                      </label>
+                    )}
                   </div>
-
                 </div>
                 <div className='grid gap-1'>
                   <label className='font-medium'>Category</label>
-                  <div>
+                  <div className='relative'>
+                    <div className='bg-white border border-gray-300 w-full min-h-[42px] p-2 rounded-lg focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 flex flex-wrap gap-2 items-center'>
+                      {data.category.length > 0 ? (
+                        data.category.map((c, index) => {
+                          return (
+                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg border border-gray-200 relative z-10'>
+                              <p className='text-gray-700'>{c.name}</p>
+                              <button
+                                type='button'
+                                className='hover:text-red-500 cursor-pointer transition-colors'
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  e.stopPropagation()
+                                  handleRemoveCategory(index)
+                                }}
+                              >
+                                <IoClose size={16} />
+                              </button>
+                            </div>
+                          )
+                        })
+                      ) : (
+                        <span className='text-gray-400 text-sm'>Chọn danh mục</span>
+                      )}
+                    </div>
                     <select
-                      className='bg-white border border-gray-300 w-full p-2 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
+                      className='absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-0'
                       value={selectCategory}
                       onChange={(e) => {
                         const value = e.target.value
-                        const category = allCategory.find(el => el._id === value)
-
-                        setData((preve) => {
-                          return {
-                            ...preve,
-                            category: [...preve.category, category],
+                        if (value) {
+                          const category = allCategory.find(el => el._id === value)
+                          if (category && !data.category.find(c => c._id === category._id)) {
+                            setData((preve) => {
+                              return {
+                                ...preve,
+                                category: [...preve.category, category],
+                              }
+                            })
                           }
-                        })
-                        setSelectCategory("")
+                          setSelectCategory("")
+                        }
                       }}
                     >
                       <option value={""}>Chọn danh mục</option>
@@ -254,39 +312,52 @@ const UploadProduct = () => {
                         })
                       }
                     </select>
-                    <div className='flex flex-wrap gap-3'>
-                      {
-                        data.category.map((c, index) => {
-                          return (
-                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg mt-2 border border-gray-200'>
-                              <p className='text-gray-700'>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer transition-colors' onClick={() => handleRemoveCategory(index)}>
-                                <IoClose size={18} />
-                              </div>
-                            </div>
-                          )
-                        })
-                      }
-                    </div>
                   </div>
                 </div>
                 <div className='grid gap-1'>
                   <label className='font-medium'>Sub Category</label>
-                  <div>
+                  <div className='relative'>
+                    <div className='bg-white border border-gray-300 w-full min-h-[42px] p-2 rounded-lg focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 flex flex-wrap gap-2 items-center'>
+                      {data.subCategory.length > 0 ? (
+                        data.subCategory.map((c, index) => {
+                          return (
+                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg border border-gray-200 relative z-10'>
+                              <p className='text-gray-700'>{c.name}</p>
+                              <button
+                                type='button'
+                                className='hover:text-red-500 cursor-pointer transition-colors'
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  e.stopPropagation()
+                                  handleRemoveSubCategory(index)
+                                }}
+                              >
+                                <IoClose size={16} />
+                              </button>
+                            </div>
+                          )
+                        })
+                      ) : (
+                        <span className='text-gray-400 text-sm'>Select Sub Category</span>
+                      )}
+                    </div>
                     <select
-                      className='bg-white border border-gray-300 w-full p-2 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200'
+                      className='absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer z-0'
                       value={selectSubCategory}
                       onChange={(e) => {
                         const value = e.target.value
-                        const subCategory = allSubCategory.find(el => el._id === value)
-
-                        setData((preve) => {
-                          return {
-                            ...preve,
-                            subCategory: [...preve.subCategory, subCategory]
+                        if (value) {
+                          const subCategory = allSubCategory.find(el => el._id === value)
+                          if (subCategory && !data.subCategory.find(c => c._id === subCategory._id)) {
+                            setData((preve) => {
+                              return {
+                                ...preve,
+                                subCategory: [...preve.subCategory, subCategory]
+                              }
+                            })
                           }
-                        })
-                        setSelectSubCategory("")
+                          setSelectSubCategory("")
+                        }
                       }}
                     >
                       <option value={""} className='text-neutral-600'>Select Sub Category</option>
@@ -298,20 +369,6 @@ const UploadProduct = () => {
                         })
                       }
                     </select>
-                    <div className='flex flex-wrap gap-3'>
-                      {
-                        data.subCategory.map((c, index) => {
-                          return (
-                            <div key={c._id + index + "productsection"} className='text-sm flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-lg mt-2 border border-gray-200'>
-                              <p className='text-gray-700'>{c.name}</p>
-                              <div className='hover:text-red-500 cursor-pointer transition-colors' onClick={() => handleRemoveSubCategory(index)}>
-                                <IoClose size={18} />
-                              </div>
-                            </div>
-                          )
-                        })
-                      }
-                    </div>
                   </div>
                 </div>
 

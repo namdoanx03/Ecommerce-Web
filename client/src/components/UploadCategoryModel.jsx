@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { IoClose } from "react-icons/io5";
+import { FaCloudUploadAlt } from "react-icons/fa";
 import uploadImage from '../utils/UploadImage';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
@@ -54,77 +55,112 @@ const UploadCategoryModel = ({close, fetchData}) => {
         if(!file){
             return
         }
+        setLoading(true)
+        try {
+            const response = await uploadImage(file)
+            const { data : ImageResponse } = response
 
-        const response = await uploadImage(file)
-        const { data : ImageResponse } = response
-
-        setData((preve)=>{
-            return{
-                ...preve,
-                image : ImageResponse.data.url
-            }
-        })
+            setData((preve)=>{
+                return{
+                    ...preve,
+                    image : ImageResponse.data.url
+                }
+            })
+        } catch (error) {
+            AxiosToastError(error)
+        } finally {
+            setLoading(false)
+        }
     }
   return (
-    <section className='fixed top-0 bottom-0 left-0 right-0 p-4 bg-neutral-800 bg-opacity-60 flex items-center justify-center z-50'>
-        <div className='bg-white max-w-4xl w-full p-4 rounded'>
-            <div className='flex items-center justify-between'>
-                <h1 className='font-semibold'>Category</h1>
-                <button onClick={close} className='w-fit block ml-auto'>
-                    <IoClose size={25}/>
-                </button>
-            </div>
-            <form className='my-3 grid gap-2' onSubmit={handleSubmit}>
-                <div className='grid gap-1'>
-                    <label id='categoryName'>Name</label>
-                    <input
-                        type='text'
-                        id='categoryName'
-                        placeholder='Enter category name'
-                        value={data.name}
-                        name='name'
-                        onChange={handleOnChange}
-                        className='bg-blue-50 p-2 border border-blue-100 focus-within:border-primary-200 outline-none rounded'
-                    />
-                </div>
-                <div className='grid gap-1'>
-                    <p>Image</p>
-                    <div className='flex gap-4 flex-col lg:flex-row items-center'>
-                        <div className='border bg-blue-50 h-36 w-full lg:w-36 flex items-center justify-center rounded'>
-                            {
-                                data.image ? (
-                                    <img
-                                        alt='category'
-                                        src={data.image}
-                                        className='w-full h-full object-scale-down'
-                                    />
-                                ) : (
-                                    <p className='text-sm text-neutral-500'>No Image</p>
-                                )
-                            }
-                            
-                        </div>
-                        <label htmlFor='uploadCategoryImage'>
-                            <div  className={`
-                            ${!data.name ? "bg-gray-300" : "border-primary-200 hover:bg-primary-100" }  
-                                px-4 py-2 rounded cursor-pointer border font-medium
-                            `}>Upload Image</div>
-
-                            <input disabled={!data.name} onChange={handleUploadCategoryImage} type='file' id='uploadCategoryImage' className='hidden'/>
-                        </label>
-                        
-                    </div>
-                </div>
-
-                <button
-                    className={`
-                    ${data.name && data.image ? "bg-primary-200 hover:bg-primary-100" : "bg-gray-300 "}
-                    py-2    
-                    font-semibold 
-                    `}
-                >Add Category</button>
-            </form>
+    <section 
+      className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4'
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          close()
+        }
+      }}
+    >
+      <div className='bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
+        <div className='flex items-center justify-between p-6 border-b border-gray-200'>
+          <h1 className='text-2xl font-semibold text-gray-800'>Add Category</h1>
+          <button 
+            onClick={close} 
+            className='text-gray-400 hover:text-gray-600 transition-colors'
+          >
+            <IoClose size={24}/>
+          </button>
         </div>
+        <form className='p-6 grid gap-4' onSubmit={handleSubmit}>
+          <div className='grid gap-1'>
+            <label htmlFor='categoryName' className='text-sm font-medium text-gray-700'>Name</label>
+            <input
+              type='text'
+              id='categoryName'
+              placeholder='Enter category name'
+              value={data.name}
+              name='name'
+              onChange={handleOnChange}
+              className='bg-white border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-colors'
+              required
+            />
+          </div>
+          <div className='grid gap-1'>
+            <label className='text-sm font-medium text-gray-700'>Image</label>
+            <label
+              htmlFor='uploadCategoryImage'
+              className='bg-gray-50 h-48 border border-gray-300 rounded-lg flex justify-center items-center cursor-pointer hover:bg-gray-100 transition-colors relative overflow-hidden'
+            >
+              {data.image ? (
+                <img
+                  src={data.image}
+                  alt='category'
+                  className='w-full h-full object-contain'
+                />
+              ) : (
+                <div className='text-center flex flex-col items-center justify-center'>
+                  {loading ? (
+                    <span className="text-sm text-blue-600">Đang tải ảnh...</span>
+                  ) : (
+                    <>
+                      <FaCloudUploadAlt size={32} className='text-gray-400 mb-2' />
+                      <p className='text-gray-600'>Tải ảnh danh mục</p>
+                    </>
+                  )}
+                </div>
+              )}
+              <input 
+                disabled={loading} 
+                onChange={handleUploadCategoryImage} 
+                type='file' 
+                id='uploadCategoryImage' 
+                className='hidden'
+                accept='image/*'
+              />
+            </label>
+          </div>
+
+          <div className='flex items-center justify-end gap-3 pt-4 border-t border-gray-200'>
+            <button
+              type='button'
+              className='px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium'
+              onClick={close}
+            >
+              Hủy
+            </button>
+            <button
+              type='submit'
+              disabled={!data.name || !data.image || loading}
+              className={`
+                ${data.name && data.image && !loading ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-300 cursor-not-allowed"}
+                px-6 py-2.5 text-white rounded-lg transition-colors font-medium
+              `}
+            >
+              Add Category
+            </button>
+          </div>
+        </form>
+      </div>
     </section>
   )
 }

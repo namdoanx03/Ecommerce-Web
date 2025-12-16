@@ -1,18 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { 
     FaHome, 
     FaBox, 
     FaList, 
-    FaSlidersH, 
     FaUser, 
-    FaUsers, 
-    FaImages, 
     FaShoppingCart,
-    FaGlobe,
     FaTag,
-    FaFileAlt,
     FaStar,
     FaHeadset,
     FaCog,
@@ -30,16 +25,27 @@ const LeftDashboard = ({ isCollapsed = false }) => {
     const location = useLocation();
     const [isHovered, setIsHovered] = useState(false);
     const [productMenuOpen, setProductMenuOpen] = useState(false);
-    const [categoryMenuOpen, setCategoryMenuOpen] = useState(true);
-    const [attributesMenuOpen, setAttributesMenuOpen] = useState(false);
+    const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+    const [subCategoryMenuOpen, setSubCategoryMenuOpen] = useState(false);
     const [usersMenuOpen, setUsersMenuOpen] = useState(false);
-    const [rolesMenuOpen, setRolesMenuOpen] = useState(false);
     const [ordersMenuOpen, setOrdersMenuOpen] = useState(false);
-    const [localizationMenuOpen, setLocalizationMenuOpen] = useState(false);
     const [couponsMenuOpen, setCouponsMenuOpen] = useState(false);
     const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch()
+
+    // Auto-open menu based on current location
+    useEffect(() => {
+        if (location.pathname.includes('/category') && !location.pathname.includes('/subcategory')) {
+            setCategoryMenuOpen(true);
+            setSubCategoryMenuOpen(false);
+        } else if (location.pathname.includes('/subcategory')) {
+            setSubCategoryMenuOpen(true);
+            setCategoryMenuOpen(false);
+        } else if (location.pathname.includes('/product')) {
+            setProductMenuOpen(true);
+        }
+    }, [location.pathname]);
 
     const handleLogout = async () => {
         try {
@@ -90,18 +96,22 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             hasSubmenu: true,
             submenu: [
                 { name: 'Category List', path: '/dashboard/category' },
-                { name: 'Add New Category', path: '/dashboard/category' }
+                { name: 'Add New Category', path: '/dashboard/upload-category' }
             ],
             open: categoryMenuOpen,
             setOpen: setCategoryMenuOpen
         },
         {
-            name: 'Attributes',
-            icon: FaSlidersH,
-            path: '#',
+            name: 'Sub Category',
+            icon: FaList,
+            path: '/dashboard/subcategory',
             hasSubmenu: true,
-            open: attributesMenuOpen,
-            setOpen: setAttributesMenuOpen
+            submenu: [
+                { name: 'Sub Category List', path: '/dashboard/subcategory' },
+                { name: 'Add New Sub Category', path: '/dashboard/upload-subcategory' }
+            ],
+            open: subCategoryMenuOpen,
+            setOpen: setSubCategoryMenuOpen
         },
         {
             name: 'Users',
@@ -112,20 +122,6 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setOpen: setUsersMenuOpen
         },
         {
-            name: 'Roles',
-            icon: FaUsers,
-            path: '#',
-            hasSubmenu: true,
-            open: rolesMenuOpen,
-            setOpen: setRolesMenuOpen
-        },
-        {
-            name: 'Media',
-            icon: FaImages,
-            path: '#',
-            hasSubmenu: false
-        },
-        {
             name: 'Orders',
             icon: FaShoppingCart,
             path: '/dashboard/manage-order',
@@ -134,26 +130,12 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setOpen: setOrdersMenuOpen
         },
         {
-            name: 'Localization',
-            icon: FaGlobe,
-            path: '#',
-            hasSubmenu: true,
-            open: localizationMenuOpen,
-            setOpen: setLocalizationMenuOpen
-        },
-        {
             name: 'Coupons',
             icon: FaTag,
             path: '#',
             hasSubmenu: true,
             open: couponsMenuOpen,
             setOpen: setCouponsMenuOpen
-        },
-        {
-            name: 'Tax',
-            icon: FaFileAlt,
-            path: '#',
-            hasSubmenu: false
         },
         {
             name: 'Product Review',
@@ -217,8 +199,15 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                 <ul className="space-y-1">
                     {menuItems.map((item, index) => {
                         const Icon = item.icon;
-                        const active = isActive(item.path);
-                        const isCategoryActive = item.name === 'Category' && (location.pathname.includes('/category') || location.pathname.includes('/subcategory'));
+                        // Fix: Category should only be active for category pages, not subcategory
+                        let active = false;
+                        if (item.name === 'Category') {
+                            active = location.pathname === '/dashboard/category' || location.pathname === '/dashboard/upload-category';
+                        } else if (item.name === 'Sub Category') {
+                            active = location.pathname === '/dashboard/subcategory' || location.pathname === '/dashboard/upload-subcategory';
+                        } else {
+                            active = isActive(item.path);
+                        }
 
                         return (
                             <li key={index} className="relative">
@@ -227,7 +216,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                         <button
                                             onClick={() => item.setOpen(!item.open)}
                                             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors relative ${
-                                                (active || isCategoryActive) 
+                                                active
                                                     ? 'bg-white/20 text-white' 
                                                     : 'text-white/90 hover:bg-white/10'
                                             }`}
@@ -239,7 +228,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                                     style={{ width: '20px', height: '20px', flexShrink: 0 }}
                                                 >
                                                     <Icon 
-                                                        className={`${(active || isCategoryActive) ? 'text-white' : 'text-white/80'}`} 
+                                                        className={`${active ? 'text-white' : 'text-white/80'}`} 
                                                         size={18}
                                                         style={{ display: 'block', visibility: 'visible' }}
                                                     />
@@ -272,7 +261,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                                     <FaChevronRight className="text-white/80 text-xs" />
                                                 )}
                                             </div>
-                                            {(active || isCategoryActive) && (
+                                            {active && (
                                                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full"></div>
                                             )}
                                         </button>

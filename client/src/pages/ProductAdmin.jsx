@@ -7,6 +7,8 @@ import { FaEye } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
 import { TbEdit } from "react-icons/tb";
 import { FaRegTrashCan } from "react-icons/fa6";
+import { IoClose } from "react-icons/io5";
+import { valideURLConvert } from '../utils/valideURLConvert'
 
 const ProductAdmin = () => {
   const [allProducts, setAllProducts] = useState([])
@@ -19,6 +21,8 @@ const ProductAdmin = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [viewProduct, setViewProduct] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
   const navigate = useNavigate();
 
   // Lọc sản phẩm theo search (nếu có)
@@ -110,6 +114,11 @@ const ProductAdmin = () => {
   const handleEdit = (product) => {
     setEditProduct(product);
     setShowEditModal(true);
+  };
+
+  const handleView = (product) => {
+    setViewProduct(product);
+    setShowViewModal(true);
   };
 
   const handleUpdateProduct = async (updatedProduct) => {
@@ -260,7 +269,7 @@ const ProductAdmin = () => {
                           <button 
                             title='View' 
                             className='text-gray-400 hover:text-blue-600 transition-colors'
-                            onClick={() => navigate(`/product/${p._id}`)}
+                            onClick={() => handleView(p)}
                           >
                             <FaEye size={18} />
                           </button>
@@ -332,61 +341,276 @@ const ProductAdmin = () => {
         </div>
       </div>
       {showEditModal && editProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-[400px]">
-            <h2 className="text-lg font-semibold mb-4">Sửa sản phẩm</h2>
-            <div className="mb-2 flex flex-col items-center">
-              <img
-                src={editProduct.image && editProduct.image[0] ? editProduct.image[0] : '/default.png'}
-                alt="Ảnh sản phẩm"
-                className="w-24 h-24 object-contain rounded mb-2 border"
-              />
-              <label className="block">
-                <span className="sr-only">Chọn ảnh mới</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  onChange={handleImageChange}
-                  disabled={uploadingImage}
-                />
-              </label>
-              {uploadingImage && <span className="text-xs text-blue-500 mt-1">Đang tải ảnh...</span>}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowEditModal(false)
+          }
+        }}>
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-semibold text-gray-800">Sửa sản phẩm</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <IoClose size={24} />
+              </button>
             </div>
-            <input
-              className="border p-2 w-full mb-2"
-              value={editProduct.name}
-              onChange={e => setEditProduct({ ...editProduct, name: e.target.value })}
-              placeholder="Tên sản phẩm"
-            />
-            <input
-              className="border p-2 w-full mb-2"
-              value={editProduct.price}
-              type="number"
-              onChange={e => setEditProduct({ ...editProduct, price: Number(e.target.value) })}
-              placeholder="Giá bán"
-            />
-            <input
-              className="border p-2 w-full mb-2"
-              value={editProduct.discount}
-              type="number"
-              onChange={e => setEditProduct({ ...editProduct, discount: Number(e.target.value) })}
-              placeholder="Giảm giá (%)"
-            />
-            <input
-              className="border p-2 w-full mb-2"
-              value={editProduct.stock}
-              type="number"
-              onChange={e => setEditProduct({ ...editProduct, stock: Number(e.target.value) })}
-              placeholder="Số lượng trong kho"
-            />
-            <div className="flex gap-2 mt-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => handleUpdateProduct(editProduct)} disabled={uploadingImage}>Lưu</button>
-              <button className="bg-gray-300 px-4 py-2 rounded" onClick={() => setShowEditModal(false)}>Hủy</button>
+
+            {/* Content */}
+            <div className="p-6">
+              {/* Image Upload Section */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh sản phẩm</label>
+                <div className="flex flex-col items-center">
+                  <div className="mb-4">
+                    <img
+                      src={editProduct.image && editProduct.image[0] ? editProduct.image[0] : '/default.png'}
+                      alt="Ảnh sản phẩm"
+                      className="w-40 h-40 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                    />
+                  </div>
+                  <label className="cursor-pointer">
+                    <div className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors text-sm font-medium inline-flex items-center gap-2">
+                      <span>Chọn tệp</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                  {uploadingImage && (
+                    <span className="text-xs text-blue-600 mt-2 flex items-center gap-1">
+                      <span className="animate-spin">⏳</span>
+                      Đang tải ảnh...
+                    </span>
+                  )}
+                  {editProduct.image && editProduct.image[0] && (
+                    <span className="text-xs text-gray-500 mt-2 truncate max-w-xs">
+                      {editProduct.image[0].split('/').pop()}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Form Fields */}
+              <div className="grid gap-4">
+                <div className="grid gap-1">
+                  <label htmlFor="edit-name" className="text-sm font-medium text-gray-700">Tên sản phẩm</label>
+                  <input
+                    id="edit-name"
+                    type="text"
+                    className="bg-white border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-colors"
+                    value={editProduct.name || ''}
+                    onChange={e => setEditProduct({ ...editProduct, name: e.target.value })}
+                    placeholder="Nhập tên sản phẩm"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="grid gap-1">
+                    <label htmlFor="edit-price" className="text-sm font-medium text-gray-700">Giá bán</label>
+                    <input
+                      id="edit-price"
+                      type="number"
+                      className="bg-white border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-colors"
+                      value={editProduct.price || 0}
+                      onChange={e => setEditProduct({ ...editProduct, price: Number(e.target.value) || 0 })}
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <label htmlFor="edit-discount" className="text-sm font-medium text-gray-700">Giảm giá (%)</label>
+                    <input
+                      id="edit-discount"
+                      type="number"
+                      className="bg-white border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-colors"
+                      value={editProduct.discount || 0}
+                      onChange={e => setEditProduct({ ...editProduct, discount: Number(e.target.value) || 0 })}
+                      placeholder="0"
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+                  <div className="grid gap-1">
+                    <label htmlFor="edit-stock" className="text-sm font-medium text-gray-700">Số lượng trong kho</label>
+                    <input
+                      id="edit-stock"
+                      type="number"
+                      className="bg-white border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-colors"
+                      value={editProduct.stock || 0}
+                      onChange={e => setEditProduct({ ...editProduct, stock: Number(e.target.value) || 0 })}
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                onClick={() => setShowEditModal(false)}
+              >
+                Hủy
+              </button>
+              <button
+                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium disabled:bg-blue-400 disabled:cursor-not-allowed"
+                onClick={() => handleUpdateProduct(editProduct)}
+                disabled={uploadingImage}
+              >
+                Lưu
+              </button>
             </div>
           </div>
         </div>
       )}
+      {showViewModal && viewProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowViewModal(false)
+          }
+        }}>
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-semibold text-gray-800">Chi tiết sản phẩm</h2>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <IoClose size={24} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column - Image */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Ảnh sản phẩm</label>
+                  <div className="flex justify-center">
+                    {viewProduct.image && viewProduct.image[0] ? (
+                      <img
+                        src={viewProduct.image[0]}
+                        alt={viewProduct.name}
+                        className="w-full max-w-md h-auto object-contain rounded-lg border-2 border-gray-200 shadow-sm"
+                      />
+                    ) : (
+                      <div className="w-full max-w-md h-64 bg-gray-100 rounded-lg border-2 border-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400">Không có ảnh</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column - Product Info */}
+                <div className="space-y-4">
+                  <div className="grid gap-1">
+                    <label className="text-sm font-medium text-gray-700">Tên sản phẩm</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800">
+                      {viewProduct.name || 'N/A'}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-1">
+                      <label className="text-sm font-medium text-gray-700">Giá bán</label>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 font-medium">
+                        {formatCurrency(viewProduct.price || 0)}
+                      </div>
+                    </div>
+                    <div className="grid gap-1">
+                      <label className="text-sm font-medium text-gray-700">Giảm giá (%)</label>
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800 font-medium">
+                        {viewProduct.discount || 0}%
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-1">
+                    <label className="text-sm font-medium text-gray-700">Giá sau khi giảm giá</label>
+                    <div className="bg-teal-50 border border-teal-200 rounded-lg px-4 py-2.5 text-teal-700 font-semibold text-lg">
+                      {formatCurrency(
+                        viewProduct.price && viewProduct.discount
+                          ? viewProduct.price - (viewProduct.price * viewProduct.discount / 100)
+                          : viewProduct.price || 0
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-1">
+                    <label className="text-sm font-medium text-gray-700">Số lượng tồn kho</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-gray-800">
+                      {viewProduct.stock || 0}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-1">
+                    <label className="text-sm font-medium text-gray-700">Danh mục</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
+                      {viewProduct.category && viewProduct.category.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {viewProduct.category.map((cat, index) => (
+                            <span key={index} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-sm">
+                              {typeof cat === 'object' ? cat.name : cat}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">N/A</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-1">
+                    <label className="text-sm font-medium text-gray-700">Danh mục con</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5">
+                      {viewProduct.subCategory && viewProduct.subCategory.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {viewProduct.subCategory.map((subCat, index) => (
+                            <span key={index} className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm">
+                              {typeof subCat === 'object' ? subCat.name : subCat}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">N/A</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mt-6 grid gap-1">
+                <label className="text-sm font-medium text-gray-700">Mô tả</label>
+                <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-800 whitespace-pre-wrap min-h-[100px]">
+                  {viewProduct.description || 'Không có mô tả'}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+              <button
+                className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                onClick={() => setShowViewModal(false)}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow w-[350px]">
