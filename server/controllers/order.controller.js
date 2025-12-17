@@ -26,10 +26,27 @@ export async function createPaymentController(request, response) {
             userId: userId,
             orderId: `ORD-${new mongoose.Types.ObjectId()}`,
             productId: list_items.map(el => el.productId._id),
-            product_details: list_items.map(el => ({
-                name: el.productId.name
-            })),
+            product_details: list_items.map(el => {
+                // Get image - handle both array and string
+                let productImage = '';
+                if (el.productId.image) {
+                    if (Array.isArray(el.productId.image) && el.productId.image.length > 0) {
+                        productImage = el.productId.image[0];
+                    } else if (typeof el.productId.image === 'string' && el.productId.image.trim() !== '') {
+                        productImage = el.productId.image;
+                    }
+                }
+                
+                return {
+                    name: el.productId.name || '',
+                    qty: el.quantity || el.qty || 1,
+                    price: el.productId.price || 0,
+                    image: productImage,
+                    productId: el.productId._id.toString()
+                };
+            }),
             paymentId: "",
+            payment_method: "VNPAY",
             payment_status: "PENDING",
             delivery_address: addressId,
             subTotalAmt: subTotalAmt,
@@ -155,7 +172,8 @@ export async function checkPaymentController(request, response) {
                 },
                 {
                     paymentId: query.vnp_TransactionNo,
-                    payment_status: "VNPAY"
+                    payment_method: "VNPAY",
+                    payment_status: "SUCCESS"
                 },
                 { new: true }
             );
@@ -188,6 +206,7 @@ export async function checkPaymentController(request, response) {
                     payment_status: "PENDING"
                 },
                 {
+                    payment_method: "VNPAY",
                     payment_status: "FAILED",
                     paymentId: query.vnp_TransactionNo
                 },
@@ -216,24 +235,79 @@ export async function CashOnDeliveryOrderController(request, response) {
         const userId = request.userId; // auth middleware
         const { list_items, totalAmt, addressId, subTotalAmt } = request.body;
 
+        // Validate input
+        if (!list_items || !Array.isArray(list_items) || list_items.length === 0) {
+            return response.status(400).json({
+                message: "Danh sách sản phẩm không hợp lệ",
+                error: true,
+                success: false
+            });
+        }
+
+        // Validate each item has valid product data
+        for (const item of list_items) {
+            if (!item.productId || !item.productId._id) {
+                return response.status(400).json({
+                    message: "Thông tin sản phẩm không hợp lệ",
+                    error: true,
+                    success: false
+                });
+            }
+            if (!item.productId.price || item.productId.price <= 0) {
+                return response.status(400).json({
+                    message: `Sản phẩm "${item.productId.name || 'N/A'}" không có giá hợp lệ`,
+                    error: true,
+                    success: false
+                });
+            }
+        }
+
         // Tạo 1 order duy nhất chứa nhiều sản phẩm
         const payload = {
             userId: userId,
             orderId: `ORD-${new mongoose.Types.ObjectId()}`,
             productId: list_items.map(el => el.productId._id),
-            product_details: list_items.map(el => ({
-                name: el.productId.name,
-                qty: el.qty || 1,
-                price: el.productId.price || 0,
-                image: el.productId.image && el.productId.image[0] ? el.productId.image[0] : '',
-                productId: el.productId._id.toString()
-            })),
+            product_details: list_items.map(el => {
+                // Get image - handle both array and string
+                let productImage = '';
+                if (el.productId.image) {
+                    if (Array.isArray(el.productId.image) && el.productId.image.length > 0) {
+                        productImage = el.productId.image[0];
+                    } else if (typeof el.productId.image === 'string' && el.productId.image.trim() !== '') {
+                        productImage = el.productId.image;
+                    }
+                }
+                
+                // Ensure price is valid number
+                const productPrice = Number(el.productId.price) || 0;
+                if (productPrice <= 0) {
+                    throw new Error(`Giá sản phẩm "${el.productId.name || 'N/A'}" không hợp lệ`);
+                }
+                
+                return {
+                    name: el.productId.name || '',
+                    qty: el.quantity || el.qty || 1,
+                    price: productPrice,
+                    image: productImage,
+                    productId: el.productId._id.toString()
+                };
+            }),
             paymentId: "",
-            payment_status: "CASH ON DELIVERY",
+            payment_method: "CASH ON DELIVERY",
+            payment_status: "PENDING",
             delivery_address: addressId,
-            subTotalAmt: subTotalAmt,
-            totalAmt: totalAmt,
+            subTotalAmt: Number(subTotalAmt) || 0,
+            totalAmt: Number(totalAmt) || 0,
         };
+
+        // Validate totals
+        if (payload.totalAmt <= 0) {
+            return response.status(400).json({
+                message: "Tổng tiền đơn hàng không hợp lệ",
+                error: true,
+                success: false
+            });
+        }
 
         const generatedOrder = await OrderModel.create(payload);
 
@@ -326,6 +400,7 @@ const getOrderProductItems = async ({
     userId,
     addressId,
     paymentId,
+    payment_method,
     payment_status,
 }) => {
     if (!lineItems?.data?.length) return [];
@@ -350,6 +425,7 @@ const getOrderProductItems = async ({
         productId: productDetails.map(p => p.productId),
         product_details: productDetails,
         paymentId: paymentId,
+        payment_method: payment_method || "STRIPE",
         payment_status: payment_status,
         delivery_address: addressId,
         subTotalAmt: totalAmount / 100,
@@ -376,7 +452,8 @@ export async function webhookStripe(request, response) {
                     userId: userId,
                     addressId: session.metadata.addressId,
                     paymentId: session.payment_intent,
-                    payment_status: session.payment_status,
+                    payment_method: "STRIPE",
+                    payment_status: session.payment_status === 'paid' ? 'SUCCESS' : 'PENDING',
                 })
 
             const order = await OrderModel.insertMany(orderProduct)

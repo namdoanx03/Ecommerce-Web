@@ -79,22 +79,36 @@ const GlobalProvider = ({children}) => {
     }
 
     useEffect(()=>{
-      const qty = cartItem.reduce((preve,curr)=>{
-          return preve + curr.quantity
-      },0)
-      setTotalQty(qty)
+      if (!cartItem || cartItem.length === 0) {
+        setTotalQty(0);
+        setTotalPrice(0);
+        setNotDiscountTotalPrice(0);
+        return;
+      }
+
+      const qty = cartItem.reduce((preve, curr) => {
+          return preve + (curr?.quantity || 0);
+      }, 0);
+      setTotalQty(qty);
       
-      const tPrice = cartItem.reduce((preve,curr)=>{
-          const priceAfterDiscount = pricewithDiscount(curr?.productId?.price,curr?.productId?.discount)
+      const tPrice = cartItem.reduce((preve, curr) => {
+          const price = curr?.productId?.price || 0;
+          const discount = curr?.productId?.discount || 0;
+          const quantity = curr?.quantity || 0;
+          const priceAfterDiscount = pricewithDiscount(price, discount);
+          const itemTotal = priceAfterDiscount * quantity;
+          
+          return preve + (isNaN(itemTotal) ? 0 : itemTotal);
+      }, 0);
+      setTotalPrice(isNaN(tPrice) ? 0 : tPrice);
 
-          return preve + (priceAfterDiscount * curr.quantity)
-      },0)
-      setTotalPrice(tPrice)
-
-      const notDiscountPrice = cartItem.reduce((preve,curr)=>{
-        return preve + (curr?.productId?.price * curr.quantity)
-      },0)
-      setNotDiscountTotalPrice(notDiscountPrice)
+      const notDiscountPrice = cartItem.reduce((preve, curr) => {
+        const price = curr?.productId?.price || 0;
+        const quantity = curr?.quantity || 0;
+        const itemTotal = price * quantity;
+        return preve + (isNaN(itemTotal) ? 0 : itemTotal);
+      }, 0);
+      setNotDiscountTotalPrice(isNaN(notDiscountPrice) ? 0 : notDiscountPrice);
   },[cartItem])
 
     const handleLogoutOut = ()=>{

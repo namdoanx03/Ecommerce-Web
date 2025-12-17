@@ -32,6 +32,7 @@ import DashboardPage from "../pages/DashboardPage";
 import ManageOrder from "../pages/ManageOrder";
 import CheckPayment from "../pages/CheckPayment";
 import UserAdmin from "../pages/UserAdmin";
+import OrderDetail from "../pages/OrderDetail";
 
 const router = createBrowserRouter([
     {
@@ -114,6 +115,10 @@ const router = createBrowserRouter([
                     {
                         path : 'manage-order',
                         element : <AdminPermision><ManageOrder/></AdminPermision>
+                    },
+                    {
+                        path : 'order-detail/:orderId',
+                        element : <AdminPermision><OrderDetail/></AdminPermision>
                     },
                     {
                         path : "subcategory",

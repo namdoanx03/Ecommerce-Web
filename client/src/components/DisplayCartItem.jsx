@@ -76,16 +76,31 @@ const DisplayCartItem = ({ close }) => {
                                                 return (
                                                     <div key={item?._id + "cartItemDisplay"} className='flex justify-between w-full gap-4'>
                                                         <div className='flex items-center gap-4'>
-                                                            <div className='w-16 h-16 min-h-16 min-w-16 bg-red-500 border rounded'>
-                                                                <img
-                                                                    src={item?.productId?.image[0]}
-                                                                    className='object-scale-down'
-                                                                />
+                                                            <div className='w-16 h-16 min-h-16 min-w-16 bg-red-500 border rounded flex items-center justify-center overflow-hidden'>
+                                                                {item?.productId?.image && Array.isArray(item.productId.image) && item.productId.image.length > 0 ? (
+                                                                    <img
+                                                                        src={item.productId.image[0]}
+                                                                        alt={item?.productId?.name}
+                                                                        className='w-full h-full object-cover'
+                                                                        onError={(e) => {
+                                                                            e.target.style.display = 'none';
+                                                                        }}
+                                                                    />
+                                                                ) : item?.productId?.image && typeof item.productId.image === 'string' ? (
+                                                                    <img
+                                                                        src={item.productId.image}
+                                                                        alt={item?.productId?.name}
+                                                                        className='w-full h-full object-cover'
+                                                                        onError={(e) => {
+                                                                            e.target.style.display = 'none';
+                                                                        }}
+                                                                    />
+                                                                ) : null}
                                                             </div>
                                                             <div className='w-full max-w-40 text-xs'>
-                                                                <p className='text-sm text-ellipsis truncate line-clamp-2'>{item?.productId?.name}</p>
-                                                                <p className='text-sm my-1'>Số lượng: {item?.quantity}</p>
-                                                                <p className='font-semibold'>{DisplayPriceInVND(pricewithDiscount(item?.productId?.price, item?.productId?.discount))}</p>
+                                                                <p className='text-sm text-ellipsis truncate line-clamp-2'>{item?.productId?.name || 'N/A'}</p>
+                                                                <p className='text-sm my-1'>Số lượng: {item?.quantity || 0}</p>
+                                                                <p className='font-semibold'>{DisplayPriceInVND(pricewithDiscount(item?.productId?.price || 0, item?.productId?.discount || 0))}</p>
                                                             </div>
 
                                                         </div>

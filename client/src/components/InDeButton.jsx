@@ -15,8 +15,14 @@ const InDeButton = ({ data }) => {
     const [cartItemDetails,setCartItemsDetails] = useState()
 
     useEffect(() => {
-        const product = cartItem.find(item => item.productId._id === data._id);
-        setCartItemsDetails(product);
+        if (!data?._id || !cartItem || cartItem.length === 0) {
+            setCartItemsDetails(null);
+            setQty(1);
+            return;
+        }
+
+        const product = cartItem.find(item => item?.productId?._id === data._id);
+        setCartItemsDetails(product || null);
         setQty(product?.quantity || 1);
     }, [cartItem, data]);
 
@@ -34,11 +40,19 @@ const InDeButton = ({ data }) => {
     const decreaseQty = async(e) => {
         e.preventDefault()
         e.stopPropagation()
-        if (cartItemDetails && qty > 1) {
-            const response = await updateCartItem(cartItemDetails?._id, qty - 1)
-            if (response.success) {
+        if (!cartItemDetails) return;
+        
+        if (qty === 1) {
+            // Nếu số lượng là 1, xóa sản phẩm khỏi giỏ hàng
+            const response = await deleteCartItem(cartItemDetails._id)
+            if (response?.success) {
+                toast.success("Đã xóa sản phẩm khỏi giỏ hàng")
+            }
+        } else if (qty > 1) {
+            // Nếu số lượng > 1, giảm số lượng
+            const response = await updateCartItem(cartItemDetails._id, qty - 1)
+            if (response?.success) {
                 setQty(qty - 1)
-                toast.success("Item removed")
             }
         }
     }

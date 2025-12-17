@@ -411,17 +411,46 @@ const CheckoutPage = () => {
           <div className="bg-[#f8f8f8] rounded-lg shadow p-8">
             <h3 className="text-lg font-semibold mb-4">Tóm tắt Đặt hàng</h3>
             <div className="flex flex-col gap-3 max-h-80 overflow-y-auto mb-4">
-              {cartItemsList.map((item, idx) => (
-                <div key={item._id + 'summary'} className="flex items-center gap-3">
-                  <img src={item.productId.image[0]} alt={item.productId.name} className="w-12 h-12 object-cover rounded" />
-                  <div className="flex-1">
-                    <p className="font-medium text-sm line-clamp-2">{item.productId.name} X {item.quantity}</p>
-                  </div>
-                  <div className="text-right font-semibold text-sm whitespace-nowrap">
-                    {DisplayPriceInVND(item.productId.price)}
-                  </div>
-                </div>
-              ))}
+              {cartItemsList && cartItemsList.length > 0 ? (
+                cartItemsList.map((item, idx) => {
+                  // Get image - handle both array and string
+                  let productImage = null;
+                  if (item?.productId?.image) {
+                    if (Array.isArray(item.productId.image) && item.productId.image.length > 0) {
+                      productImage = item.productId.image[0];
+                    } else if (typeof item.productId.image === 'string' && item.productId.image.trim() !== '') {
+                      productImage = item.productId.image;
+                    }
+                  }
+                  
+                  return (
+                    <div key={item._id + 'summary'} className="flex items-center gap-3">
+                      {productImage ? (
+                        <img 
+                          src={productImage} 
+                          alt={item?.productId?.name || 'Product'} 
+                          className="w-12 h-12 object-cover rounded"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className={`w-12 h-12 bg-gray-100 rounded flex items-center justify-center ${productImage ? 'hidden' : ''}`}
+                      ></div>
+                      <div className="flex-1">
+                        <p className="font-medium text-sm line-clamp-2">{item?.productId?.name || 'N/A'} X {item?.quantity || 1}</p>
+                      </div>
+                      <div className="text-right font-semibold text-sm whitespace-nowrap">
+                        {DisplayPriceInVND(item?.productId?.price || 0)}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center text-gray-500 py-4">Giỏ hàng trống</div>
+              )}
             </div>
             <div className="border-t pt-4 space-y-2 text-sm">
               <div className="flex justify-between">
