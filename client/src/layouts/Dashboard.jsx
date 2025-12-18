@@ -5,6 +5,7 @@ import { IoSearch } from "react-icons/io5";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { FaChevronDown, FaBars, FaChevronLeft } from "react-icons/fa";
+import { FiSettings, FiLogOut } from "react-icons/fi";
 import LeftDashboard from '../pages/LeftDashboard'
 import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
@@ -118,28 +119,23 @@ const Dashboard = () => {
                   {showUserMenu && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <Link 
-                        to="/dashboard/profile" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        to="/dashboard/profile-setting" 
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                         onClick={() => setShowUserMenu(false)}
                       >
-                        Profile
-                      </Link>
-                      <Link 
-                        to="/" 
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setShowUserMenu(false)}
-                      >
-                        Settings
+                        <FiSettings className="w-4 h-4 mr-3" />
+                        <span>Settings</span>
                       </Link>
                       <div className="border-t border-gray-200 my-1"></div>
                       <button 
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors"
                         onClick={() => {
                           setShowUserMenu(false)
                           handleLogout()
                         }}
                       >
-                        Logout
+                        <FiLogOut className="w-4 h-4 mr-3" />
+                        <span>Logout</span>
                       </button>
                     </div>
                   )}

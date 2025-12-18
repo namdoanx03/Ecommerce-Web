@@ -92,7 +92,7 @@ const router = createBrowserRouter([
                 element : <Dashboard/>,
                 children : [
                     {
-                        path : "profile",
+                        path : "profile-setting",
                         element : <Profile/>
                     },
                     
