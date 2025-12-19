@@ -33,6 +33,8 @@ import ManageOrder from "../pages/ManageOrder";
 import CheckPayment from "../pages/CheckPayment";
 import UserAdmin from "../pages/UserAdmin";
 import OrderDetail from "../pages/OrderDetail";
+import ManageVoucher from "../pages/ManageVoucher";
+import AddVoucher from "../pages/AddVoucher";
 
 const router = createBrowserRouter([
     {
@@ -139,6 +141,14 @@ const router = createBrowserRouter([
                     {
                         path : 'users',
                         element : <AdminPermision><UserAdmin/></AdminPermision>
+                    },
+                    {
+                        path : 'voucher',
+                        element : <AdminPermision><ManageVoucher/></AdminPermision>
+                    },
+                    {
+                        path : 'add-voucher',
+                        element : <AdminPermision><AddVoucher/></AdminPermision>
                     }
                 ]
             },

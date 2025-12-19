@@ -29,7 +29,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
     const [subCategoryMenuOpen, setSubCategoryMenuOpen] = useState(false);
     const [usersMenuOpen, setUsersMenuOpen] = useState(false);
     const [ordersMenuOpen, setOrdersMenuOpen] = useState(false);
-    const [couponsMenuOpen, setCouponsMenuOpen] = useState(false);
+    const [voucherMenuOpen, setVoucherMenuOpen] = useState(false);
     const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch()
@@ -48,6 +48,8 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setUsersMenuOpen(true);
         } else if (location.pathname.includes('/manage-order')) {
             setOrdersMenuOpen(true);
+        } else if (location.pathname.includes('/voucher')) {
+            setVoucherMenuOpen(true);
         }
     }, [location.pathname]);
 
@@ -140,12 +142,16 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setOpen: setOrdersMenuOpen
         },
         {
-            name: 'Coupons',
+            name: 'Voucher',
             icon: FaTag,
-            path: '#',
+            path: '/dashboard/voucher',
             hasSubmenu: true,
-            open: couponsMenuOpen,
-            setOpen: setCouponsMenuOpen
+            submenu: [
+                { name: 'Voucher List', path: '/dashboard/voucher' },
+                { name: 'Add New Voucher', path: '/dashboard/add-voucher' }
+            ],
+            open: voucherMenuOpen,
+            setOpen: setVoucherMenuOpen
         },
         {
             name: 'Product Review',
@@ -217,6 +223,8 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                             active = location.pathname === '/dashboard/subcategory' || location.pathname === '/dashboard/upload-subcategory';
                         } else if (item.name === 'Orders') {
                             active = location.pathname === '/dashboard/manage-order';
+                        } else if (item.name === 'Voucher') {
+                            active = location.pathname === '/dashboard/voucher' || location.pathname === '/dashboard/add-voucher';
                         } else {
                             active = isActive(item.path);
                         }
@@ -228,8 +236,8 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                         <button
                                             onClick={() => {
                                                 item.setOpen(!item.open)
-                                                // If clicking on Orders, also navigate to the page
-                                                if (item.name === 'Orders' && item.path) {
+                                                // If clicking on Orders or Voucher, also navigate to the page
+                                                if ((item.name === 'Orders' || item.name === 'Voucher') && item.path) {
                                                     navigate(item.path)
                                                 }
                                             }}

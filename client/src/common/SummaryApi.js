@@ -169,6 +169,22 @@ const SummaryApi = {
     getAllUsers: {
         url: '/api/user/get-all-users',
         method: 'get'
+    },
+    createVoucher: {
+        url: '/api/voucher/create',
+        method: 'post'
+    },
+    getVouchers: {
+        url: '/api/voucher/get',
+        method: 'get'
+    },
+    updateVoucher: {
+        url: '/api/voucher/update',
+        method: 'put'
+    },
+    deleteVoucher: {
+        url: '/api/voucher/delete',
+        method: 'delete'
     }
 }
 
