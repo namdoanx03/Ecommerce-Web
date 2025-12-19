@@ -10,6 +10,7 @@ import ResetPassword from "../pages/ResetPassword";
 import UserMenuMobile from "../pages/UserMenuMobile";
 import Dashboard from "../layouts/Dashboard";
 import Profile from "../pages/Profile";
+import UserDashboard from "../pages/UserDashboard";
 import MyOrders from "../pages/MyOrders";
 import Address from "../pages/Address";
 import CategoryPage from "../pages/CategoryPage";
@@ -33,6 +34,7 @@ import ManageOrder from "../pages/ManageOrder";
 import CheckPayment from "../pages/CheckPayment";
 import UserAdmin from "../pages/UserAdmin";
 import OrderDetail from "../pages/OrderDetail";
+import OrderTracking from "../pages/OrderTracking";
 import ManageVoucher from "../pages/ManageVoucher";
 import AddVoucher from "../pages/AddVoucher";
 
@@ -83,11 +85,11 @@ const router = createBrowserRouter([
             },
             {
                 path : "profile",
-                element : <Profile/>
+                element : <UserDashboard/>
             },
             {
                 path : "myorders",
-                element : <MyOrders/>
+                element : <UserDashboard/>
             },
             {
                 path : "dashboard",
@@ -180,6 +182,14 @@ const router = createBrowserRouter([
             {
                 path : "success",
                 element : <Success/>
+            },
+            {
+                path : "order-detail/:orderId",
+                element : <OrderDetail/>
+            },
+            {
+                path : "order-tracking/:orderId",
+                element : <OrderTracking/>
             },
             {
                 path : 'cancel',

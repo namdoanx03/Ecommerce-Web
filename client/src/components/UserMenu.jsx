@@ -63,13 +63,7 @@ const UserMenu = ({ close }) => {
               <a onClick={handleClose} href={"/profile"}>My Account</a>
             </div>
             <div className='px-2 hover:bg-orange-200 py-1 cursor-pointer'>
-              <a onClick={handleClose} href={"/myorders"}>My Order</a>
-            </div>
-            <div className='px-2 hover:bg-orange-200 py-1 cursor-pointer'>
               <button onClick={handleLogout}>Log Out </button>
-            </div>
-            <div className='text-sm flex items-center gap-2'>
-              {/* ... */}
             </div>
           </>
         )

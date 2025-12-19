@@ -68,9 +68,8 @@ function App() {
     // fetchCartItem()
   }, [])
 
-  const isAuthPage = location.pathname === '/reset-password' ||
-    location.pathname === '/profile' ||
-    location.pathname === '/myorders'
+  // Các trang auth (không cần header/footer)
+  const isAuthPage = location.pathname === '/reset-password'
   const isDashboard = location.pathname.startsWith('/dashboard')
 
   return (

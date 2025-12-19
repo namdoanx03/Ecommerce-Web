@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import SummaryApi from '../common/SummaryApi'
 import AxiosToastError from '../utils/AxiosToastError'
 import Axios from '../utils/Axios'
@@ -11,6 +11,7 @@ import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 const OrderDetail = () => {
   const { orderId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -146,7 +147,13 @@ const OrderDetail = () => {
         {/* Header */}
         <div className="mb-6">
           <button
-            onClick={() => navigate('/dashboard/manage-order')}
+            onClick={() => {
+              if (location.pathname.startsWith('/dashboard')) {
+                navigate('/dashboard/manage-order')
+              } else {
+                navigate(-1)
+              }
+            }}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors"
           >
             <IoArrowBack size={20} />
