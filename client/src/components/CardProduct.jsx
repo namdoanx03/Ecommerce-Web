@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 import { Link } from 'react-router-dom'
 import { valideURLConvert } from '../utils/valideURLConvert'
@@ -7,22 +7,54 @@ import SummaryApi from '../common/SummaryApi'
 import AxiosToastError from '../utils/AxiosToastError'
 import Axios from '../utils/Axios'
 import toast from 'react-hot-toast'
-import { useState } from 'react'
-import { useGlobalContext } from '../provider/GlobalProvider'
 import AddToCartButton from './AddToCartButton'
-import { FaRegStar } from "react-icons/fa";
+import { CiHeart } from "react-icons/ci";
+import { useSelector } from 'react-redux'
 
 const CardProduct = ({data}) => {
     const url = `/product/${valideURLConvert(data.name)}-${data._id}`
     const [loading,setLoading] = useState(false)
+    const user = useSelector(state => state.user)
+
+    const handleToggleFavorite = async (e) => {
+      e.preventDefault()
+      if (!user?._id) {
+        toast.error('Vui lòng đăng nhập để thêm yêu thích')
+        return
+      }
+      try {
+        if (loading) return
+        setLoading(true)
+        const response = await Axios({
+          ...SummaryApi.toggleFavorite,
+          data: { productId: data._id }
+        })
+        const { data: res } = response
+        if (res.success) {
+          toast.success(res.message)
+        }
+      } catch (error) {
+        AxiosToastError(error)
+      } finally {
+        setLoading(false)
+      }
+    }
   
   return (
-    <Link to={url} className=' py-2 lg:p-4 grid gap-11 lg:gap-3 min-w-36 lg:min-w-52 rounded cursor-pointer bg-[#f8f8f8]' >
+    <Link to={url} className=' py-2 lg:p-4 grid gap-11 lg:gap-3 min-w-36 lg:min-w-52 rounded cursor-pointer bg-[#f8f8f8] relative' >
+      <button
+        onClick={handleToggleFavorite}
+        className='absolute top-2 right-2 z-10 p-1.5 rounded-full bg-white shadow hover:text-emerald-500'
+        title='Favorite'
+        disabled={loading}
+      >
+        <CiHeart className='w-5 h-5' />
+      </button>
       <div className='min-h-20 w-full max-h-24 lg:max-h-32 rounded overflow-hidden'>
-            <img 
-                src={data.image[0]}
-                className='w-full h-full object-scale-down lg:scale-125'
-            />
+        <img 
+          src={data.image[0]}
+          className='w-full h-full object-scale-down lg:scale-125'
+        />
       </div>
       <div className='flex items-center gap-1'>
         <div className='rounded text-xs w-fit p-[1px] px-2 text-green-600 bg-green-50'>

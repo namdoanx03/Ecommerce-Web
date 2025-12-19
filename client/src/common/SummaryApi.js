@@ -170,6 +170,14 @@ const SummaryApi = {
         url: '/api/user/get-all-users',
         method: 'get'
     },
+    toggleFavorite: {
+        url: '/api/user/favorite/toggle',
+        method: 'post'
+    },
+    getFavoriteList: {
+        url: '/api/user/favorite/list',
+        method: 'get'
+    },
     createVoucher: {
         url: '/api/voucher/create',
         method: 'post'

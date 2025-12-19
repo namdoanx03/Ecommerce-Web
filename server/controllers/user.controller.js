@@ -213,6 +213,93 @@ export async function logoutController(request,response){
     }
 }
 
+// Toggle favorite product
+export async function toggleFavoriteProductController(request, response) {
+    try {
+        const userId = request.userId;
+        const { productId } = request.body;
+
+        if (!productId) {
+            return response.status(400).json({
+                message: "Provide productId",
+                error: true,
+                success: false
+            });
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return response.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false
+            });
+        }
+
+        const index = user.favorites?.findIndex(id => id.toString() === productId) ?? -1;
+        let isFavorite;
+
+        if (index === -1) {
+            user.favorites = [...(user.favorites || []), productId];
+            isFavorite = true;
+        } else {
+            user.favorites.splice(index, 1);
+            isFavorite = false;
+        }
+
+        await user.save();
+
+        return response.json({
+            message: isFavorite ? "Đã thêm vào yêu thích" : "Đã bỏ khỏi yêu thích",
+            success: true,
+            error: false,
+            isFavorite,
+            data: user.favorites
+        });
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
+    }
+}
+
+// Get favorite products list
+export async function getFavoriteProductsController(request, response) {
+    try {
+        const userId = request.userId;
+
+        const user = await UserModel.findById(userId).populate({
+            path: 'favorites',
+            select: 'name image price discount stock'
+        });
+
+        if (!user) {
+            return response.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false
+            });
+        }
+
+        return response.json({
+            message: "Lấy danh sách sản phẩm yêu thích thành công",
+            success: true,
+            error: false,
+            data: user.favorites || []
+        });
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
+    }
+}
+
 //upload user avatar
 export async  function uploadAvatar(request,response){
     try {

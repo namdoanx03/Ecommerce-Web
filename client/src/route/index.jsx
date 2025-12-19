@@ -13,6 +13,7 @@ import Profile from "../pages/Profile";
 import UserDashboard from "../pages/UserDashboard";
 import MyOrders from "../pages/MyOrders";
 import Address from "../pages/Address";
+import UserProfile from "../pages/UserProfile";
 import CategoryPage from "../pages/CategoryPage";
 import SubCategoryPage from "../pages/SubCategoryPage";
 import UploadProduct from "../pages/UploadProduct";
@@ -35,6 +36,7 @@ import CheckPayment from "../pages/CheckPayment";
 import UserAdmin from "../pages/UserAdmin";
 import OrderDetail from "../pages/OrderDetail";
 import OrderTracking from "../pages/OrderTracking";
+import Wishlist from "../pages/Wishlist";
 import ManageVoucher from "../pages/ManageVoucher";
 import AddVoucher from "../pages/AddVoucher";
 
@@ -88,8 +90,20 @@ const router = createBrowserRouter([
                 element : <UserDashboard/>
             },
             {
+                path : "wishlist",
+                element : <Wishlist/>
+            },
+            {
                 path : "myorders",
                 element : <UserDashboard/>
+            },
+            {
+                path : "address",
+                element : <Address/>
+            },
+            {
+                path : "info",
+                element : <UserProfile/>
             },
             {
                 path : "dashboard",
@@ -98,11 +112,6 @@ const router = createBrowserRouter([
                     {
                         path : "profile-setting",
                         element : <Profile/>
-                    },
-                    
-                    {
-                        path : "address",
-                        element : <Address/>
                     },
                     {
                         path : '',

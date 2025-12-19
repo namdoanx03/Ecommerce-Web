@@ -57,6 +57,12 @@ const userSchema = new mongoose.Schema({
             ref : 'order'
         }
     ],
+    favorites: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'product'
+        }
+    ],
     forgot_password_otp : {
         type : String,
         default : null

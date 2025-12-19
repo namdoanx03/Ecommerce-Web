@@ -184,46 +184,25 @@ const UserDashboard = () => {
                 <span>Order</span>
               </button>
               <button
-                disabled
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-400 cursor-default"
+                onClick={() => navigate('/wishlist')}
+                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
               >
                 <FiHeart className="w-4 h-4" />
                 <span>Wishlist</span>
               </button>
               <button
-                disabled
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-400 cursor-default"
-              >
-                <FiCreditCard className="w-4 h-4" />
-                <span>Saved Card</span>
-              </button>
-              <button
-                onClick={() => navigate('/dashboard/address')}
+                onClick={() => navigate('/address')}
                 className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
               >
                 <FiMapPin className="w-4 h-4" />
                 <span>Address</span>
               </button>
               <button
-                onClick={() => navigate('/dashboard/profile-setting')}
+                onClick={() => navigate('/info')}
                 className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
               >
                 <FiUser className="w-4 h-4" />
                 <span>Profile</span>
-              </button>
-              <button
-                disabled
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-400 cursor-default"
-              >
-                <FiDownload className="w-4 h-4" />
-                <span>Download</span>
-              </button>
-              <button
-                disabled
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-400 cursor-default"
-              >
-                <FiShield className="w-4 h-4" />
-                <span>Privacy</span>
               </button>
             </nav>
           </div>
@@ -307,7 +286,7 @@ const UserDashboard = () => {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold text-gray-700">Default Billing Address</h4>
                     <button
-                      onClick={() => navigate('/dashboard/address')}
+                      onClick={() => navigate('/address')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
                       Edit Address
@@ -321,7 +300,7 @@ const UserDashboard = () => {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-semibold text-gray-700">Default Shipping Address</h4>
                     <button
-                      onClick={() => navigate('/dashboard/address')}
+                      onClick={() => navigate('/address')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
                       Edit Address

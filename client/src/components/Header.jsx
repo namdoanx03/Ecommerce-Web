@@ -449,7 +449,16 @@ const Header = () => {
                               <div className="hidden xl:block w-px h-8 bg-gray-300"></div>
 
                               {/* Wishlist - Hiển thị từ tablet */}
-                              <button className="flex relative items-center px-1.5 md:px-2 lg:px-3 py-2 rounded text-gray-600 hover:text-red-500 transition-colors">
+                              <button
+                                  onClick={() => {
+                                      if (user?._id) {
+                                          navigate('/wishlist')
+                                      } else {
+                                          redirectToLoginPage()
+                                      }
+                                  }}
+                                  className="flex relative items-center px-1.5 md:px-2 lg:px-3 py-2 rounded text-gray-600 hover:text-red-500 transition-colors"
+                              >
                                   <HiOutlineHeart size={20} className="md:w-5 md:h-5 lg:w-6 lg:h-6" />
                               </button>
 

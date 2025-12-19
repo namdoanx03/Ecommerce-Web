@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { forgotPasswordController, loginController, logoutController, refreshToken, registerUserController, resetpassword, updateUserDetails, uploadAvatar, userDetails, verifyEmailController, verifyForgotPasswordOtp, getAllUsers } from '../controllers/user.controller.js'
+import { forgotPasswordController, loginController, logoutController, refreshToken, registerUserController, resetpassword, updateUserDetails, uploadAvatar, userDetails, verifyEmailController, verifyForgotPasswordOtp, getAllUsers, toggleFavoriteProductController, getFavoriteProductsController } from '../controllers/user.controller.js'
 import auth from '../middleware/auth.js'
 import upload from '../middleware/multer.js'
 import { getDashboardSummary } from '../controllers/summary.controller.js'
@@ -20,5 +20,7 @@ userRouter.post('/refresh-token',refreshToken)
 userRouter.get('/user-details',auth,userDetails)
 userRouter.get('/dashboard-summary', getDashboardSummary)
 userRouter.get('/get-all-users',auth,admin,getAllUsers)
+userRouter.post('/favorite/toggle', auth, toggleFavoriteProductController)
+userRouter.get('/favorite/list', auth, getFavoriteProductsController)
 
 export default userRouter
