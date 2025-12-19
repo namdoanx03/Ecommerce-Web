@@ -193,6 +193,15 @@ const SummaryApi = {
     deleteVoucher: {
         url: '/api/voucher/delete',
         method: 'delete'
+    },
+    // Chat API
+    fetchChatMessages: {
+        url: '/api/chat/messages',
+        method: 'get'
+    },
+    sendChatMessage: {
+        url: '/api/chat/send',
+        method: 'post'
     }
 }
 

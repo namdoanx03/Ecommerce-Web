@@ -15,6 +15,7 @@ import cartRouter from './route/cart.route.js'
 import addressRouter from './route/address.route.js'
 import orderRouter from './route/order.route.js'
 import voucherRouter from './route/voucher.route.js'
+import chatRouter from './route/chat.route.js'
 
 const app = express()
 app.use(cors({
@@ -46,6 +47,7 @@ app.use("/api/cart",cartRouter)
 app.use("/api/address",addressRouter)
 app.use('/api/order',orderRouter)
 app.use('/api/voucher',voucherRouter)
+app.use('/api/chat',chatRouter)
 
 connectDB().then(()=>{
     app.listen(PORT,()=>{

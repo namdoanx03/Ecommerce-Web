@@ -14,6 +14,7 @@ import { handleAddItemCart } from './store/cartProduct'
 import GlobalProvider from './provider/GlobalProvider';
 import { FaCartShopping } from "react-icons/fa6";
 import CartMobileLink from './components/CartMobile';
+import Chat from './components/Chat';
 
 function App() {
   const dispatch = useDispatch()
@@ -85,6 +86,7 @@ function App() {
           <CartMobileLink />
         )
       }
+      {!isAuthPage && !isDashboard && <Chat />}
     </GlobalProvider>
   )
 }
