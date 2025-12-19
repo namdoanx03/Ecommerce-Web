@@ -300,16 +300,21 @@ useEffect(() => {
   };
 
   return (
-    <div className='product-page '>
-      <div className='container min-h-screen bg-white px-28'>
-        <div className='breadcrumb-section h-24 bg-[#f8f8f8] flex items-center justify-between py-7 px-2'>
+    <div className='bg-white min-h-screen'>
+      {/* Thanh tiêu đề full chiều ngang */}
+      <div className='bg-[#f8f8f8]'>
+        <div className='breadcrumb-section h-24 flex items-center justify-between py-7 px-2 container mx-auto px-4 sm:px-5 lg:px-16'>
           <h2 className='text-2xl font-bold '>Tất cả sản phẩm</h2>
           <div className='breadcrumb flex items-center gap-2 h-10'>
-            <a  href='/'><IoIosHome className='text-gray-500 text-xl'/></a>
+            <a href='/'><IoIosHome className='text-gray-500 text-xl'/></a>
             <FaAngleRight className='text-gray-500 text-base' />
             <span className=' text-black-500 font-medium'>Đi chợ tại nhà</span>
           </div>
         </div>
+      </div>
+
+      {/* Nội dung trong container, thẳng hàng với header */}
+      <div className='container mx-auto px-4 sm:px-5 lg:px-16'>
         <div className="display-categories my-10 overflow-hidden">
           <Slider {...settings2}>
             {categories.map((p) => (
@@ -326,12 +331,13 @@ useEffect(() => {
             ))}
           </Slider>
         </div>
+
         <div className='product-list' ref={productListRef}>
           {/* Hiển thị thông báo nếu không có sản phẩm */}
           {!loading && allProducts.length === 0 && (
             <div className="text-center text-gray-500 py-8 ">Không có sản phẩm nào phù hợp.</div>
           )}
-          <div className='container mx-auto flex justify-between'>
+           <div className='flex justify-between'>
             <div className='section-left w-full md:w-1/5 pb-16'>
               <div className='left-box-sidebar border-r-2 border-gray-200 p-2 sticky top-1'>
                 {/* Tìm kiếm */}
