@@ -995,16 +995,15 @@ const Home = () => {
                                        </div>
                                      </a>
                                      
-                                     <div className="px-2 pb-2 flex justify-center">
-                                       <button 
-                                         onClick={(e) => {
-                                           e.preventDefault();
-                                         }}
-                                         className="w-[90%] px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md text-xs font-semibold"
-                                       >
-                                         Thêm vào giỏ
-                                       </button>
-                                     </div>
+                                    {p.stock !== 0 && (
+                                      <div className="px-2 pb-2 flex justify-center">
+                                        <AddToCartButton 
+                                          data={p} 
+                                          showFullWidth={true}
+                                          className="w-[90%] px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md text-xs font-semibold"
+                                        />
+                                      </div>
+                                    )}
                                    </div>
                                  );
                                })}
@@ -1150,18 +1149,16 @@ const Home = () => {
                              </div>
                            </a>
                            
-                           {/* Add to Cart Button */}
-                           <div className="px-3 md:px-4 xl:px-5 pb-3 md:pb-4 xl:pb-5 flex justify-center">
-                             <button 
-                               onClick={(e) => {
-                                 e.preventDefault();
-                                 // Add to cart logic
-                               }}
-                               className="w-[90%] px-4 py-2.5 md:py-3 xl:py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md text-sm md:text-base xl:text-base font-semibold"
-                             >
-                               Thêm vào giỏ
-                             </button>
-                           </div>
+                          {/* Add to Cart Button */}
+                          {p.stock !== 0 && (
+                            <div className="px-3 md:px-4 xl:px-5 pb-3 md:pb-4 xl:pb-5 flex justify-center">
+                              <AddToCartButton 
+                                data={p} 
+                                showFullWidth={true}
+                                className="w-[90%] px-4 py-2.5 md:py-3 xl:py-3.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-colors shadow-md text-sm md:text-base xl:text-base font-semibold"
+                              />
+                            </div>
+                          )}
                          </div>
                          );
                        });
@@ -1266,9 +1263,9 @@ const Home = () => {
                             </div>
                             <div className="flex-1 flex flex-col justify-between">
                               <div>
-                                <div className="font-semibold text-sm mb-1 leading-tight line-clamp-2 trumcate" style={{ minHeight: 42, lineHeight: '1.5' }}>{p.name}</div>
+                                <div className="font-semibold text-sm mb-1 leading-tight line-clamp-2" style={{ minHeight: 42, lineHeight: '1.5' }}>{p.name}</div>
                                 <div className="flex items-end gap-2 mb-1">
-                                  <span className="text-red-600 font-bold text-lg">{pricewithDiscount(p.price, p.discount).toLocaleString("vi-VN")} đ</span>
+                                  <span className="text-emerald-600 font-bold text-lg">{pricewithDiscount(p.price, p.discount).toLocaleString("vi-VN")} đ</span>
                                   <span className="text-gray-400 line-through text-sm">{p.price.toLocaleString("vi-VN")} đ</span>
                                 </div>
                                 <div className="flex items-center gap-1 mb-2">
@@ -1283,11 +1280,17 @@ const Home = () => {
                                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.974a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.39 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.922-.755 1.688-1.54 1.118l-3.39-2.46a1 1 0 00-1.175 0l-3.389 2.46c-.784.57-1.838-.196-1.539-1.118l1.287-3.973a1 1 0 00-.364-1.118L2.037 9.4c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.974z" />
                                     </svg>
                                   ))}
-                                  <span className="text-red-500 font-semibold text-base ml-2">{p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}</span>
+                                  <span className="text-emerald-600 font-semibold text-base ml-2">{p.stock === 0 ? 'Hết hàng' : 'Còn hàng'}</span>
                                 </div>
                               </div>
-                              <div className='flex justify-center items-center mt-5'>
-                                <AddToCartButton data={p} />
+                              <div className='px-4 pb-4 flex justify-center'>
+                                {p.stock !== 0 && (
+                                  <AddToCartButton 
+                                    data={p} 
+                                    showFullWidth={true}
+                                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-lg transition-colors"
+                                  />
+                                )}
                               </div>
                             </div>
                           </a>

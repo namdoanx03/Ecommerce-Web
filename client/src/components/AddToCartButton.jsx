@@ -8,7 +8,7 @@ import Loading from './Loading'
 import { useSelector } from 'react-redux'
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
-const AddToCartButton = ({ data }) => {
+const AddToCartButton = ({ data, showFullWidth = false, className = '', children }) => {
     const { fetchCartItem} = useGlobalContext()
     const [loading, setLoading] = useState(false)
     const cartItem = useSelector(state => state.cartItem.cart)
@@ -68,10 +68,21 @@ const AddToCartButton = ({ data }) => {
         setCartItemsDetails(product || null)
     }, [data, cartItem])
 
+    const defaultClassName = 'bg-green-600 hover:bg-green-700 text-white px-2 lg:px-3 py-2 rounded-full w-full font-medium'
+    const finalClassName = className || defaultClassName
+
+    if (showFullWidth) {
+        return (
+            <button onClick={handleADDTocart} className={finalClassName} disabled={loading}>
+                {loading ? <Loading /> : (children || "Thêm vào giỏ")}
+            </button>
+        )
+    }
+
     return (
         <div className='w-full max-w-[150px]'>
-            <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-3 py-2 rounded-full w-full font-medium'>
-                {loading ? <Loading /> : "Thêm vào giỏ"}
+            <button onClick={handleADDTocart} className={finalClassName} disabled={loading}>
+                {loading ? <Loading /> : (children || "Thêm vào giỏ")}
             </button>
         </div>
     )
