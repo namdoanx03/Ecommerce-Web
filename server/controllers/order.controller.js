@@ -56,12 +56,25 @@ export async function createPaymentController(request, response) {
         // Save temporary order
         const tempOrder = await OrderModel.create(orderPayload);
 
-        const tmnCode = "ADA1G5J9"; // Lấy từ VNPay .env
-        const secretKey = "Z0AWA2O5YQUX6TR4I8MAHIYSAAFER6D7"; // Lấy từ VNPay
-        const returnUrl = "http://localhost:5173/check-payment"; // Trang kết quả
-        const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        const tmnCode = process.env.VNPAY_TMN_CODE || "ADA1G5J9";
+        const secretKey = process.env.VNPAY_SECRET_KEY || "Z0AWA2O5YQUX6TR4I8MAHIYSAAFER6D7";
+        // VNPay yêu cầu return URL phải được đăng ký trong merchant account
+        // Nếu dùng localhost, cần đăng ký với VNPay hoặc dùng ngrok/public URL
+        const returnUrl = process.env.VNPAY_RETURN_URL || `${process.env.FRONTEND_URL || "http://localhost:5173"}/check-payment`;
+        const vnp_Url = process.env.VNPAY_URL || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
-        let ipAddr = request.ip;
+        // Get client IP address (handle proxy/load balancer)
+        let ipAddr = request.headers['x-forwarded-for'] || 
+                     request.headers['x-real-ip'] || 
+                     request.connection.remoteAddress || 
+                     request.socket.remoteAddress ||
+                     (request.connection.socket ? request.connection.socket.remoteAddress : null) ||
+                     '127.0.0.1';
+        
+        // Extract first IP if it's a comma-separated list
+        if (ipAddr.includes(',')) {
+            ipAddr = ipAddr.split(',')[0].trim();
+        }
         let orderId = tempOrder.orderId; // Use the saved order ID
         let bankCode = request.query.bankCode || "";
         let createDate = moment().format("YYYYMMDDHHmmss");
@@ -122,20 +135,28 @@ export async function createPaymentController(request, response) {
 export async function checkPaymentController(request, response) {
     try {
         const query = request.query;
-        const secretKey = "Z0AWA2O5YQUX6TR4I8MAHIYSAAFER6D7";
+        const secretKey = process.env.VNPAY_SECRET_KEY || "Z0AWA2O5YQUX6TR4I8MAHIYSAAFER6D7";
         const vnp_SecureHash = query.vnp_SecureHash;
 
-        delete query.vnp_SecureHash;
-        const signData = querystring.stringify(query);
+        // Create a copy of query without SecureHash for signature verification
+        const queryForSign = { ...query };
+        delete queryForSign.vnp_SecureHash;
+        delete queryForSign.vnp_SecureHashType;
+        
+        const signData = querystring.stringify(queryForSign);
 
         const hmac = crypto.createHmac("sha512", secretKey);
-        const checkSum = hmac.update(signData).digest("hex");
+        const checkSum = hmac.update(new Buffer.from(signData, "utf-8")).digest("hex");
+        
         console.log("Query from VNPay:", query);
+        console.log("Calculated checksum:", checkSum);
+        console.log("Received checksum:", vnp_SecureHash);
 
         // Verify VNPay signature
         if (vnp_SecureHash !== checkSum) {
+            console.error("Signature mismatch!");
             return response.status(400).json({ 
-                message: "Dữ liệu không hợp lệ",
+                message: "Dữ liệu không hợp lệ - chữ ký không khớp",
                 success: false 
             });
         }
@@ -163,7 +184,8 @@ export async function checkPaymentController(request, response) {
 
         let updatedOrder;
 
-        if (query.vnp_ResponseCode === "00") {
+        // Check payment status: ResponseCode = "00" means success
+        if (query.vnp_ResponseCode === "00" && query.vnp_TransactionStatus === "00") {
             // Update order status to success
             updatedOrder = await OrderModel.findOneAndUpdate(
                 { 
@@ -171,7 +193,7 @@ export async function checkPaymentController(request, response) {
                     payment_status: "PENDING"
                 },
                 {
-                    paymentId: query.vnp_TransactionNo,
+                    paymentId: query.vnp_TransactionNo || query.vnp_BankTranNo,
                     payment_method: "VNPAY",
                     payment_status: "SUCCESS"
                 },
@@ -200,6 +222,9 @@ export async function checkPaymentController(request, response) {
             });
         } else {
             // Update order status to failed
+            const responseCode = query.vnp_ResponseCode || "99";
+            const responseMessage = getVNPayResponseMessage(responseCode);
+            
             updatedOrder = await OrderModel.findOneAndUpdate(
                 { 
                     _id: order._id,
@@ -208,13 +233,13 @@ export async function checkPaymentController(request, response) {
                 {
                     payment_method: "VNPAY",
                     payment_status: "FAILED",
-                    paymentId: query.vnp_TransactionNo
+                    paymentId: query.vnp_TransactionNo || null
                 },
                 { new: true }
             );
 
             return response.json({
-                message: "Thanh toán thất bại",
+                message: responseMessage || "Thanh toán thất bại",
                 data: query,
                 success: false,
                 order: updatedOrder
@@ -228,6 +253,25 @@ export async function checkPaymentController(request, response) {
             success: false
         });
     }
+}
+
+// Helper function to get VNPay response messages
+function getVNPayResponseMessage(code) {
+    const messages = {
+        "00": "Giao dịch thành công",
+        "07": "Trừ tiền thành công. Giao dịch bị nghi ngờ (liên quan tới lừa đảo, giao dịch bất thường)",
+        "09": "Thẻ/Tài khoản chưa đăng ký dịch vụ InternetBanking",
+        "10": "Xác thực thông tin thẻ/tài khoản không đúng quá 3 lần",
+        "11": "Đã hết hạn chờ thanh toán. Xin vui lòng thực hiện lại giao dịch",
+        "12": "Thẻ/Tài khoản bị khóa",
+        "13": "Nhập sai mật khẩu xác thực giao dịch (OTP). Xin vui lòng thực hiện lại giao dịch",
+        "51": "Tài khoản không đủ số dư để thực hiện giao dịch",
+        "65": "Tài khoản đã vượt quá hạn mức giao dịch trong ngày",
+        "75": "Ngân hàng thanh toán đang bảo trì",
+        "79": "Nhập sai mật khẩu thanh toán quá số lần quy định",
+        "99": "Lỗi không xác định"
+    };
+    return messages[code] || `Lỗi không xác định (Mã: ${code})`;
 }
 
 export async function CashOnDeliveryOrderController(request, response) {

@@ -18,6 +18,7 @@ function CheckPayment() {
 
     useEffect(() => {
         (async () => {
+            try {
                 // Gọi API xác thực thanh toán
                 const { data } = await axios.get(
                     `http://localhost:8080/api/order/check-payment?${searchParams.toString()}`
@@ -32,18 +33,29 @@ function CheckPayment() {
                     if (fetchCartItem) fetchCartItem();
                     if (fetchOrder) fetchOrder();
                     toast.success("Đặt hàng thành công!");
-                } else if (data.data?.vnp_ResponseCode === "24") {
-                    setStatus("error");
-                    setTitle("Khách hàng đã hủy thanh toán");
-                    setMessage("Bạn đã hủy giao dịch. Vui lòng thử lại nếu muốn mua hàng.");
-                    toast.error("Thanh toán bị hủy");
                 } else {
-                    setStatus("error");
-                    setTitle("Thanh toán thất bại");
-                    setMessage(data.message || "Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại sau.");
-                    toast.error("Thanh toán thất bại");
+                    // Check specific response codes
+                    const responseCode = data.data?.vnp_ResponseCode || searchParams.get("vnp_ResponseCode");
+                    
+                    if (responseCode === "24") {
+                        setStatus("error");
+                        setTitle("Khách hàng đã hủy thanh toán");
+                        setMessage("Bạn đã hủy giao dịch. Vui lòng thử lại nếu muốn mua hàng.");
+                        toast.error("Thanh toán bị hủy");
+                    } else {
+                        setStatus("error");
+                        setTitle("Thanh toán thất bại");
+                        setMessage(data.message || "Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại sau.");
+                        toast.error(data.message || "Thanh toán thất bại");
+                    }
                 }
-           
+            } catch (error) {
+                console.error("[CheckPayment] Error:", error);
+                setStatus("error");
+                setTitle("Lỗi xử lý thanh toán");
+                setMessage(error.response?.data?.message || "Không thể xác thực thanh toán. Vui lòng liên hệ hỗ trợ.");
+                toast.error("Lỗi xử lý thanh toán");
+            }
         })();
     }, [searchParams, dispatch, fetchCartItem, fetchOrder]);
 
