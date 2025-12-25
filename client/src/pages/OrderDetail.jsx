@@ -85,8 +85,6 @@ const OrderDetail = () => {
     const status = paymentStatus.toUpperCase();
     if (status.includes('VNPAY')) {
       return 'VNPay';
-    } else if (status.includes('STRIPE')) {
-      return 'Stripe';
     } else if (status.includes('CASH ON DELIVERY') || status.includes('COD')) {
       return 'Thanh toán khi nhận hàng';
     } else if (status.includes('PAYPAL')) {
@@ -99,7 +97,7 @@ const OrderDetail = () => {
     if (!paymentStatus) return 'bg-gray-100 text-gray-700';
     
     const status = paymentStatus.toUpperCase();
-    if (status.includes('VNPAY') || status.includes('STRIPE') || status.includes('CASH ON DELIVERY')) {
+    if (status.includes('VNPAY') || status.includes('CASH ON DELIVERY')) {
       return 'bg-green-100 text-green-700';
     } else if (status.includes('PENDING')) {
       return 'bg-gray-100 text-gray-700';
@@ -113,7 +111,7 @@ const OrderDetail = () => {
     if (!paymentStatus) return 'Đang xử lý';
     
     const status = paymentStatus.toUpperCase();
-    if (status.includes('VNPAY') || status.includes('STRIPE') || status.includes('CASH ON DELIVERY')) {
+    if (status.includes('VNPAY') || status.includes('CASH ON DELIVERY')) {
       return 'Thành công';
     } else if (status.includes('PENDING')) {
       return 'Đang xử lý';

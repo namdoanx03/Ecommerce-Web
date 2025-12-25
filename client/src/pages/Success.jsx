@@ -61,7 +61,6 @@ const Success = () => {
     const m = method.toUpperCase()
     if (m.includes('CASH')) return 'Thanh toán khi nhận hàng (COD)'
     if (m.includes('VNPAY')) return 'Thanh toán bằng VNPay'
-    if (m.includes('STRIPE')) return 'Thanh toán bằng thẻ (Stripe)'
     return method
   }
 

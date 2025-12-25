@@ -7,7 +7,6 @@ import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import { loadStripe } from '@stripe/stripe-js'
 import { IoIosHome } from "react-icons/io";
 import { FaAngleRight } from "react-icons/fa6";
 import { useForm } from "react-hook-form"
@@ -133,47 +132,6 @@ const CheckoutPage = () => {
     }
   };
 
-  const handlePaymentStripe = async () => {
-    if (!addressList[selectAddress]?._id) {
-      toast.error("Vui lòng chọn địa chỉ giao hàng!");
-      return;
-    }
-    if (selectedPaymentMethod !== 'stripe') {
-      toast.error("Vui lòng chọn phương thức thanh toán stripe!");
-      return;
-    }
-    try {
-      toast.loading("Loading...")
-      const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-      console.log("stripePublicKey", stripePublicKey)
-      const stripePromise = await loadStripe(stripePublicKey)
-
-      const response = await Axios({
-        ...SummaryApi.payment_url,
-        data: {
-          list_items: cartItemsList,
-          addressId: addressList[selectAddress]?._id,
-          subTotalAmt: totalPrice,
-          totalAmt: totalPrice,
-        }
-      })
-
-      const { data: responseData } = response
-
-      stripePromise.redirectToCheckout({ sessionId: responseData.id })
-
-      if (fetchCartItem) {
-        fetchCartItem()
-      }
-      if (fetchOrder) {
-        fetchOrder()
-      }
-    } catch (error) {
-      AxiosToastError(error)
-    }
-  }
-
-
   const handlePlaceOrder = () => {
     // Kiểm tra địa chỉ
     if (!addressList[selectAddress]?._id) {
@@ -190,8 +148,6 @@ const CheckoutPage = () => {
       handleCashOnDelivery();
     } else if (selectedPaymentMethod === 'vnpay') {
       handlePaymentVNPay();
-    } else if (selectedPaymentMethod === 'stripe') {
-      handlePaymentStripe();
     } else {
       toast.error("Phương thức thanh toán không hợp lệ!");
     }
@@ -391,17 +347,6 @@ const CheckoutPage = () => {
                   onChange={() => setSelectedPaymentMethod('vnpay')}
                 />
                 <span className="font-medium">Thanh toán bằng VNPay</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  className="form-check-input"
-                  type="radio"
-                  name="payment_method"
-                  value="stripe"
-                  checked={selectedPaymentMethod === 'stripe'}
-                  onChange={() => setSelectedPaymentMethod('stripe')}
-                />
-                <span className="font-medium">Thanh toán bằng Stripe</span>
               </label>
             </div>
           </div>

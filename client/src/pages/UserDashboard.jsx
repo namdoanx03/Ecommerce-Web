@@ -96,8 +96,6 @@ const UserDashboard = () => {
     const method = paymentMethod.toUpperCase();
     if (method.includes('VNPAY')) {
       return 'VNPay';
-    } else if (method.includes('STRIPE')) {
-      return 'Stripe';
     } else if (method.includes('CASH ON DELIVERY') || method.includes('COD')) {
       return 'Thanh toán khi nhận hàng';
     }
