@@ -99,6 +99,10 @@ const router = createBrowserRouter([
                 element : <UserDashboard/>
             },
             {
+                path : "myorders/order-tracking/:orderId",
+                element : <OrderTracking/>
+            },
+            {
                 path : "address",
                 element : <Address/>
             },

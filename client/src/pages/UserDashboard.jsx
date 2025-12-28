@@ -16,6 +16,9 @@ const UserDashboard = () => {
   const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState(location.pathname === '/myorders' ? 'order' : 'dashboard')
+  const [selectedOrderId, setSelectedOrderId] = useState(null)
+  const [trackingOrder, setTrackingOrder] = useState(null)
+  const [trackingLoading, setTrackingLoading] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = 5
 
@@ -36,6 +39,26 @@ const UserDashboard = () => {
 
     fetchOrders()
   }, [dispatch])
+
+  const loadTrackingOrder = async (orderId) => {
+    try {
+      setTrackingLoading(true)
+      const response = await Axios({ ...SummaryApi.getOrderItems })
+      const { data: responseData } = response
+      if (responseData.success && Array.isArray(responseData.data)) {
+        const found = responseData.data.find(
+          (o) => o._id === orderId || o.orderId === orderId
+        )
+        setTrackingOrder(found || null)
+      } else {
+        setTrackingOrder(null)
+      }
+    } catch (error) {
+      setTrackingOrder(null)
+    } finally {
+      setTrackingLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (location.pathname === '/myorders') {
@@ -274,7 +297,7 @@ const UserDashboard = () => {
                         <tr>
                           <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mã đơn</th>
                           <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Thanh toán</th>
-                          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái thanh toán</th>
+                          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái đơn hàng</th>
                           <th className="p-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Tổng tiền</th>
                           <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Thao tác</th>
                         </tr>
@@ -308,7 +331,11 @@ const UserDashboard = () => {
                                     Chi tiết đơn hàng
                                   </button>
                                   <button
-                                    onClick={() => navigate(`/order-tracking/${order._id}`)}
+                                    onClick={() => {
+                                      setSelectedOrderId(order._id)
+                                      setActiveTab('tracking')
+                                      loadTrackingOrder(order._id)
+                                    }}
                                     className="px-3 py-1 text-xs font-semibold rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50"
                                   >
                                     Theo dõi
@@ -367,6 +394,245 @@ const UserDashboard = () => {
                       </button>
                     </div>
                   </div>
+                )}
+              </>
+            )}
+
+            {activeTab === 'tracking' && (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Theo dõi đơn hàng</h2>
+                    <p className="text-sm text-gray-500">
+                      Xem chi tiết trạng thái đơn hàng của bạn
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setActiveTab('order')
+                      setTrackingOrder(null)
+                      setSelectedOrderId(null)
+                    }}
+                    className="px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  >
+                    ← Quay lại
+                  </button>
+                </div>
+
+                {trackingLoading && (
+                  <div className="flex items-center justify-center py-12">
+                    <p className="text-sm text-gray-500">Đang tải...</p>
+                  </div>
+                )}
+
+                {!trackingLoading && !trackingOrder && (
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+                    <p className="text-gray-700 font-semibold mb-2">
+                      Không tìm thấy đơn hàng
+                    </p>
+                    <button
+                      onClick={() => {
+                        setActiveTab('order')
+                        setTrackingOrder(null)
+                        setSelectedOrderId(null)
+                      }}
+                      className="mt-4 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
+                    >
+                      Quay lại danh sách đơn hàng
+                    </button>
+                  </div>
+                )}
+
+                {!trackingLoading && trackingOrder && (
+                  <>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+                      {/* Product image */}
+                      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center p-6">
+                        <div className="w-40 h-40 sm:w-52 sm:h-52 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
+                          {trackingOrder.product_details?.[0]?.image ? (
+                            <img
+                              src={trackingOrder.product_details[0].image}
+                              alt={trackingOrder.product_details[0].name}
+                              className="w-full h-full object-contain"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none'
+                              }}
+                            />
+                          ) : (
+                            <span className="text-xs text-gray-400">Không có ảnh</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Tracking info */}
+                      <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                        <div className="grid md:grid-cols-3 gap-4">
+                          <div className="space-y-1">
+                            <p className="text-xs font-semibold text-gray-500 uppercase">
+                              Mã đơn hàng
+                            </p>
+                            <p className="text-lg font-semibold text-teal-600">
+                              {trackingOrder.orderId}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs font-semibold text-gray-500 uppercase">
+                              Ngày đặt
+                            </p>
+                            <p className="text-sm text-gray-700">
+                              {trackingOrder.createdAt ? (
+                                <>
+                                  {new Date(trackingOrder.createdAt).toLocaleDateString('vi-VN', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                  })}{' '}
+                                  {new Date(trackingOrder.createdAt).toLocaleTimeString('vi-VN', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </>
+                              ) : 'N/A'}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs font-semibold text-gray-500 uppercase">
+                              Trạng thái hiện tại
+                            </p>
+                            <p className="text-sm font-semibold text-emerald-600">
+                              {(() => {
+                                const status = (trackingOrder.order_status || '').toUpperCase()
+                                if (status.includes('SUCCESS')) return 'Đã giao hàng'
+                                if (status.includes('PENDING')) return 'Đang chuẩn bị'
+                                if (status.includes('FAILED') || status.includes('CANCEL')) return 'Đã hủy'
+                                return 'Đã đặt hàng'
+                              })()}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Timeline bar */}
+                        <div className="mt-6">
+                          <div className="relative flex items-center justify-between">
+                            <div className="absolute left-4 right-4 top-1/2 h-[2px] bg-gray-200 -z-10" />
+                            {[
+                              { key: 'PLACED', label: 'Đã đặt hàng' },
+                              { key: 'PROCESSING', label: 'Đang chuẩn bị' },
+                              { key: 'SHIPPED', label: 'Đang giao hàng' },
+                              { key: 'DELIVERED', label: 'Đã giao hàng' }
+                            ].map((step, index) => {
+                              const status = (trackingOrder.order_status || '').toUpperCase()
+                              let currentStepIndex = 0
+                              if (status.includes('SUCCESS')) currentStepIndex = 3
+                              else if (status.includes('PENDING')) currentStepIndex = 1
+                              else if (status.includes('FAILED') || status.includes('CANCEL')) currentStepIndex = 1
+                              
+                              const isCompleted = index <= currentStepIndex
+                              return (
+                                <div
+                                  key={step.key}
+                                  className="flex flex-col items-center flex-1"
+                                >
+                                  <div
+                                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                                      isCompleted
+                                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                                        : 'bg-white border-gray-300 text-gray-400'
+                                    }`}
+                                  >
+                                    {index + 1}
+                                  </div>
+                                  <p className="mt-2 text-xs font-medium text-gray-700 text-center">
+                                    {step.label}
+                                  </p>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Timeline table */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
+                        <h3 className="text-sm font-semibold text-gray-800">
+                          Lịch sử trạng thái đơn hàng
+                        </h3>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-[#F3F3F3]">
+                            <tr>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Mô tả
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Ngày
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Thời gian
+                              </th>
+                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Ghi chú
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            <tr>
+                              <td className="px-6 py-3 text-gray-800">Đã đặt hàng</td>
+                              <td className="px-6 py-3 text-gray-700">
+                                {trackingOrder.createdAt ? new Date(trackingOrder.createdAt).toLocaleDateString('vi-VN', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                }) : 'N/A'}
+                              </td>
+                              <td className="px-6 py-3 text-gray-700">
+                                {trackingOrder.createdAt ? new Date(trackingOrder.createdAt).toLocaleTimeString('vi-VN', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                }) : 'N/A'}
+                              </td>
+                              <td className="px-6 py-3 text-gray-500">
+                                Đơn hàng đã được tạo thành công.
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="px-6 py-3 text-gray-800">Đang chuẩn bị</td>
+                              <td className="px-6 py-3 text-gray-700">
+                                {trackingOrder.createdAt ? new Date(trackingOrder.createdAt).toLocaleDateString('vi-VN', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                }) : 'N/A'}
+                              </td>
+                              <td className="px-6 py-3 text-gray-700">—</td>
+                              <td className="px-6 py-3 text-gray-500">
+                                Đơn hàng đang được chuẩn bị.
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="px-6 py-3 text-gray-800">Đang giao hàng</td>
+                              <td className="px-6 py-3 text-gray-700">—</td>
+                              <td className="px-6 py-3 text-gray-700">—</td>
+                              <td className="px-6 py-3 text-gray-500">
+                                Sẽ được cập nhật khi đơn giao cho đơn vị vận chuyển.
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="px-6 py-3 text-gray-800">Đã giao hàng</td>
+                              <td className="px-6 py-3 text-gray-700">—</td>
+                              <td className="px-6 py-3 text-gray-700">—</td>
+                              <td className="px-6 py-3 text-gray-500">
+                                Sẽ được cập nhật khi đơn được giao thành công.
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
                 )}
               </>
             )}
