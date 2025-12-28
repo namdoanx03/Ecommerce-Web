@@ -45,6 +45,11 @@ const orderSchema = new mongoose.Schema({
         type : Number,
         default : 0
     },
+    voucherId : {
+        type : mongoose.Schema.ObjectId,
+        ref : 'voucher',
+        default : null
+    },
     invoice_receipt : {
         type : String,
         default : ""

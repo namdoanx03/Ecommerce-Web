@@ -190,6 +190,10 @@ const SummaryApi = {
         url: '/api/voucher/delete',
         method: 'delete'
     },
+    validateVoucher: {
+        url: '/api/voucher/validate',
+        method: 'post'
+    },
     // Chat API
     fetchChatMessages: {
         url: '/api/chat/messages',

@@ -99,22 +99,22 @@ export async function createPaymentController(request, response) {
                 });
             }
 
-            const returnUrl = process.env.VNPAY_RETURN_URL || `${process.env.FRONTEND_URL || "http://localhost:5173"}/check-payment`;
-            const vnp_Url = process.env.VNPAY_URL || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        const returnUrl = process.env.VNPAY_RETURN_URL || `${process.env.FRONTEND_URL || "http://localhost:5173"}/check-payment`;
+        const vnp_Url = process.env.VNPAY_URL || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
-            // Get client IP address (handle proxy/load balancer)
+        // Get client IP address (handle proxy/load balancer)
             // VNPay requires IPv4 address, not IPv6
-            let ipAddr = request.headers['x-forwarded-for'] || 
-                         request.headers['x-real-ip'] || 
-                         request.connection.remoteAddress || 
-                         request.socket.remoteAddress ||
-                         (request.connection.socket ? request.connection.socket.remoteAddress : null) ||
-                         '127.0.0.1';
-            
-            // Extract first IP if it's a comma-separated list
-            if (ipAddr.includes(',')) {
-                ipAddr = ipAddr.split(',')[0].trim();
-            }
+        let ipAddr = request.headers['x-forwarded-for'] || 
+                     request.headers['x-real-ip'] || 
+                     request.connection.remoteAddress || 
+                     request.socket.remoteAddress ||
+                     (request.connection.socket ? request.connection.socket.remoteAddress : null) ||
+                     '127.0.0.1';
+        
+        // Extract first IP if it's a comma-separated list
+        if (ipAddr.includes(',')) {
+            ipAddr = ipAddr.split(',')[0].trim();
+        }
             
             // Convert IPv6 localhost (::1) to IPv4 (127.0.0.1)
             if (ipAddr === '::1' || ipAddr === '::ffff:127.0.0.1') {
@@ -127,39 +127,39 @@ export async function createPaymentController(request, response) {
             }
             
             let orderId = pendingOrder.orderId;
-            let bankCode = request.query.bankCode || "";
-            let createDate = moment().format("YYYYMMDDHHmmss");
+        let bankCode = request.query.bankCode || "";
+        let createDate = moment().format("YYYYMMDDHHmmss");
             let orderInfo = `Thanh_toan_don_hang_${userId}`;
-            let locale = request.query.language || "vn";
-            let currCode = "VND";
+        let locale = request.query.language || "vn";
+        let currCode = "VND";
 
-            let vnp_Params = {
-                vnp_Version: "2.1.0",
-                vnp_Command: "pay",
-                vnp_TmnCode: tmnCode,
-                vnp_Locale: locale,
-                vnp_CurrCode: currCode,
-                vnp_TxnRef: orderId,
-                vnp_OrderInfo: orderInfo,
-                vnp_OrderType: "billpayment",
+        let vnp_Params = {
+            vnp_Version: "2.1.0",
+            vnp_Command: "pay",
+            vnp_TmnCode: tmnCode,
+            vnp_Locale: locale,
+            vnp_CurrCode: currCode,
+            vnp_TxnRef: orderId,
+            vnp_OrderInfo: orderInfo,
+            vnp_OrderType: "billpayment",
                 vnp_Amount: Math.round(finalAmount * 100),
-                vnp_ReturnUrl: returnUrl,
-                vnp_IpAddr: ipAddr,
-                vnp_CreateDate: createDate
-            };
+            vnp_ReturnUrl: returnUrl,
+            vnp_IpAddr: ipAddr,
+            vnp_CreateDate: createDate
+        };
 
-            if (bankCode !== "") {
-                vnp_Params["vnp_BankCode"] = bankCode;
-            }
+        if (bankCode !== "") {
+            vnp_Params["vnp_BankCode"] = bankCode;
+        }
 
-            vnp_Params = sortObject(vnp_Params);
+        vnp_Params = sortObject(vnp_Params);
 
-            let signData = querystring.stringify(vnp_Params);
-            let hmac = crypto.createHmac("sha512", secretKey);
+        let signData = querystring.stringify(vnp_Params);
+        let hmac = crypto.createHmac("sha512", secretKey);
             let signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-            vnp_Params["vnp_SecureHash"] = signed;
+        vnp_Params["vnp_SecureHash"] = signed;
 
-            let paymentUrl = vnp_Url + "?" + querystring.stringify(vnp_Params);
+        let paymentUrl = vnp_Url + "?" + querystring.stringify(vnp_Params);
             return response.json({ paymentUrl, orderId: pendingOrder.orderId, type: 'vnpay' });
             
         } else if (typePayment === 'momo') {
@@ -352,7 +352,7 @@ export async function checkPaymentController(request, response) {
         
         const signData = querystring.stringify(sortedQuery);
         console.log("[checkPaymentController] Sign data string:", signData);
-        
+
         const hmac = crypto.createHmac("sha512", secretKey);
         const checkSum = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
@@ -378,10 +378,10 @@ export async function checkPaymentController(request, response) {
                 console.warn("[checkPaymentController] Signature mismatch but responseCode = 00, continuing with payment processing...");
                 signatureValid = true; // Override để tiếp tục xử lý
             } else {
-                return response.status(400).json({ 
-                    message: "Dữ liệu không hợp lệ - chữ ký không khớp",
-                    success: false 
-                });
+            return response.status(400).json({ 
+                message: "Dữ liệu không hợp lệ - chữ ký không khớp",
+                success: false 
+            });
             }
         }
 
@@ -408,7 +408,7 @@ export async function checkPaymentController(request, response) {
                 success: false
             });
         }
-        
+
         console.log("[checkPaymentController] Pending order found:", {
             orderId: pendingOrder.orderId,
             userId: pendingOrder.userId
@@ -427,11 +427,12 @@ export async function checkPaymentController(request, response) {
                 productId: pendingOrder.productId,
                 product_details: pendingOrder.product_details,
                 paymentId: query.vnp_TransactionNo || query.vnp_BankTranNo || "",
-                payment_method: "VNPAY",
+                    payment_method: "VNPAY",
                 payment_status: "SUCCESS",
                 delivery_address: pendingOrder.delivery_address,
                 subTotalAmt: pendingOrder.subTotalAmt,
-                totalAmt: pendingOrder.totalAmt
+                totalAmt: pendingOrder.totalAmt,
+                voucherId: pendingOrder.voucherId || null
             };
 
             createdOrder = await OrderModel.create(orderPayload);
@@ -485,8 +486,8 @@ export async function checkPaymentController(request, response) {
                 
                 const updateUserResult = await UserModel.updateOne(
                     { _id: pendingOrder.userId },
-                    { shopping_cart: [] }
-                );
+                { shopping_cart: [] }
+            );
                 console.log("[checkPaymentController] Updated user shopping_cart:", updateUserResult.modifiedCount);
             } catch (cartError) {
                 console.error("[checkPaymentController] Error clearing cart:", cartError);
@@ -495,15 +496,15 @@ export async function checkPaymentController(request, response) {
             }
 
             // Update voucher if exists
-            // if (pendingOrder.voucherId) {
-            //     await VoucherModel.findByIdAndUpdate(
-            //         pendingOrder.voucherId,
-            //         { $inc: { used_count: 1 } }
-            //     );
-            // }
+            if (pendingOrder.voucherId) {
+                await VoucherModel.findByIdAndUpdate(
+                    pendingOrder.voucherId,
+                    { $inc: { used_count: 1 } }
+                );
+            }
 
             console.log("[checkPaymentController] Payment processing completed successfully");
-            
+
             return response.json({
                 message: "Thanh toán thành công",
                 data: query,
@@ -601,7 +602,8 @@ export async function momoCallbackController(request, response) {
             payment_status: "SUCCESS",
             delivery_address: pendingOrder.delivery_address,
             subTotalAmt: pendingOrder.subTotalAmt,
-            totalAmt: pendingOrder.totalAmt
+            totalAmt: pendingOrder.totalAmt,
+            voucherId: pendingOrder.voucherId || null
         };
 
         const createdOrder = await OrderModel.create(orderPayload);
@@ -647,12 +649,12 @@ export async function momoCallbackController(request, response) {
         }
 
         // Update voucher if exists
-        // if (pendingOrder.voucherId) {
-        //     await VoucherModel.findByIdAndUpdate(
-        //         pendingOrder.voucherId,
-        //         { $inc: { used_count: 1 } }
-        //     );
-        // }
+        if (pendingOrder.voucherId) {
+            await VoucherModel.findByIdAndUpdate(
+                pendingOrder.voucherId,
+                { $inc: { used_count: 1 } }
+            );
+        }
         
         return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-success/${createdOrder._id}`);
         
@@ -736,6 +738,7 @@ export async function CashOnDeliveryOrderController(request, response) {
             delivery_address: addressId,
             subTotalAmt: Number(subTotalAmt) || 0,
             totalAmt: Number(totalAmt) || 0,
+            voucherId: voucherId || null
         };
 
         // Validate totals
