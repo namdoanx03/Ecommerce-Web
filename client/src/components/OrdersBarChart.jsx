@@ -4,12 +4,18 @@ import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Legend, Toolt
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 const OrdersBarChart = ({ data: chartData }) => {
+  // Use real data if available, otherwise use default
+  const labels = chartData?.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const values = chartData?.values || [45, 52, 38, 67, 54, 72, 60];
+  
+  const maxValue = Math.max(...values, 1) * 1.2; // Add 20% padding
+
   const data = {
-    labels: chartData?.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    labels: labels,
     datasets: [
       {
         label: 'Orders',
-        data: chartData?.values || [45, 52, 38, 67, 54, 72, 60],
+        data: values,
         backgroundColor: '#0da487',
         borderRadius: 8,
         borderSkipped: false,
@@ -47,8 +53,9 @@ const OrdersBarChart = ({ data: chartData }) => {
       },
       y: {
         beginAtZero: true,
+        max: maxValue,
         ticks: {
-          stepSize: 20,
+          stepSize: Math.ceil(maxValue / 5),
           font: { size: 12 },
           color: '#6b7280'
         },

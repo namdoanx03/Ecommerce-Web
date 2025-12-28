@@ -30,7 +30,7 @@ export const AddCategoryController = async(request,response)=>{
         }
 
         return response.json({
-            message : "Add Category",
+            message : "Thêm danh mục",
             data : saveCategory,
             success : true,
             error : false

@@ -282,7 +282,7 @@ const Profile = () => {
                                 disabled={loading}
                                 className='px-6 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
                             >
-                                {loading ? 'Saving...' : 'Save Changes'}
+                                {loading ? 'Lưu...' : 'Lưu thay đổi'}
                             </button>
                         </div>
                     </form>

@@ -83,7 +83,7 @@ const UploadCategoryModel = ({close, fetchData}) => {
     >
       <div className='bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
         <div className='flex items-center justify-between p-6 border-b border-gray-200'>
-          <h1 className='text-2xl font-semibold text-gray-800'>Add Category</h1>
+          <h1 className='text-2xl font-semibold text-gray-800'>THêm danh mục</h1>
           <button 
             onClick={close} 
             className='text-gray-400 hover:text-gray-600 transition-colors'
@@ -156,7 +156,7 @@ const UploadCategoryModel = ({close, fetchData}) => {
                 px-6 py-2.5 text-white rounded-lg transition-colors font-medium
               `}
             >
-              Add Category
+              Thêm danh mục
             </button>
           </div>
         </form>

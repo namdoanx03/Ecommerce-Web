@@ -36,6 +36,7 @@ import CheckPayment from "../pages/CheckPayment";
 import UserAdmin from "../pages/UserAdmin";
 import OrderDetail from "../pages/OrderDetail";
 import OrderTracking from "../pages/OrderTracking";
+import OrderTrackingList from "../pages/OrderTrackingList";
 import Wishlist from "../pages/Wishlist";
 import ManageVoucher from "../pages/ManageVoucher";
 import AddVoucher from "../pages/AddVoucher";
@@ -128,6 +129,14 @@ const router = createBrowserRouter([
                     {
                         path : 'manage-order',
                         element : <AdminPermision><ManageOrder/></AdminPermision>
+                    },
+                    {
+                        path : 'order-tracking',
+                        element : <AdminPermision><OrderTrackingList/></AdminPermision>
+                    },
+                    {
+                        path : 'order-tracking/:orderId',
+                        element : <AdminPermision><OrderTracking/></AdminPermision>
                     },
                     {
                         path : 'order-detail/:orderId',

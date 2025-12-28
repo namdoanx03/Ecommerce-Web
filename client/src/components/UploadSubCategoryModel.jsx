@@ -86,7 +86,7 @@ const UploadSubCategoryModel = ({close, fetchData}) => {
     <section className='fixed top-0 right-0 bottom-0 left-0 bg-neutral-800 bg-opacity-70 z-50 flex items-center justify-center p-4'>
         <div className='w-full max-w-5xl bg-white p-4 rounded'>
             <div className='flex items-center justify-between gap-3'>
-                <h1 className='font-semibold'>Add Sub Category</h1>
+                <h1 className='font-semibold'>Thêm danh mục con</h1>
                 <button onClick={close}>
                     <IoClose size={25}/>
                 </button>
@@ -120,7 +120,7 @@ const UploadSubCategoryModel = ({close, fetchData}) => {
                             </div>
                             <label htmlFor='uploadSubCategoryImage'>
                                 <div className='px-4 py-1 border border-primary-100 text-primary-200 rounded hover:bg-primary-200 hover:text-neutral-900 cursor-pointer  '>
-                                    Upload Image
+                                    Tải ảnh
                                 </div>
                                 <input 
                                     type='file'

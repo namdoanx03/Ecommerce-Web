@@ -337,7 +337,7 @@ const UserProfile = () => {
                       disabled={loading}
                       className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 text-sm"
                     >
-                      Save
+                      Lưu
                     </button>
                     <button
                       onClick={() => {
@@ -380,7 +380,7 @@ const UserProfile = () => {
                           disabled={loading}
                           className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 text-sm"
                         >
-                          Save
+                          Lưu
                         </button>
                         <button
                           onClick={() => {
@@ -441,7 +441,7 @@ const UserProfile = () => {
                             disabled={loading}
                             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 text-sm"
                           >
-                            Save
+                            Lưu
                           </button>
                           <button
                             onClick={() => {

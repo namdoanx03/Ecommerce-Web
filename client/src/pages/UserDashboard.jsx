@@ -46,7 +46,7 @@ const UserDashboard = () => {
 
   const stats = useMemo(() => {
     const total = orders.length || 0
-    const pending = orders.filter(o => (o.payment_status || '').toUpperCase() === 'PENDING').length
+    const pending = orders.filter(o => (o.order_status || '').toUpperCase() === 'PENDING').length
     const wishlist = 0
     return { total, pending, wishlist }
   }, [orders])
@@ -102,10 +102,10 @@ const UserDashboard = () => {
     return paymentMethod;
   }
 
-  const getDeliveryStatusColor = (paymentStatus) => {
-    if (!paymentStatus) return 'bg-red-100 text-red-700';
+  const getDeliveryStatusColor = (orderStatus) => {
+    if (!orderStatus) return 'bg-red-100 text-red-700';
     
-    const status = paymentStatus.toUpperCase();
+    const status = orderStatus.toUpperCase();
     if (status.includes('SUCCESS')) {
       return 'bg-green-100 text-green-700';
     } else {
@@ -114,10 +114,10 @@ const UserDashboard = () => {
     }
   }
 
-  const getDeliveryStatusText = (paymentStatus) => {
-    if (!paymentStatus) return 'Đã hủy';
+  const getDeliveryStatusText = (orderStatus) => {
+    if (!orderStatus) return 'Đã hủy';
     
-    const status = paymentStatus.toUpperCase();
+    const status = orderStatus.toUpperCase();
     if (status.includes('SUCCESS')) {
       return 'Thành công';
     } else {
@@ -334,8 +334,8 @@ const UserDashboard = () => {
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-100">
                         {paginatedOrders.map((order, index) => {
-                          const badgeClass = getDeliveryStatusColor(order.payment_status)
-                          const statusText = getDeliveryStatusText(order.payment_status)
+                          const badgeClass = getDeliveryStatusColor(order.order_status)
+                          const statusText = getDeliveryStatusText(order.order_status)
                           return (
                             <tr key={order._id || index} className="hover:bg-gray-50">
                               <td className="p-3 text-sm text-teal-600 font-semibold">

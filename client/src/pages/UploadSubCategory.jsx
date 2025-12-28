@@ -131,7 +131,7 @@ const UploadSubCategory = () => {
       <div className='bg-white rounded-lg shadow-sm p-4 sm:p-6 max-w-4xl mx-auto'>
         {/* Header Section */}
         <div className='mb-6'>
-          <h1 className="text-2xl font-semibold text-gray-800">Add Sub Category</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">Thêm danh mục con</h1>
         </div>
 
         {/* Form Section */}
@@ -267,7 +267,7 @@ const UploadSubCategory = () => {
                 onClick={() => navigate('/dashboard/subcategory')}
                 className='px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors'
               >
-                Discard
+                Hủy
               </button>
               <button
                 type='submit'
@@ -278,7 +278,7 @@ const UploadSubCategory = () => {
                     : 'bg-gray-300 cursor-not-allowed'
                 } text-white py-2 px-6 rounded-lg font-semibold transition-colors`}
               >
-                Save
+                Lưu
               </button>
             </div>
           </form>

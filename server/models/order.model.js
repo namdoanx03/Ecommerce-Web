@@ -21,15 +21,11 @@ const orderSchema = new mongoose.Schema({
         image : String,
         productId : String
     }],
-    paymentId : {
-        type : String,
-        default : ""
-    },
     payment_method : {
         type : String,
         default : ""
     },
-    payment_status : {
+    order_status : {
         type : String,
         default : ""
     },

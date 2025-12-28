@@ -197,7 +197,7 @@ const EditProductAdmin = ({ close ,data : propsData,fetchProductData}) => {
                         imageLoading ? <Loading /> : (
                           <>
                             <FaCloudUploadAlt size={35} />
-                            <p>Upload Image</p>
+                            <p>Tải ảnh</p>
                           </>
                         )
                       }

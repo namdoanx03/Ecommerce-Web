@@ -76,7 +76,7 @@ const EditCategory = ({close, fetchData,data : CategoryData}) => {
     >
       <div className='bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
         <div className='flex items-center justify-between p-6 border-b border-gray-200'>
-          <h1 className='text-2xl font-semibold text-gray-800'>Update Category</h1>
+          <h1 className='text-2xl font-semibold text-gray-800'>Cập nhật danh mục</h1>
           <button 
             onClick={close} 
             className='text-gray-400 hover:text-gray-600 transition-colors'
@@ -120,7 +120,7 @@ const EditCategory = ({close, fetchData,data : CategoryData}) => {
                     ${loading ? "bg-gray-300 cursor-not-allowed" : "bg-blue-50 hover:bg-blue-100 cursor-pointer"}  
                     px-4 py-2 rounded-lg border border-blue-200 text-blue-700 font-medium transition-colors
                   `}>
-                    {loading ? "Loading..." : "Upload Image"}
+                    {loading ? "Loading..." : "Tải ảnh"}
                   </div>
                   <input 
                     disabled={loading} 
@@ -151,7 +151,7 @@ const EditCategory = ({close, fetchData,data : CategoryData}) => {
                 px-6 py-2.5 text-white rounded-lg transition-colors font-medium
               `}
             >
-              Update Category
+              Cập nhật danh mục
             </button>
           </div>
         </form>

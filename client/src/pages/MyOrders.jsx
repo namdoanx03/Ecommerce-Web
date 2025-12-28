@@ -74,7 +74,7 @@ const MyOrders = () => {
             <div className='flex justify-between items-center mb-2  '>
               <p className='font-semibold'>Mã đơn: {order?.orderId}</p>
               <div>
-              <span className='text-xs px-2 py-1 rounded bg-blue-100 text-blue-700'>{order.payment_status || 'Chờ xử lý'}</span>  
+              <span className='text-xs px-2 py-1 rounded bg-blue-100 text-blue-700'>{order.order_status || 'Chờ xử lý'}</span>  
               </div>
               <div>
                 <span className='text-xs text-gray-500'>Thời gian đặt hàng: {new Date(order.createdAt).toLocaleString()}</span>

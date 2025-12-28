@@ -44,9 +44,9 @@ const pendingOrderSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    paymentId: {
+    momoOrderId: {
         type: String,
-        default: "" // Tạm thời lưu payment gateway orderId (dùng cho MoMo)
+        default: "" // Tạm thời lưu MoMo orderId để dùng trong callback
     },
     voucherId: {
         type: mongoose.Schema.ObjectId,

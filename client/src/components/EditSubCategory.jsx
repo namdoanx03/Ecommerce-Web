@@ -175,7 +175,7 @@ const EditSubCategory = ({close,data,fetchData}) => {
                     ${loading ? "bg-gray-300 cursor-not-allowed" : "bg-blue-50 hover:bg-blue-100 cursor-pointer"}  
                     px-4 py-2 rounded-lg border border-blue-200 text-blue-700 font-medium transition-colors
                   `}>
-                    {loading ? "Loading..." : "Upload Image"}
+                    {loading ? "Loading..." : "Tải ảnh"}
                   </div>
                   <input 
                     disabled={loading} 

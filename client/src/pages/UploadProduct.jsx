@@ -152,7 +152,7 @@ const UploadProduct = () => {
       <div className='bg-white rounded-lg shadow-sm p-4 sm:p-6 max-w-4xl mx-auto'>
         {/* Header Section */}
         <div className='mb-6'>
-          <h1 className="text-2xl font-semibold text-gray-800">Add Product</h1>
+          <h1 className="text-2xl font-semibold text-gray-800">Thêm sản phẩm</h1>
         </div>
 
         {/* Form Section */}
@@ -258,7 +258,7 @@ const UploadProduct = () => {
                   </div>
                 </div>
                 <div className='grid gap-1'>
-                  <label className='font-medium'>Category</label>
+                  <label className='font-medium'>Danh mục</label>
                   <div className='relative'>
                     <div className='bg-white border border-gray-300 w-full min-h-[42px] p-2 rounded-lg focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 flex flex-wrap gap-2 items-center'>
                       {data.category.length > 0 ? (
@@ -315,7 +315,7 @@ const UploadProduct = () => {
                   </div>
                 </div>
                 <div className='grid gap-1'>
-                  <label className='font-medium'>Sub Category</label>
+                  <label className='font-medium'>Danh mục con</label>
                   <div className='relative'>
                     <div className='bg-white border border-gray-300 w-full min-h-[42px] p-2 rounded-lg focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200 flex flex-wrap gap-2 items-center'>
                       {data.subCategory.length > 0 ? (
@@ -338,7 +338,7 @@ const UploadProduct = () => {
                           )
                         })
                       ) : (
-                        <span className='text-gray-400 text-sm'>Select Sub Category</span>
+                        <span className='text-gray-400 text-sm'>Chọn danh mục con</span>
                       )}
                     </div>
                     <select
@@ -360,7 +360,7 @@ const UploadProduct = () => {
                         }
                       }}
                     >
-                      <option value={""} className='text-neutral-600'>Select Sub Category</option>
+                      <option value={""} className='text-neutral-600'>Chọn danh mục con</option>
                       {
                         allSubCategory.map((c, index) => {
                           return (
@@ -373,11 +373,11 @@ const UploadProduct = () => {
                 </div>
 
                 <div className='grid gap-1'>
-                  <label htmlFor='unit' className='font-medium'>Unit</label>
+                  <label htmlFor='unit' className='font-medium'>Đơn vị</label>
                   <input
                     id='unit'
                     type='text'
-                    placeholder='Enter product unit'
+                    placeholder='Nhập đơn vị sản phẩm'
                     name='unit'
                     value={data.unit}
                     onChange={handleChange}
@@ -387,11 +387,11 @@ const UploadProduct = () => {
                 </div>
 
                 <div className='grid gap-1'>
-                  <label htmlFor='stock' className='font-medium'>Number of Stock</label>
+                  <label htmlFor='stock' className='font-medium'>Số lượng tồn kho</label>
                   <input
                     id='stock'
                     type='number'
-                    placeholder='Enter product stock'
+                    placeholder='Nhập số lượng tồn kho'
                     name='stock'
                     value={data.stock}
                     onChange={handleChange}
@@ -401,11 +401,11 @@ const UploadProduct = () => {
                 </div>
 
                 <div className='grid gap-1'>
-                  <label htmlFor='price' className='font-medium'>Price</label>
+                  <label htmlFor='price' className='font-medium'>Giá</label>
                   <input
                     id='price'
                     type='number'
-                    placeholder='Enter product price'
+                    placeholder='Nhập giá sản phẩm'
                     name='price'
                     value={data.price}
                     onChange={handleChange}
@@ -415,11 +415,11 @@ const UploadProduct = () => {
                 </div>
 
                 <div className='grid gap-1'>
-                  <label htmlFor='discount' className='font-medium'>Discount</label>
+                  <label htmlFor='discount' className='font-medium'>Giảm giá</label>
                   <input
                     id='discount'
                     type='number'
-                    placeholder='Enter product discount'
+                    placeholder='Nhập giảm giá sản phẩm'
                     name='discount'
                     value={data.discount}
                     onChange={handleChange}
@@ -462,7 +462,7 @@ const UploadProduct = () => {
                   type='submit'
                   className='bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg font-semibold transition-colors'
                 >
-                  Submit
+                  Lưu
                 </button>
               </form>
         </div>

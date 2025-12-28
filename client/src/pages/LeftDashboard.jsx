@@ -46,7 +46,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setProductMenuOpen(true);
         } else if (location.pathname.includes('/users')) {
             setUsersMenuOpen(true);
-        } else if (location.pathname.includes('/manage-order')) {
+        } else if (location.pathname.includes('/manage-order') || location.pathname.includes('/order-tracking')) {
             setOrdersMenuOpen(true);
         } else if (location.pathname.includes('/voucher')) {
             setVoucherMenuOpen(true);
@@ -78,95 +78,96 @@ const LeftDashboard = ({ isCollapsed = false }) => {
 
     const menuItems = [
         {
-            name: 'Dashboard',
+            name: 'Bảng điều khiển',
             icon: FaHome,
             path: '/dashboard',
             hasSubmenu: false
         },
         {
-            name: 'Product',
+            name: 'Sản phẩm',
             icon: FaBox,
             path: '/dashboard/product',
             hasSubmenu: true,
             submenu: [
-                { name: 'Product List', path: '/dashboard/product' },
-                { name: 'Add New Product', path: '/dashboard/upload-product' }
+                { name: 'Danh sách sản phẩm', path: '/dashboard/product' },
+                { name: 'Thêm sản phẩm mới', path: '/dashboard/upload-product' }
             ],
             open: productMenuOpen,
             setOpen: setProductMenuOpen
         },
         {
-            name: 'Category',
+            name: 'Danh mục',
             icon: FaList,
             path: '/dashboard/category',
             hasSubmenu: true,
             submenu: [
-                { name: 'Category List', path: '/dashboard/category' },
-                { name: 'Add New Category', path: '/dashboard/upload-category' }
+                { name: 'Danh sách danh mục', path: '/dashboard/category' },
+                { name: 'Thêm danh mục mới', path: '/dashboard/upload-category' }
             ],
             open: categoryMenuOpen,
             setOpen: setCategoryMenuOpen
         },
         {
-            name: 'Sub Category',
+            name: 'Danh mục con',
             icon: FaList,
             path: '/dashboard/subcategory',
             hasSubmenu: true,
             submenu: [
-                { name: 'Sub Category List', path: '/dashboard/subcategory' },
-                { name: 'Add New Sub Category', path: '/dashboard/upload-subcategory' }
+                { name: 'Danh sách danh mục con', path: '/dashboard/subcategory' },
+                { name: 'Thêm danh mục con mới', path: '/dashboard/upload-subcategory' }
             ],
             open: subCategoryMenuOpen,
             setOpen: setSubCategoryMenuOpen
         },
         {
-            name: 'Users',
+            name: 'Người dùng',
             icon: FaUser,
             path: '/dashboard/users',
             hasSubmenu: true,
             submenu: [
-                { name: 'Users List', path: '/dashboard/users' }
+                { name: 'Danh sách người dùng', path: '/dashboard/users' }
             ],
             open: usersMenuOpen,
             setOpen: setUsersMenuOpen
         },
         {
-            name: 'Orders',
+            name: 'Đơn hàng',
             icon: FaShoppingCart,
             path: '/dashboard/manage-order',
             hasSubmenu: true,
             submenu: [
-                { name: 'Orders List', path: '/dashboard/manage-order' }
+                { name: 'Danh sách đơn hàng', path: '/dashboard/manage-order' },
+                { name: 'Theo dõi đơn hàng', path: '/dashboard/order-tracking' }
             ],
             open: ordersMenuOpen,
             setOpen: setOrdersMenuOpen
         },
         {
-            name: 'Voucher',
+            name: 'Mã giảm giá',
             icon: FaTag,
             path: '/dashboard/voucher',
             hasSubmenu: true,
             submenu: [
-                { name: 'Voucher List', path: '/dashboard/voucher' },
-                { name: 'Add New Voucher', path: '/dashboard/add-voucher' }
+                { name: 'Danh sách mã giảm giá', path: '/dashboard/voucher' },
+                { name: 'Thêm mã giảm giá mới', path: '/dashboard/add-voucher' }
             ],
             open: voucherMenuOpen,
             setOpen: setVoucherMenuOpen
         },
         {
-            name: 'Product Review',
+            name: 'Đánh giá sản phẩm',
             icon: FaStar,
             path: '#',
             hasSubmenu: false
         },
         {
-            name: 'Support Ticket',
+            name: 'Hỗ trợ',
             icon: FaHeadset,
             path: '#',
             hasSubmenu: false
         },
         {
-            name: 'Settings',
+            name: 'Cài đặt',
             icon: FaCog,
             path: '#',
             hasSubmenu: true,
@@ -174,7 +175,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
             setOpen: setSettingsMenuOpen
         },
         {
-            name: 'Reports',
+            name: 'Báo cáo',
             icon: FaChartBar,
             path: '#',
             hasSubmenu: false
@@ -217,13 +218,13 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                         const Icon = item.icon;
                         // Fix: Category should only be active for category pages, not subcategory
                         let active = false;
-                        if (item.name === 'Category') {
+                        if (item.name === 'Danh mục') {
                             active = location.pathname === '/dashboard/category' || location.pathname === '/dashboard/upload-category';
-                        } else if (item.name === 'Sub Category') {
+                        } else if (item.name === 'Danh mục con') {
                             active = location.pathname === '/dashboard/subcategory' || location.pathname === '/dashboard/upload-subcategory';
-                        } else if (item.name === 'Orders') {
-                            active = location.pathname === '/dashboard/manage-order';
-                        } else if (item.name === 'Voucher') {
+                        } else if (item.name === 'Đơn hàng') {
+                            active = location.pathname === '/dashboard/manage-order' || location.pathname.startsWith('/dashboard/order-tracking');
+                        } else if (item.name === 'Mã giảm giá') {
                             active = location.pathname === '/dashboard/voucher' || location.pathname === '/dashboard/add-voucher';
                         } else {
                             active = isActive(item.path);
@@ -237,7 +238,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                             onClick={() => {
                                                 item.setOpen(!item.open)
                                                 // If clicking on Orders or Voucher, also navigate to the page
-                                                if ((item.name === 'Orders' || item.name === 'Voucher') && item.path) {
+                                                if ((item.name === 'Đơn hàng' || item.name === 'Mã giảm giá') && item.path) {
                                                     navigate(item.path)
                                                 }
                                             }}
@@ -303,20 +304,27 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                                                     pointerEvents: isExpanded ? 'auto' : 'none'
                                                 }}
                                             >
-                                                {item.submenu.map((subItem, subIndex) => (
-                                                    <li key={subIndex}>
-                                                        <Link
-                                                            to={subItem.path}
-                                                            className={`block px-3 py-2 rounded-lg text-sm whitespace-nowrap ${
-                                                                location.pathname === subItem.path
-                                                                    ? 'text-white font-medium bg-white/20'
-                                                                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                                                            }`}
-                                                        >
-                                                            {subItem.name}
-                                                        </Link>
-                                                    </li>
-                                                ))}
+                                                {item.submenu.map((subItem, subIndex) => {
+                                                    // Check if submenu item is active
+                                                    const isSubActive = subItem.path === '/dashboard/order-tracking' 
+                                                        ? location.pathname.startsWith('/dashboard/order-tracking')
+                                                        : location.pathname === subItem.path;
+                                                    
+                                                    return (
+                                                        <li key={subIndex}>
+                                                            <Link
+                                                                to={subItem.path}
+                                                                className={`block px-3 py-2 rounded-lg text-sm whitespace-nowrap ${
+                                                                    isSubActive
+                                                                        ? 'text-white font-medium bg-white/20'
+                                                                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                                                                }`}
+                                                            >
+                                                                {subItem.name}
+                                                            </Link>
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         )}
                                     </>

@@ -275,7 +275,7 @@ export async function createPaymentController(request, response) {
 
             // Update pending order with MoMo orderId (lưu vào một field tạm để dùng trong callback)
             await PendingOrderModel.findByIdAndUpdate(pendingOrder._id, {
-                $set: { paymentId: orderId } // Tạm thời lưu MoMo orderId vào paymentId field
+                $set: { momoOrderId: orderId } // Tạm thời lưu MoMo orderId
             });
 
             return response.json({
@@ -426,9 +426,8 @@ export async function checkPaymentController(request, response) {
                 orderId: pendingOrder.orderId,
                 productId: pendingOrder.productId,
                 product_details: pendingOrder.product_details,
-                paymentId: query.vnp_TransactionNo || query.vnp_BankTranNo || "",
-                    payment_method: "VNPAY",
-                payment_status: "SUCCESS",
+                payment_method: "VNPAY",
+                order_status: "SUCCESS",
                 delivery_address: pendingOrder.delivery_address,
                 subTotalAmt: pendingOrder.subTotalAmt,
                 totalAmt: pendingOrder.totalAmt,
@@ -447,8 +446,7 @@ export async function checkPaymentController(request, response) {
             
             console.log("[checkPaymentController] Order created successfully:", {
                 orderId: createdOrder.orderId,
-                payment_status: createdOrder.payment_status,
-                paymentId: createdOrder.paymentId
+                order_status: createdOrder.order_status
             });
 
             // Xóa pending order
@@ -567,22 +565,22 @@ export async function momoCallbackController(request, response) {
         
         if (resultCode !== '0') {
             // Payment failed - tìm và xóa pending order
-            const pendingOrder = await PendingOrderModel.findOne({ paymentId: orderId });
+            const pendingOrder = await PendingOrderModel.findOne({ momoOrderId: orderId });
             if (pendingOrder) {
                 await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
             }
             return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Thanh toán thất bại`);
         }
 
-        // Find pending order by MoMo orderId (stored in paymentId field)
+        // Find pending order by MoMo orderId (stored in momoOrderId field)
         const pendingOrder = await PendingOrderModel.findOne({ 
-            paymentId: orderId 
+            momoOrderId: orderId 
         });
 
         if (!pendingOrder) {
             // Kiểm tra xem order đã được tạo chưa (idempotency check)
             const existingOrder = await OrderModel.findOne({ 
-                paymentId: orderId,
+                orderId: pendingOrder.orderId,
                 payment_method: "MOMO"
             });
             if (existingOrder) {
@@ -597,9 +595,8 @@ export async function momoCallbackController(request, response) {
             orderId: pendingOrder.orderId,
             productId: pendingOrder.productId,
             product_details: pendingOrder.product_details,
-            paymentId: orderId,
             payment_method: "MOMO",
-            payment_status: "SUCCESS",
+            order_status: "SUCCESS",
             delivery_address: pendingOrder.delivery_address,
             subTotalAmt: pendingOrder.subTotalAmt,
             totalAmt: pendingOrder.totalAmt,
@@ -621,6 +618,7 @@ export async function momoCallbackController(request, response) {
         }
 
         // Decrease product stock
+        console.log("[momoCallbackController] Decreasing product stock...");
         try {
             for (const productDetail of pendingOrder.product_details) {
                 const productId = productDetail.productId;
@@ -630,9 +628,10 @@ export async function momoCallbackController(request, response) {
                     productId,
                     { $inc: { stock: -quantity } }
                 );
+                console.log(`[momoCallbackController] Decreased stock for product ${productId} by ${quantity}`);
             }
         } catch (stockError) {
-            console.error("Error decreasing product stock:", stockError);
+            console.error("[momoCallbackController] Error decreasing product stock:", stockError);
             // Continue even if stock update fails - order is already created
         }
 
@@ -665,16 +664,12 @@ export async function momoCallbackController(request, response) {
 }
 
 export async function CashOnDeliveryOrderController(request, response) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    
     try {
         const userId = request.userId; // auth middleware
         const { list_items, totalAmt, addressId, subTotalAmt, voucherId } = request.body;
 
         // Validate input
         if (!list_items || !Array.isArray(list_items) || list_items.length === 0) {
-            await session.abortTransaction();
             return response.status(400).json({
                 message: "Danh sách sản phẩm không hợp lệ",
                 error: true,
@@ -682,10 +677,9 @@ export async function CashOnDeliveryOrderController(request, response) {
             });
         }
 
-        // Validate each item has valid product data
+        // Validate each item has valid product data and check stock
         for (const item of list_items) {
             if (!item.productId || !item.productId._id) {
-                await session.abortTransaction();
                 return response.status(400).json({
                     message: "Thông tin sản phẩm không hợp lệ",
                     error: true,
@@ -693,9 +687,30 @@ export async function CashOnDeliveryOrderController(request, response) {
                 });
             }
             if (!item.productId.price || item.productId.price <= 0) {
-                await session.abortTransaction();
                 return response.status(400).json({
                     message: `Sản phẩm "${item.productId.name || 'N/A'}" không có giá hợp lệ`,
+                    error: true,
+                    success: false
+                });
+            }
+            
+            // Check stock availability
+            const quantity = item.quantity || item.qty || 1;
+            const product = await ProductModel.findById(item.productId._id).select('stock name').lean();
+            if (!product) {
+                return response.status(400).json({
+                    message: `Sản phẩm "${item.productId.name || 'N/A'}" không tồn tại`,
+                    error: true,
+                    success: false
+                });
+            }
+            if (product.stock === null || product.stock === undefined) {
+                // Skip stock check if stock is null/undefined
+                continue;
+            }
+            if (product.stock < quantity) {
+                return response.status(400).json({
+                    message: `Sản phẩm "${product.name || item.productId.name || 'N/A'}" không đủ tồn kho. Tồn kho hiện tại: ${product.stock}, số lượng yêu cầu: ${quantity}`,
                     error: true,
                     success: false
                 });
@@ -732,9 +747,8 @@ export async function CashOnDeliveryOrderController(request, response) {
                     productId: el.productId._id.toString()
                 };
             }),
-            paymentId: "",
             payment_method: "CASH ON DELIVERY",
-            payment_status: "PENDING",
+            order_status: "PENDING",
             delivery_address: addressId,
             subTotalAmt: Number(subTotalAmt) || 0,
             totalAmt: Number(totalAmt) || 0,
@@ -743,7 +757,6 @@ export async function CashOnDeliveryOrderController(request, response) {
 
         // Validate totals
         if (payload.totalAmt <= 0) {
-            await session.abortTransaction();
             return response.status(400).json({
                 message: "Tổng tiền đơn hàng không hợp lệ",
                 error: true,
@@ -751,55 +764,66 @@ export async function CashOnDeliveryOrderController(request, response) {
             });
         }
 
-        const generatedOrder = await OrderModel.create([payload], { session });
+        const generatedOrder = await OrderModel.create(payload);
 
         // Decrease product stock
-        for (const productDetail of payload.product_details) {
-            const productId = productDetail.productId;
-            const quantity = productDetail.qty || 1;
-            
-            await ProductModel.findByIdAndUpdate(
-                productId,
-                { $inc: { stock: -quantity } },
-                { session }
-            );
+        console.log("[CashOnDeliveryOrderController] Decreasing product stock...");
+        try {
+            for (const productDetail of payload.product_details) {
+                const productId = productDetail.productId;
+                const quantity = productDetail.qty || 1;
+                
+                await ProductModel.findByIdAndUpdate(
+                    productId,
+                    { $inc: { stock: -quantity } }
+                );
+                console.log(`[CashOnDeliveryOrderController] Decreased stock for product ${productId} by ${quantity}`);
+            }
+        } catch (stockError) {
+            console.error("[CashOnDeliveryOrderController] Error decreasing product stock:", stockError);
+            // Continue even if stock update fails - order is already created
         }
 
         // Remove from cart
-        await CartProductModel.deleteMany({ userId: userId }).session(session);
-        await UserModel.updateOne(
-            { _id: userId },
-            { shopping_cart: [] },
-            { session }
-        );
+        console.log("[CashOnDeliveryOrderController] Clearing cart for userId:", userId);
+        try {
+            await CartProductModel.deleteMany({ userId: userId });
+            await UserModel.updateOne(
+                { _id: userId },
+                { shopping_cart: [] }
+            );
+        } catch (cartError) {
+            console.error("[CashOnDeliveryOrderController] Error clearing cart:", cartError);
+            // Continue even if cart clearing fails - order is already created
+        }
 
         // Update voucher if exists
         if (voucherId) {
-            await VoucherModel.findByIdAndUpdate(
-                voucherId,
-                { $inc: { used_count: 1 } },
-                { session }
-            );
+            try {
+                await VoucherModel.findByIdAndUpdate(
+                    voucherId,
+                    { $inc: { used_count: 1 } }
+                );
+            } catch (voucherError) {
+                console.error("[CashOnDeliveryOrderController] Error updating voucher:", voucherError);
+                // Continue even if voucher update fails
+            }
         }
-
-        await session.commitTransaction();
 
         return response.json({
             message: "Order successfully",
             error: false,
             success: true,
-            data: generatedOrder[0]
+            data: generatedOrder
         });
 
     } catch (error) {
-        await session.abortTransaction();
+        console.error("[CashOnDeliveryOrderController] Error:", error);
         return response.status(500).json({
             message: error.message || error,
             error: true,
             success: false
         });
-    } finally {
-        session.endSession();
     }
 }
 

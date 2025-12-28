@@ -68,7 +68,7 @@ const OrderTracking = () => {
   ]
 
   const currentStepIndex = useMemo(() => {
-    const status = (order?.payment_status || '').toUpperCase()
+    const status = (order?.order_status || '').toUpperCase()
     if (status.includes('SUCCESS')) return 3
     if (status.includes('PENDING')) return 1
     if (status.includes('FAILED') || status.includes('CANCEL')) return 1
