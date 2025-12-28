@@ -1,7 +1,9 @@
 import CartProductModel from "../models/cartproduct.model.js";
 import OrderModel from "../models/order.model.js";
+import PendingOrderModel from "../models/pendingorder.model.js";
 import UserModel from "../models/user.model.js";
 import VoucherModel from "../models/voucher.model.js";
+import ProductModel from "../models/product.model.js";
 import mongoose from "mongoose";
 import querystring from "querystring";
 import crypto from "crypto";
@@ -23,7 +25,7 @@ function generatePayID() {
 }
 
 export async function createPaymentController(request, response) {
-    let tempOrder = null;
+    let pendingOrder = null;
     
     try {
         const { amount, list_items, addressId, subTotalAmt, totalAmt, typePayment = 'vnpay', voucherId } = request.body;
@@ -50,8 +52,8 @@ export async function createPaymentController(request, response) {
         // Calculate final amount (voucher logic can be added here)
         let finalAmount = totalAmt || amount;
         
-        // Create temporary order
-        const orderPayload = {
+        // Create pending order (tạm thời, chỉ lưu khi thanh toán thành công mới tạo order thực sự)
+        const pendingOrderPayload = {
             userId: userId,
             orderId: `ORD-${new mongoose.Types.ObjectId()}`,
             productId: list_items.map(el => el.productId._id),
@@ -74,16 +76,15 @@ export async function createPaymentController(request, response) {
                     productId: el.productId._id.toString()
                 };
             }),
-            paymentId: "",
-            payment_method: typePayment.toUpperCase(),
-            payment_status: "PENDING",
             delivery_address: addressId,
             subTotalAmt: subTotalAmt || amount,
             totalAmt: finalAmount,
+            payment_method: typePayment.toUpperCase(),
+            voucherId: voucherId || null
         };
 
-        // Save temporary order
-        tempOrder = await OrderModel.create(orderPayload);
+        // Save pending order (sẽ tự động xóa sau 24h nếu không được sử dụng)
+        pendingOrder = await PendingOrderModel.create(pendingOrderPayload);
 
         if (typePayment === 'vnpay') {
             // VNPay Payment
@@ -125,7 +126,7 @@ export async function createPaymentController(request, response) {
                 ipAddr = ipAddr.replace('::ffff:', '');
             }
             
-            let orderId = tempOrder.orderId;
+            let orderId = pendingOrder.orderId;
             let bankCode = request.query.bankCode || "";
             let createDate = moment().format("YYYYMMDDHHmmss");
             let orderInfo = `Thanh_toan_don_hang_${userId}`;
@@ -159,7 +160,7 @@ export async function createPaymentController(request, response) {
             vnp_Params["vnp_SecureHash"] = signed;
 
             let paymentUrl = vnp_Url + "?" + querystring.stringify(vnp_Params);
-            return response.json({ paymentUrl, orderId: tempOrder.orderId, type: 'vnpay' });
+            return response.json({ paymentUrl, orderId: pendingOrder.orderId, type: 'vnpay' });
             
         } else if (typePayment === 'momo') {
             // MoMo Payment
@@ -263,8 +264,8 @@ export async function createPaymentController(request, response) {
 
             // Check if payUrl exists
             if (!momoResponse.payUrl) {
-                // Delete temporary order if MoMo fails
-                await OrderModel.findByIdAndDelete(tempOrder._id);
+                // Delete pending order if MoMo fails
+                await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
                 return response.status(500).json({
                     message: "Không thể tạo link thanh toán MoMo",
                     error: true,
@@ -272,14 +273,14 @@ export async function createPaymentController(request, response) {
                 });
             }
 
-            // Update order with MoMo orderId
-            await OrderModel.findByIdAndUpdate(tempOrder._id, {
-                paymentId: orderId
+            // Update pending order with MoMo orderId (lưu vào một field tạm để dùng trong callback)
+            await PendingOrderModel.findByIdAndUpdate(pendingOrder._id, {
+                $set: { paymentId: orderId } // Tạm thời lưu MoMo orderId vào paymentId field
             });
 
             return response.json({
                 paymentUrl: momoResponse.payUrl,
-                orderId: tempOrder.orderId,
+                orderId: pendingOrder.orderId,
                 momoOrderId: orderId,
                 type: 'momo'
             });
@@ -287,12 +288,12 @@ export async function createPaymentController(request, response) {
     } catch (error) {
         console.error("Error creating payment:", error);
         
-        // If order was created but payment failed, try to delete it
-        if (tempOrder && tempOrder._id) {
+        // If pending order was created but payment failed, try to delete it
+        if (pendingOrder && pendingOrder._id) {
             try {
-                await OrderModel.findByIdAndDelete(tempOrder._id);
+                await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
             } catch (deleteError) {
-                console.error("Error deleting temporary order:", deleteError);
+                console.error("Error deleting pending order:", deleteError);
             }
         }
         
@@ -377,7 +378,6 @@ export async function checkPaymentController(request, response) {
                 console.warn("[checkPaymentController] Signature mismatch but responseCode = 00, continuing with payment processing...");
                 signatureValid = true; // Override để tiếp tục xử lý
             } else {
-                await session.abortTransaction();
                 return response.status(400).json({ 
                     message: "Dữ liệu không hợp lệ - chữ ký không khớp",
                     success: false 
@@ -385,89 +385,119 @@ export async function checkPaymentController(request, response) {
             }
         }
 
-        // Find the order
-        console.log("[checkPaymentController] Looking for order with orderId:", query.vnp_TxnRef);
-        const order = await OrderModel.findOne({ 
+        // Find the pending order
+        console.log("[checkPaymentController] Looking for pending order with orderId:", query.vnp_TxnRef);
+        const pendingOrder = await PendingOrderModel.findOne({ 
             orderId: query.vnp_TxnRef 
         });
 
-        if (!order) {
-            console.error("[checkPaymentController] Order not found with orderId:", query.vnp_TxnRef);
+        if (!pendingOrder) {
+            console.error("[checkPaymentController] Pending order not found with orderId:", query.vnp_TxnRef);
+            // Kiểm tra xem order đã được tạo chưa (idempotency check)
+            const existingOrder = await OrderModel.findOne({ orderId: query.vnp_TxnRef });
+            if (existingOrder) {
+                return response.json({
+                    message: "Đơn hàng đã được xử lý trước đó",
+                    data: query,
+                    success: true,
+                    order: existingOrder
+                });
+            }
             return response.status(404).json({
                 message: "Không tìm thấy đơn hàng",
                 success: false
             });
         }
         
-        console.log("[checkPaymentController] Order found:", {
-            orderId: order.orderId,
-            payment_status: order.payment_status,
-            userId: order.userId
+        console.log("[checkPaymentController] Pending order found:", {
+            orderId: pendingOrder.orderId,
+            userId: pendingOrder.userId
         });
 
-        // Check if order is already processed (idempotency check)
-        if (order.payment_status !== "PENDING") {
-            return response.status(400).json({
-                message: "Đơn hàng đã được xử lý trước đó",
-                success: false,
-                order: order
-            });
-        }
-
-        let updatedOrder;
+        let createdOrder;
 
         // Check payment status: ResponseCode = "00" means success
         if (query.vnp_ResponseCode === "00" && query.vnp_TransactionStatus === "00") {
-            console.log("[checkPaymentController] Payment successful, updating order...");
-            // Update order status to success
-            updatedOrder = await OrderModel.findOneAndUpdate(
-                { 
-                    _id: order._id,
-                    payment_status: "PENDING"
-                },
-                {
-                    paymentId: query.vnp_TransactionNo || query.vnp_BankTranNo || "",
-                    payment_method: "VNPAY",
-                    payment_status: "SUCCESS"
-                },
-                { new: true }
-            );
+            console.log("[checkPaymentController] Payment successful, creating order...");
+            
+            // Tạo order mới với trạng thái SUCCESS (chỉ lưu khi thanh toán thành công)
+            const orderPayload = {
+                userId: pendingOrder.userId,
+                orderId: pendingOrder.orderId,
+                productId: pendingOrder.productId,
+                product_details: pendingOrder.product_details,
+                paymentId: query.vnp_TransactionNo || query.vnp_BankTranNo || "",
+                payment_method: "VNPAY",
+                payment_status: "SUCCESS",
+                delivery_address: pendingOrder.delivery_address,
+                subTotalAmt: pendingOrder.subTotalAmt,
+                totalAmt: pendingOrder.totalAmt
+            };
 
-            if (!updatedOrder) {
-                console.error("[checkPaymentController] Failed to update order - order may have been updated by another process");
+            createdOrder = await OrderModel.create(orderPayload);
+
+            if (!createdOrder) {
+                console.error("[checkPaymentController] Failed to create order");
                 return response.status(500).json({
-                    message: "Không thể cập nhật trạng thái đơn hàng",
+                    message: "Không thể tạo đơn hàng",
                     success: false
                 });
             }
             
-            console.log("[checkPaymentController] Order updated successfully:", {
-                orderId: updatedOrder.orderId,
-                payment_status: updatedOrder.payment_status,
-                paymentId: updatedOrder.paymentId
+            console.log("[checkPaymentController] Order created successfully:", {
+                orderId: createdOrder.orderId,
+                payment_status: createdOrder.payment_status,
+                paymentId: createdOrder.paymentId
             });
 
-            // Clear cart
-            console.log("[checkPaymentController] Clearing cart for userId:", order.userId);
+            // Xóa pending order
             try {
-                const deleteResult = await CartProductModel.deleteMany({ userId: order.userId });
+                await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
+                console.log("[checkPaymentController] Pending order deleted");
+            } catch (deleteError) {
+                console.error("[checkPaymentController] Error deleting pending order:", deleteError);
+                // Continue even if deletion fails
+            }
+
+            // Decrease product stock
+            console.log("[checkPaymentController] Decreasing product stock...");
+            try {
+                for (const productDetail of pendingOrder.product_details) {
+                    const productId = productDetail.productId;
+                    const quantity = productDetail.qty || 1;
+                    
+                    await ProductModel.findByIdAndUpdate(
+                        productId,
+                        { $inc: { stock: -quantity } }
+                    );
+                    console.log(`[checkPaymentController] Decreased stock for product ${productId} by ${quantity}`);
+                }
+            } catch (stockError) {
+                console.error("[checkPaymentController] Error decreasing product stock:", stockError);
+                // Continue even if stock update fails - order is already created
+            }
+
+            // Clear cart
+            console.log("[checkPaymentController] Clearing cart for userId:", pendingOrder.userId);
+            try {
+                const deleteResult = await CartProductModel.deleteMany({ userId: pendingOrder.userId });
                 console.log("[checkPaymentController] Deleted cart items:", deleteResult.deletedCount);
                 
                 const updateUserResult = await UserModel.updateOne(
-                    { _id: order.userId },
+                    { _id: pendingOrder.userId },
                     { shopping_cart: [] }
                 );
                 console.log("[checkPaymentController] Updated user shopping_cart:", updateUserResult.modifiedCount);
             } catch (cartError) {
                 console.error("[checkPaymentController] Error clearing cart:", cartError);
                 console.error("[checkPaymentController] Cart error stack:", cartError.stack);
-                // Continue even if cart clearing fails - order is already updated
+                // Continue even if cart clearing fails - order is already created
             }
 
-            // Update voucher if exists (voucher logic can be added to order model)
-            // if (order.voucherId) {
+            // Update voucher if exists
+            // if (pendingOrder.voucherId) {
             //     await VoucherModel.findByIdAndUpdate(
-            //         order.voucherId,
+            //         pendingOrder.voucherId,
             //         { $inc: { used_count: 1 } }
             //     );
             // }
@@ -478,31 +508,24 @@ export async function checkPaymentController(request, response) {
                 message: "Thanh toán thành công",
                 data: query,
                 success: true,
-                order: updatedOrder
+                order: createdOrder
             });
         } else {
-            // Update order status to failed
+            // Payment failed - xóa pending order (không tạo order)
             const responseCode = query.vnp_ResponseCode || "99";
             const responseMessage = getVNPayResponseMessage(responseCode);
             
-            updatedOrder = await OrderModel.findOneAndUpdate(
-                { 
-                    _id: order._id,
-                    payment_status: "PENDING"
-                },
-                {
-                    payment_method: "VNPAY",
-                    payment_status: "FAILED",
-                    paymentId: query.vnp_TransactionNo || null
-                },
-                { new: true }
-            );
+            try {
+                await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
+                console.log("[checkPaymentController] Pending order deleted due to payment failure");
+            } catch (deleteError) {
+                console.error("[checkPaymentController] Error deleting pending order:", deleteError);
+            }
 
             return response.json({
                 message: responseMessage || "Thanh toán thất bại",
                 data: query,
-                success: false,
-                order: updatedOrder
+                success: false
             });
         }
     } catch (error) {
@@ -538,78 +561,104 @@ function getVNPayResponseMessage(code) {
 
 // MoMo Callback Handler
 export async function momoCallbackController(request, response) {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    
     try {
-        const { resultCode, orderId, orderInfo } = request.query;
+        const { resultCode, orderId } = request.query;
         
         if (resultCode !== '0') {
-            await session.abortTransaction();
+            // Payment failed - tìm và xóa pending order
+            const pendingOrder = await PendingOrderModel.findOne({ paymentId: orderId });
+            if (pendingOrder) {
+                await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
+            }
             return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Thanh toán thất bại`);
         }
 
-        // Find order by MoMo orderId (stored in paymentId)
-        const order = await OrderModel.findOne({ 
+        // Find pending order by MoMo orderId (stored in paymentId field)
+        const pendingOrder = await PendingOrderModel.findOne({ 
             paymentId: orderId 
-        }).session(session);
+        });
 
-        if (!order) {
-            await session.abortTransaction();
+        if (!pendingOrder) {
+            // Kiểm tra xem order đã được tạo chưa (idempotency check)
+            const existingOrder = await OrderModel.findOne({ 
+                paymentId: orderId,
+                payment_method: "MOMO"
+            });
+            if (existingOrder) {
+                return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-success/${existingOrder._id}`);
+            }
             return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Không tìm thấy đơn hàng`);
         }
 
-        // Check if order is already processed (idempotency)
-        if (order.payment_status !== "PENDING") {
-            await session.abortTransaction();
-            return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-success/${order._id}`);
+        // Tạo order mới với trạng thái SUCCESS (chỉ lưu khi thanh toán thành công)
+        const orderPayload = {
+            userId: pendingOrder.userId,
+            orderId: pendingOrder.orderId,
+            productId: pendingOrder.productId,
+            product_details: pendingOrder.product_details,
+            paymentId: orderId,
+            payment_method: "MOMO",
+            payment_status: "SUCCESS",
+            delivery_address: pendingOrder.delivery_address,
+            subTotalAmt: pendingOrder.subTotalAmt,
+            totalAmt: pendingOrder.totalAmt
+        };
+
+        const createdOrder = await OrderModel.create(orderPayload);
+
+        if (!createdOrder) {
+            return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Không thể tạo đơn hàng`);
         }
 
-        // Update order status to success
-        const updatedOrder = await OrderModel.findOneAndUpdate(
-            { 
-                _id: order._id,
-                payment_status: "PENDING"
-            },
-            {
-                payment_method: "MOMO",
-                payment_status: "SUCCESS"
-            },
-            { new: true, session }
-        );
+        // Xóa pending order
+        try {
+            await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
+        } catch (deleteError) {
+            console.error("Error deleting pending order:", deleteError);
+            // Continue even if deletion fails
+        }
 
-        if (!updatedOrder) {
-            await session.abortTransaction();
-            return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Không thể cập nhật đơn hàng`);
+        // Decrease product stock
+        try {
+            for (const productDetail of pendingOrder.product_details) {
+                const productId = productDetail.productId;
+                const quantity = productDetail.qty || 1;
+                
+                await ProductModel.findByIdAndUpdate(
+                    productId,
+                    { $inc: { stock: -quantity } }
+                );
+            }
+        } catch (stockError) {
+            console.error("Error decreasing product stock:", stockError);
+            // Continue even if stock update fails - order is already created
         }
 
         // Clear cart
-        await CartProductModel.deleteMany({ userId: order.userId }).session(session);
-        await UserModel.updateOne(
-            { _id: order.userId },
-            { shopping_cart: [] },
-            { session }
-        );
+        try {
+            await CartProductModel.deleteMany({ userId: pendingOrder.userId });
+            await UserModel.updateOne(
+                { _id: pendingOrder.userId },
+                { shopping_cart: [] }
+            );
+        } catch (cartError) {
+            console.error("Error clearing cart:", cartError);
+            // Continue even if cart clearing fails - order is already created
+        }
 
         // Update voucher if exists
-        // if (order.voucherId) {
+        // if (pendingOrder.voucherId) {
         //     await VoucherModel.findByIdAndUpdate(
-        //         order.voucherId,
-        //         { $inc: { used_count: 1 } },
-        //         { session }
+        //         pendingOrder.voucherId,
+        //         { $inc: { used_count: 1 } }
         //     );
         // }
-
-        await session.commitTransaction();
         
-        return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-success/${updatedOrder._id}`);
+        return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-success/${createdOrder._id}`);
         
     } catch (error) {
-        await session.abortTransaction();
         console.error("Error in momoCallbackController:", error);
         return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Lỗi xử lý thanh toán`);
-    } finally {
-        session.endSession();
     }
 }
 
@@ -700,6 +749,18 @@ export async function CashOnDeliveryOrderController(request, response) {
         }
 
         const generatedOrder = await OrderModel.create([payload], { session });
+
+        // Decrease product stock
+        for (const productDetail of payload.product_details) {
+            const productId = productDetail.productId;
+            const quantity = productDetail.qty || 1;
+            
+            await ProductModel.findByIdAndUpdate(
+                productId,
+                { $inc: { stock: -quantity } },
+                { session }
+            );
+        }
 
         // Remove from cart
         await CartProductModel.deleteMany({ userId: userId }).session(session);

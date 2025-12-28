@@ -77,3 +77,5 @@ Sau khi sửa, kiểm tra:
 - Người dùng sẽ thấy "Thanh toán thành công" trên frontend, nhưng trong database, order vẫn là "PENDING" nếu signature fail.
 - **Khuyến nghị**: Nên fix signature verification để đảm bảo order được update đúng trong database.
 
+
+

@@ -30,3 +30,5 @@ VNPAY_SECRET_KEY=your_secret_key_from_vnpay  # <-- Lấy từ merchant account V
 
 **Không cần sửa code!** Chỉ cần lấy Secret Key từ tài khoản VNPay và đặt vào `.env`.
 
+
+

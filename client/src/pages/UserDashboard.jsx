@@ -103,31 +103,27 @@ const UserDashboard = () => {
   }
 
   const getDeliveryStatusColor = (paymentStatus) => {
-    if (!paymentStatus) return 'bg-gray-100 text-gray-700';
+    if (!paymentStatus) return 'bg-red-100 text-red-700';
     
     const status = paymentStatus.toUpperCase();
     if (status.includes('SUCCESS')) {
       return 'bg-green-100 text-green-700';
-    } else if (status.includes('PENDING')) {
-      return 'bg-yellow-100 text-yellow-700';
-    } else if (status.includes('FAILED') || status.includes('CANCELLED') || status.includes('CANCEL')) {
+    } else {
+      // Tất cả các trạng thái khác (PENDING, FAILED, CANCELLED, CANCEL) đều là "Đã hủy"
       return 'bg-red-100 text-red-700';
     }
-    return 'bg-gray-100 text-gray-700';
   }
 
   const getDeliveryStatusText = (paymentStatus) => {
-    if (!paymentStatus) return 'Đang xử lý';
+    if (!paymentStatus) return 'Đã hủy';
     
     const status = paymentStatus.toUpperCase();
     if (status.includes('SUCCESS')) {
       return 'Thành công';
-    } else if (status.includes('PENDING')) {
-      return 'Đang xử lý';
-    } else if (status.includes('FAILED') || status.includes('CANCELLED') || status.includes('CANCEL')) {
+    } else {
+      // Tất cả các trạng thái khác (PENDING, FAILED, CANCELLED, CANCEL) đều là "Đã hủy"
       return 'Đã hủy';
     }
-    return 'Đang xử lý';
   }
 
   return (
@@ -330,9 +326,8 @@ const UserDashboard = () => {
                       <thead className="bg-[#F3F3F3] border-b border-gray-200">
                         <tr>
                           <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mã đơn</th>
-                          <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ngày tạo</th>
-                          <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Thanh toán</th>
-                          <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái</th>
+                          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Thanh toán</th>
+                          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái thanh toán</th>
                           <th className="p-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Tổng tiền</th>
                           <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Thao tác</th>
                         </tr>
@@ -346,13 +341,10 @@ const UserDashboard = () => {
                               <td className="p-3 text-sm text-teal-600 font-semibold">
                                 #{order.orderId?.split('-')[1]?.slice(0, 5) || order._id?.slice(-5)}
                               </td>
-                              <td className="p-3 text-sm text-gray-700">
-                                {formatDateTime(order.createdAt)}
-                              </td>
-                              <td className="p-3 text-sm text-gray-700">
+                              <td className="p-3 text-sm text-gray-700 text-center">
                                 {getPaymentMethod(order.payment_method)}
                               </td>
-                              <td className="p-3">
+                              <td className="p-3 text-center">
                                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${badgeClass}`}>
                                   {statusText}
                                 </span>
@@ -366,7 +358,7 @@ const UserDashboard = () => {
                                     onClick={() => navigate(`/order-detail/${order._id}`)}
                                     className="px-3 py-1 text-xs font-semibold rounded-full border border-teal-500 text-teal-600 hover:bg-teal-50"
                                   >
-                                    Xem chi tiết
+                                    Chi tiết đơn hàng
                                   </button>
                                   <button
                                     onClick={() => navigate(`/order-tracking/${order._id}`)}

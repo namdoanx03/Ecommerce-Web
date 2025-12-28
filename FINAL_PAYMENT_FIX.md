@@ -96,3 +96,5 @@ Sau khi fix:
 3. **Kiểm tra MongoDB version** có support transactions không (cần MongoDB >= 4.0 và replica set hoặc sharded cluster)
 4. **Kiểm tra server logs** để xem error cụ thể nếu vẫn còn lỗi
 
+
+

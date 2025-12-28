@@ -456,3 +456,5 @@ Controller này có cấu trúc cơ bản tốt nhưng cần cải thiện nhi�
 
 Những cải thiện này sẽ làm cho code an toàn hơn, đáng tin cậy hơn và dễ maintain hơn.
 
+
+

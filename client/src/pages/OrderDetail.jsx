@@ -178,17 +178,18 @@ const OrderDetail = () => {
             {/* Products List */}
             <div className="border-t-0">
               <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Sản phẩm</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Số lượng</th>
-                      <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Giá</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {order.product_details && order.product_details.length > 0 
-                      ? order.product_details.map((product, index) => {
+                <div className="max-h-[400px] overflow-y-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Sản phẩm</th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Số lượng</th>
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Giá</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                      {order.product_details && order.product_details.length > 0 
+                        ? order.product_details.map((product, index) => {
                           // Try to get image from product_details, then from populated productId
                           let productImage = null;
                           
@@ -205,44 +206,45 @@ const OrderDetail = () => {
                             }
                           }
                           
-                          return (
-                            <tr key={index} className="hover:bg-gray-50">
-                              <td className="px-4 py-3">
-                                <div className="flex items-center gap-3">
-                                  {productImage ? (
-                                    <img
-                                      src={productImage}
-                                      alt={product.name}
-                                      className="w-12 h-12 object-cover rounded"
-                                      onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.nextSibling.style.display = 'flex';
-                                      }}
-                                    />
-                                  ) : null}
-                                  <div 
-                                    className={`w-12 h-12 bg-gray-100 rounded flex items-center justify-center ${productImage ? 'hidden' : ''}`}
-                                  ></div>
-                                  <span className="text-sm font-medium text-gray-800">{product.name || 'N/A'}</span>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3 text-center text-sm text-gray-600">
-                                {product.qty || 1}
-                              </td>
-                              <td className="px-4 py-3 text-right text-sm font-medium text-gray-800">
-                                {DisplayPriceInVND(product.price || 0)}
-                              </td>
+                            return (
+                              <tr key={index} className="hover:bg-gray-50">
+                                <td className="px-4 py-3">
+                                  <div className="flex items-center gap-3">
+                                    {productImage ? (
+                                      <img
+                                        src={productImage}
+                                        alt={product.name}
+                                        className="w-12 h-12 object-cover rounded"
+                                        onError={(e) => {
+                                          e.target.style.display = 'none';
+                                          e.target.nextSibling.style.display = 'flex';
+                                        }}
+                                      />
+                                    ) : null}
+                                    <div 
+                                      className={`w-12 h-12 bg-gray-100 rounded flex items-center justify-center ${productImage ? 'hidden' : ''}`}
+                                    ></div>
+                                    <span className="text-sm font-medium text-gray-800">{product.name || 'N/A'}</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-center text-sm text-gray-600">
+                                  {product.qty || 1}
+                                </td>
+                                <td className="px-4 py-3 text-right text-sm font-medium text-gray-800">
+                                  {DisplayPriceInVND(product.price || 0)}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        : (
+                            <tr>
+                              <td colSpan="3" className="px-4 py-8 text-center text-gray-500">Không có sản phẩm</td>
                             </tr>
-                          );
-                        })
-                      : (
-                          <tr>
-                            <td colSpan="3" className="px-4 py-8 text-center text-gray-500">Không có sản phẩm</td>
-                          </tr>
-                        )
-                    }
-                  </tbody>
-                </table>
+                          )
+                      }
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {/* Financial Breakdown */}
