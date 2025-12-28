@@ -206,6 +206,15 @@ const SummaryApi = {
     sendChatMessage: {
         url: '/api/chat/send',
         method: 'post'
+    },
+    // Review API
+    submitReview: {
+        url: '/api/review/submit',
+        method: 'post'
+    },
+    checkReview: {
+        url: '/api/review/check',
+        method: 'get'
     }
 }
 

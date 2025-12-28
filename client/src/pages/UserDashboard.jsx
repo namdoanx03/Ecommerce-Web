@@ -7,6 +7,7 @@ import SummaryApi from '../common/SummaryApi'
 import { setOrder } from '../store/orderSlice'
 import UserSidebarMenu from '../components/UserSidebarMenu'
 import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
+import toast from 'react-hot-toast'
 
 const UserDashboard = () => {
   const user = useSelector(state => state.user)
@@ -24,6 +25,8 @@ const UserDashboard = () => {
   const [orderDetailLoading, setOrderDetailLoading] = useState(false)
   const [reviews, setReviews] = useState({}) // { productId: { rating: number, comment: string } }
   const [reviewLoading, setReviewLoading] = useState(false)
+  const [hasReviewed, setHasReviewed] = useState(false)
+  const [checkingReview, setCheckingReview] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = 5
 
@@ -75,6 +78,11 @@ const UserDashboard = () => {
           (o) => o._id === orderId || o.orderId === orderId
         )
         setOrderDetail(found || null)
+        
+        // Check if order has been reviewed
+        if (found) {
+          checkOrderReview(orderId)
+        }
       } else {
         setOrderDetail(null)
       }
@@ -82,6 +90,34 @@ const UserDashboard = () => {
       setOrderDetail(null)
     } finally {
       setOrderDetailLoading(false)
+    }
+  }
+
+  const checkOrderReview = async (orderId) => {
+    try {
+      setCheckingReview(true)
+      const response = await Axios({
+        ...SummaryApi.checkReview,
+        params: { orderId }
+      })
+      if (response.data && response.data.success) {
+        setHasReviewed(response.data.data.reviewed || false)
+        // If already reviewed, load existing reviews
+        if (response.data.data.review && response.data.data.review.reviews) {
+          const existingReviews = {}
+          response.data.data.review.reviews.forEach(review => {
+            existingReviews[review.productId] = {
+              rating: review.rating,
+              comment: review.comment || ''
+            }
+          })
+          setReviews(existingReviews)
+        }
+      }
+    } catch (error) {
+      setHasReviewed(false)
+    } finally {
+      setCheckingReview(false)
     }
   }
 
@@ -937,10 +973,10 @@ const UserDashboard = () => {
 
             {activeTab === 'review' && (
               <>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Đánh giá sản phẩm</h2>
-                    <p className="text-sm text-gray-500">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-1">Đánh giá sản phẩm</h2>
+                    <p className="text-xs text-gray-500">
                       Hãy chia sẻ trải nghiệm của bạn về các sản phẩm trong đơn hàng
                     </p>
                   </div>
@@ -983,48 +1019,50 @@ const UserDashboard = () => {
                 )}
 
                 {!orderDetailLoading && orderDetail && orderDetail.product_details && orderDetail.product_details.length > 0 && (
-                  <div className="space-y-6">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  <div className="space-y-4">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+                      <h3 className="text-base font-semibold text-gray-800 mb-3">
                         Đơn hàng #{orderDetail.orderId?.split('-')[1]?.slice(0, 5) || orderDetail._id?.slice(-5) || 'N/A'}
                       </h3>
-                      <div className="space-y-6">
+                      <div className="space-y-4">
                         {orderDetail.product_details.map((product, index) => {
                           const productId = product.productId
                           const currentReview = reviews[productId] || { rating: 0, comment: '' }
 
                           return (
-                            <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
-                              <div className="flex items-start gap-4 mb-4">
+                            <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
+                              <div className="flex items-start gap-3 mb-3">
                                 {product.image ? (
                                   <img
                                     src={product.image}
                                     alt={product.name}
-                                    className="w-20 h-20 object-cover rounded border border-gray-200"
+                                    className="w-16 h-16 object-cover rounded border border-gray-200 flex-shrink-0"
                                     onError={(e) => {
                                       e.target.src = '/no-image.png'
                                     }}
                                   />
                                 ) : (
-                                  <div className="w-20 h-20 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
+                                  <div className="w-16 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center flex-shrink-0">
                                     <span className="text-xs text-gray-400">Không có ảnh</span>
                                   </div>
                                 )}
-                                <div className="flex-1">
-                                  <h4 className="font-semibold text-gray-800 mb-1">{product.name || 'N/A'}</h4>
-                                  <p className="text-sm text-gray-600">Số lượng: {product.qty || 1}</p>
-                                  <p className="text-sm font-medium text-teal-600 mt-1">
-                                    {DisplayPriceInVND(product.price || 0)}
-                                  </p>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2">{product.name || 'N/A'}</h4>
+                                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <span>Số lượng: {product.qty || 1}</span>
+                                    <span className="font-medium text-teal-600">
+                                      {DisplayPriceInVND(product.price || 0)}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
 
-                              <div className="space-y-4">
+                              <div className="space-y-2">
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Đánh giá sản phẩm
                                   </label>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-1">
                                     {[1, 2, 3, 4, 5].map((star) => (
                                       <button
                                         key={star}
@@ -1038,7 +1076,7 @@ const UserDashboard = () => {
                                             }
                                           })
                                         }}
-                                        className={`text-2xl transition-colors ${
+                                        className={`text-lg transition-colors ${
                                           star <= currentReview.rating
                                             ? 'text-yellow-400'
                                             : 'text-gray-300 hover:text-yellow-300'
@@ -1048,7 +1086,7 @@ const UserDashboard = () => {
                                       </button>
                                     ))}
                                     {currentReview.rating > 0 && (
-                                      <span className="text-sm text-gray-600 ml-2">
+                                      <span className="text-xs text-gray-600 ml-1">
                                         ({currentReview.rating}/5)
                                       </span>
                                     )}
@@ -1056,7 +1094,7 @@ const UserDashboard = () => {
                                 </div>
 
                                 <div>
-                                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                                  <label className="block text-xs font-medium text-gray-700 mb-1">
                                     Nhận xét (tùy chọn)
                                   </label>
                                   <textarea
@@ -1071,8 +1109,8 @@ const UserDashboard = () => {
                                       })
                                     }}
                                     placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
-                                    rows={3}
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
+                                    rows={2}
                                   />
                                 </div>
                               </div>
@@ -1081,7 +1119,7 @@ const UserDashboard = () => {
                         })}
                       </div>
 
-                      <div className="mt-6 pt-6 border-t border-gray-200 flex justify-end gap-3">
+                      <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">
                         <button
                           onClick={() => {
                             setActiveTab('order')
@@ -1095,13 +1133,43 @@ const UserDashboard = () => {
                           onClick={async () => {
                             try {
                               setReviewLoading(true)
-                              // TODO: Call API to submit reviews
-                              // For now, just show success message
-                              alert('Cảm ơn bạn đã đánh giá sản phẩm!')
-                              setReviews({})
-                              setActiveTab('order')
+                              
+                              // Prepare review data
+                              const reviewData = Object.keys(reviews).map(productId => ({
+                                productId: productId,
+                                rating: reviews[productId].rating,
+                                comment: reviews[productId].comment || ''
+                              }))
+
+                              // Only submit reviews that have rating > 0
+                              const reviewsToSubmit = reviewData.filter(r => r.rating > 0)
+
+                              if (reviewsToSubmit.length === 0) {
+                                toast.error('Vui lòng đánh giá ít nhất một sản phẩm')
+                                return
+                              }
+
+                              const response = await Axios({
+                                ...SummaryApi.submitReview,
+                                data: {
+                                  orderId: orderDetail._id,
+                                  reviews: reviewsToSubmit
+                                }
+                              })
+
+                              if (response.data && response.data.success) {
+                                toast.success('Cảm ơn bạn đã đánh giá sản phẩm!')
+                                setHasReviewed(true)
+                                setReviews({})
+                                setActiveTab('detail')
+                                // Reload order detail to update status
+                                await loadOrderDetail(orderDetail._id)
+                              } else {
+                                toast.error(response.data?.message || 'Có lỗi xảy ra khi gửi đánh giá')
+                              }
                             } catch (error) {
-                              alert('Có lỗi xảy ra khi gửi đánh giá')
+                              console.error('Error submitting review:', error)
+                              toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi gửi đánh giá')
                             } finally {
                               setReviewLoading(false)
                             }
