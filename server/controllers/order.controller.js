@@ -899,3 +899,67 @@ export async function deleteOrderController(req, res) {
         return res.status(500).json({ message: error.message || error, error: true, success: false });
     }
 }
+
+export async function updateOrderStatusController(req, res) {
+    try {
+        const userId = req.userId;
+        const { orderId, status } = req.body;
+        
+        if (!orderId || !status) {
+            return res.status(400).json({ 
+                message: "Provide orderId and status", 
+                error: true, 
+                success: false 
+            });
+        }
+
+        // Validate status
+        const validStatuses = ['SUCCESS', 'CANCELLED', 'PENDING'];
+        if (!validStatuses.includes(status.toUpperCase())) {
+            return res.status(400).json({ 
+                message: "Invalid status. Must be SUCCESS, CANCELLED, or PENDING", 
+                error: true, 
+                success: false 
+            });
+        }
+
+        // Check if user is admin
+        const user = await UserModel.findById(userId).select('role');
+        if (!user || user.role !== 'ADMIN') {
+            return res.status(403).json({ 
+                message: "Only admin can update order status", 
+                error: true, 
+                success: false 
+            });
+        }
+
+        // Update order status
+        const updatedOrder = await OrderModel.findOneAndUpdate(
+            { _id: orderId },
+            { order_status: status.toUpperCase() },
+            { new: true }
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({ 
+                message: "Order not found", 
+                error: true, 
+                success: false 
+            });
+        }
+
+        return res.json({ 
+            message: "Order status updated successfully", 
+            error: false, 
+            success: true,
+            data: updatedOrder
+        });
+    } catch (error) {
+        console.error("Error updating order status:", error);
+        return res.status(500).json({ 
+            message: error.message || error, 
+            error: true, 
+            success: false 
+        });
+    }
+}

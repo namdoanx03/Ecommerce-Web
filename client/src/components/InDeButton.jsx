@@ -68,8 +68,16 @@ const InDeButton = ({ data, quantity, setQuantity }) => {
         e.preventDefault()
         e.stopPropagation()
         
+        // Nếu số lượng = 1 và đang trong giỏ hàng, xóa sản phẩm khỏi giỏ
+        if (qty === 1 && cartItemDetails) {
+            await deleteCartItem(cartItemDetails._id)
+            if (setQty) setQty(1) // Reset về 1 cho trường hợp không có trong giỏ nữa
+            return
+        }
+        
+        // Nếu số lượng <= 1 nhưng chưa có trong giỏ, không làm gì
         if (qty <= 1) {
-            return; // Không cho phép giảm dưới 1
+            return
         }
 
         if (cartItemDetails) {
@@ -88,8 +96,8 @@ const InDeButton = ({ data, quantity, setQuantity }) => {
             <div className='flex items-center bg-gray-100 p-1 rounded-lg border border-gray-200'>
                 <button 
                     onClick={decreaseQty} 
-                    className='bg-white hover:bg-gray-50 w-8 h-8 rounded flex items-center justify-center transition-colors border border-gray-200'
-                    disabled={qty <= 1}
+                    className='bg-white hover:bg-gray-50 w-8 h-8 rounded flex items-center justify-center transition-colors border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed'
+                    disabled={!cartItemDetails && qty <= 1}
                 >
                     <FaMinus className='text-red-500 text-sm'/>
                 </button>

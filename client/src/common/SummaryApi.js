@@ -158,6 +158,10 @@ const SummaryApi = {
         url : '/api/order/delete-order',
         method : 'delete'
     },
+    updateOrderStatus : {
+        url : '/api/order/update-status',
+        method : 'put'
+    },
     dashboardSummary: {
         url: '/api/user/dashboard-summary',
         method: 'get'

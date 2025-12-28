@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react'
 import SummaryApi from '../common/SummaryApi'
 import AxiosToastError from '../utils/AxiosToastError'
 import Axios from '../utils/Axios'
-import { FaEye } from "react-icons/fa";
-import { TbEdit } from "react-icons/tb";
-import { FaRegTrashCan } from "react-icons/fa6";
 import { IoSearchOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -212,7 +209,7 @@ const ManageOrder = () => {
                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Phương thức thanh toán</th>
                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Trạng thái giao hàng</th>
                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tổng tiền</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tùy chọn</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Trạng thái đơn hàng</th>
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-200'>
@@ -273,7 +270,10 @@ const ManageOrder = () => {
                         </div>
                       </td>
                       <td className='p-4 text-center'>
-                        <span className='font-medium text-gray-800'>
+                        <span 
+                          className='font-medium text-gray-800 hover:text-teal-600 cursor-pointer transition-colors'
+                          onClick={() => handleViewOrder(order)}
+                        >
                           {order.orderId || 'N/A'}
                         </span>
                       </td>
@@ -298,42 +298,67 @@ const ManageOrder = () => {
                         </span>
                       </td>
                       <td className='p-4 text-center'>
-                        <div className='flex items-center justify-center gap-3'>
-                          <button
-                            title='Xem'
-                            className='text-gray-400 hover:text-blue-600 transition-colors'
-                            onClick={() => handleViewOrder(order)}
-                          >
-                            <FaEye size={18} />
-                          </button>
-                          <button
-                            title='Sửa'
-                            className='text-gray-400 hover:text-yellow-600 transition-colors'
-                            onClick={() => {
-                              // TODO: Implement edit order
-                              toast.info('Chức năng sửa đơn hàng sắp có')
-                            }}
-                          >
-                            <TbEdit size={18} />
-                          </button>
-                          <button
-                            title='Xóa'
-                            className='text-gray-400 hover:text-red-600 transition-colors'
-                            onClick={() => {
-                              // TODO: Implement delete order
-                              toast.info('Chức năng xóa đơn hàng sắp có')
-                            }}
-                          >
-                            <FaRegTrashCan size={18} />
-                          </button>
-                          <button
-                            className='px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors'
-                            onClick={() => {
-                              navigate(`/dashboard/order-tracking/${order._id}`)
-                            }}
-                          >
-                            Theo dõi
-                          </button>
+                        <div className='flex items-center justify-center gap-2'>
+                          {order.order_status?.toUpperCase() !== 'SUCCESS' && order.order_status?.toUpperCase() !== 'CANCELLED' && (
+                            <>
+                              <button
+                                className='px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors'
+                                onClick={async () => {
+                                  try {
+                                    const response = await Axios({
+                                      ...SummaryApi.updateOrderStatus,
+                                      data: {
+                                        orderId: order._id,
+                                        status: 'SUCCESS'
+                                      }
+                                    })
+                                    if (response.data.success) {
+                                      toast.success('Đơn hàng đã được xác nhận thành công')
+                                      fetchOrderData()
+                                    } else {
+                                      toast.error(response.data.message || 'Có lỗi xảy ra')
+                                    }
+                                  } catch (error) {
+                                    AxiosToastError(error)
+                                  }
+                                }}
+                              >
+                                Xác nhận
+                              </button>
+                              <button
+                                className='px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors'
+                                onClick={async () => {
+                                  if (!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
+                                    return
+                                  }
+                                  try {
+                                    const response = await Axios({
+                                      ...SummaryApi.updateOrderStatus,
+                                      data: {
+                                        orderId: order._id,
+                                        status: 'CANCELLED'
+                                      }
+                                    })
+                                    if (response.data.success) {
+                                      toast.success('Đơn hàng đã được hủy')
+                                      fetchOrderData()
+                                    } else {
+                                      toast.error(response.data.message || 'Có lỗi xảy ra')
+                                    }
+                                  } catch (error) {
+                                    AxiosToastError(error)
+                                  }
+                                }}
+                              >
+                                Hủy
+                              </button>
+                            </>
+                          )}
+                          {(order.order_status?.toUpperCase() === 'SUCCESS' || order.order_status?.toUpperCase() === 'CANCELLED') && (
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDeliveryStatusColor(order.order_status)}`}>
+                              {getDeliveryStatusText(order.order_status)}
+                            </span>
+                          )}
                         </div>
                       </td>
                     </tr>
