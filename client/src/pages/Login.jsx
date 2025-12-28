@@ -79,7 +79,7 @@ const Login = () => {
                 <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7">
                     <div className="flex items-center justify-between gap-4">
                         {/* Page Title - Left */}
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-600">Log In</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-600">Đăng nhập</h2>
                         
                         {/* Breadcrumb - Right */}
                         <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600">
@@ -89,7 +89,7 @@ const Login = () => {
                                 </svg>
                             </Link>
                             <span className="text-gray-600">&gt;</span>
-                            <span className="text-gray-600 font-bold">Log In</span>
+                            <span className="text-gray-600 font-bold">Đăng nhập</span>
                         </div>
                     </div>
                 </div>
@@ -126,8 +126,8 @@ const Login = () => {
                             <div className="log-in-box w-full max-w-md bg-white rounded-lg shadow-sm p-6 sm:p-8">
                                 {/* log-in-title */}
                                 <div className="log-in-title mb-6">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Welcome To Fastkart</h3>
-                                    <h4 className="text-base text-gray-600">Log In Your Account</h4>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Chào mừng bạn đến với Binkeyit</h3>
+                                    <h4 className="text-base text-gray-600">Đăng nhập vào tài khoản của bạn</h4>
                                 </div>
 
                                 {/* input-box */}
@@ -184,7 +184,7 @@ const Login = () => {
                                                             : 'top-1/2 -translate-y-1/2 text-base text-gray-500'
                                                     }`}
                                                 >
-                                                    Password
+                                                    Mật khẩu
                                                 </label>
                                                 <button
                                                     type="button"
@@ -208,11 +208,11 @@ const Login = () => {
                                                         onChange={(e) => setRememberMe(e.target.checked)}
                                                     />
                                                     <label className="form-check-label ml-2 text-sm text-gray-700 cursor-pointer" htmlFor="flexCheckDefault">
-                                                        Remember me
+                                                        Nhớ tôi
                                                     </label>
                                                 </div>
                                                 <Link to="/forgot-password" className="forgot-password text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
-                                                    Forgot Password?
+                                                    Quên mật khẩu?
                                                 </Link>
                                             </div>
                                         </div>
@@ -224,7 +224,7 @@ const Login = () => {
                                                 type="submit"
                                                 disabled={!valideValue}
                                             >
-                                                Log In
+                                                Đăng nhập
                                             </button>
                                         </div>
                                     </form>
@@ -233,7 +233,7 @@ const Login = () => {
                                 {/* OR Separator - other-log-in */}
                                 <div className="other-log-in my-6 text-center">
                                     <h6 className="text-sm text-gray-500 relative">
-                                        <span className="relative bg-white px-4">or</span>
+                                        <span className="relative bg-white px-4">hoặc</span>
                                         <div className="absolute top-1/2 left-0 right-0 border-t border-gray-300 -z-10"></div>
                                     </h6>
                                 </div>
@@ -251,7 +251,7 @@ const Login = () => {
                                                     className="blur-up lazyloaded w-5 h-5" 
                                                     alt="Google" 
                                                 />
-                                                Log In with Google
+                                                Đăng nhập với Google
                                             </a>
                                         </li>
                                         <li>
@@ -264,7 +264,7 @@ const Login = () => {
                                                     className="blur-up lazyloaded w-5 h-5" 
                                                     alt="Facebook" 
                                                 />
-                                                Log In with Facebook
+                                                Đăng nhập với Facebook
                                             </a>
                                         </li>
                                     </ul>
@@ -277,12 +277,12 @@ const Login = () => {
 
                                 {/* Sign Up Link - sign-up-box */}
                                 <div className="sign-up-box text-center">
-                                    <h4 className="text-sm text-gray-600 mb-1">Don't have an account?</h4>
+                                    <h4 className="text-sm text-gray-600 mb-1">Không có tài khoản?</h4>
                                     <Link
                                         to="/register"
                                         className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
                                     >
-                                        Sign Up
+                                        Đăng ký
                                     </Link>
                                 </div>
                             </div>

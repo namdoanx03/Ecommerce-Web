@@ -61,10 +61,10 @@ const OrderTracking = () => {
   }
 
   const steps = [
-    { key: 'PLACED', label: 'Order Placed' },
-    { key: 'PROCESSING', label: 'Processing' },
-    { key: 'SHIPPED', label: 'Shipped' },
-    { key: 'DELIVERED', label: 'Delivered' }
+    { key: 'PLACED', label: 'Đã đặt hàng' },
+    { key: 'PROCESSING', label: 'Đang chuẩn bị' },
+    { key: 'SHIPPED', label: 'Đang giao hàng' },
+    { key: 'DELIVERED', label: 'Đã giao hàng' }
   ]
 
   const currentStepIndex = useMemo(() => {
@@ -110,7 +110,7 @@ const OrderTracking = () => {
       <div className="bg-[#F8F8F8] border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7 flex items-center justify-between">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-700">
-            Order Tracking
+            Theo dõi đơn hàng
           </h2>
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
             <button
@@ -120,7 +120,7 @@ const OrderTracking = () => {
               Home
             </button>
             <span className="text-gray-400">&gt;</span>
-            <span className="font-medium">Order Tracking</span>
+            <span className="font-medium">Theo dõi đơn hàng</span>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@ const OrderTracking = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 <tr>
-                  <td className="px-6 py-3 text-gray-800">Order Placed</td>
+                  <td className="px-6 py-3 text-gray-800">Đã đặt hàng</td>
                   <td className="px-6 py-3 text-gray-700">{createdDate}</td>
                   <td className="px-6 py-3 text-gray-700">{createdTime}</td>
                   <td className="px-6 py-3 text-gray-500">
@@ -241,7 +241,7 @@ const OrderTracking = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-3 text-gray-800">Processing</td>
+                  <td className="px-6 py-3 text-gray-800">Đang chuẩn bị</td>
                   <td className="px-6 py-3 text-gray-700">{createdDate}</td>
                   <td className="px-6 py-3 text-gray-700">—</td>
                   <td className="px-6 py-3 text-gray-500">
@@ -249,7 +249,7 @@ const OrderTracking = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-3 text-gray-800">Shipped</td>
+                  <td className="px-6 py-3 text-gray-800">Đang giao hàng</td>
                   <td className="px-6 py-3 text-gray-700">—</td>
                   <td className="px-6 py-3 text-gray-700">—</td>
                   <td className="px-6 py-3 text-gray-500">
@@ -257,7 +257,7 @@ const OrderTracking = () => {
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-3 text-gray-800">Delivered</td>
+                  <td className="px-6 py-3 text-gray-800">Đã giao hàng</td>
                   <td className="px-6 py-3 text-gray-700">—</td>
                   <td className="px-6 py-3 text-gray-700">—</td>
                   <td className="px-6 py-3 text-gray-500">

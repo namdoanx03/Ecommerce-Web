@@ -59,7 +59,7 @@ const ForgotPassword = () => {
                 <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7">
                     <div className="flex items-center justify-between gap-4">
                         {/* Page Title - Left */}
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-600">Forgot Password</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-600">Quên mật khẩu</h2>
                         
                         {/* Breadcrumb - Right */}
                         <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600">
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
                                 </svg>
                             </Link>
                             <span className="text-gray-600">&gt;</span>
-                            <span className="text-gray-600 font-bold">Forgot Password</span>
+                            <span className="text-gray-600 font-bold">Quên mật khẩu</span>
                         </div>
                     </div>
                 </div>
@@ -106,8 +106,8 @@ const ForgotPassword = () => {
                             <div className="log-in-box w-full max-w-md rounded-lg shadow-sm p-6 sm:p-8" style={{ backgroundColor: '#F8F8F8' }}>
                                 {/* log-in-title */}
                                 <div className="log-in-title mb-6">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Welcome To Fastkart</h3>
-                                    <h4 className="text-base text-gray-600">Forgot your password</h4>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Chào mừng bạn đến với Binkeyit</h3>
+                                    <h4 className="text-base text-gray-600">Quên mật khẩu</h4>
                                 </div>
 
                                 {/* input-box */}
@@ -148,7 +148,7 @@ const ForgotPassword = () => {
                                                 type="submit"
                                                 disabled={!valideValue}
                                             >
-                                                Forgot Password
+                                                Quên mật khẩu
                                             </button>
                                         </div>
                                     </form>
@@ -156,12 +156,12 @@ const ForgotPassword = () => {
 
                                 {/* Login Link - sign-up-box */}
                                 <div className="sign-up-box text-center mt-6">
-                                    <h4 className="text-sm text-gray-600 mb-1">Remember your password?</h4>
+                                    <h4 className="text-sm text-gray-600 mb-1">Nhớ mật khẩu?</h4>
                                     <Link
                                         to="/login"
                                         className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
                                     >
-                                        Log In
+                                        Đăng nhập
                                     </Link>
                                 </div>
                             </div>

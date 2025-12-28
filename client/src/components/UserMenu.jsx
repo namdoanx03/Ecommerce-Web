@@ -51,7 +51,7 @@ const UserMenu = ({ close }) => {
           <FiUser size={35} className="mb-2" />
         )}
         <span>
-          Hello <span className="font-semibold text-lg">{user.name}!</span>
+          Xin chào <span className="font-semibold text-lg">{user.name}!</span>
         </span>
       </div>
 
@@ -60,10 +60,10 @@ const UserMenu = ({ close }) => {
         !isAdmin(user.role) && (
           <>
             <div className='px-2 hover:bg-orange-200 py-1 cursor-pointer'>
-              <a onClick={handleClose} href={"/profile"}>My Account</a>
+              <a onClick={handleClose} href={"/profile"}>Tài khoản của tôi</a>
             </div>
             <div className='px-2 hover:bg-orange-200 py-1 cursor-pointer'>
-              <button onClick={handleLogout}>Log Out </button>
+              <button onClick={handleLogout}>Đăng xuất </button>
             </div>
           </>
         )

@@ -208,7 +208,7 @@ const LeftDashboard = ({ isCollapsed = false }) => {
                             overflow: 'hidden'
                         }}
                     >
-                        Fastkart
+                        Binkeyit
                     </span>
                 </div>
             </div>

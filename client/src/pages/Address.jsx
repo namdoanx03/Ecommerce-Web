@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { FiHome, FiShoppingBag, FiHeart, FiCreditCard, FiMapPin, FiUser, FiDownload, FiShield } from 'react-icons/fi'
+import { FiHome } from 'react-icons/fi'
 import AddAddress from '../components/AddAddress'
 import { MdDelete, MdEdit } from "react-icons/md";
 import EditAddressDetails from '../components/EditAddressDetails';
 import { useAddress } from '../hooks/useAddress';
 import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
+import UserSidebarMenu from '../components/UserSidebarMenu'
 
 const Address = () => {
   const user = useSelector(state => state.user)
@@ -43,20 +44,20 @@ const Address = () => {
     setOpenEdit(true)
   }
 
-  const name = user.name || 'User'
+  const name = user.name || 'Người dùng'
 
   // Get address label (Home, Office, etc.) - can be enhanced with a label field in the future
   const getAddressLabel = (index) => {
-    const labels = ['Home', 'Office', 'Neighbour', 'Home 2']
+    const labels = ['Nhà', 'Văn phòng', 'Hàng xóm', 'Nhà 2']
     return labels[index % labels.length]
   }
 
   const getLabelColor = (label) => {
     const colors = {
-      'Home': 'bg-emerald-500',
-      'Office': 'bg-emerald-400',
-      'Neighbour': 'bg-emerald-600',
-      'Home 2': 'bg-emerald-500'
+      'Nhà': 'bg-emerald-500',
+      'Văn phòng': 'bg-emerald-400',
+      'Hàng xóm': 'bg-emerald-600',
+      'Nhà 2': 'bg-emerald-500'
     }
     return colors[label] || 'bg-emerald-500'
   }
@@ -66,14 +67,14 @@ const Address = () => {
       {/* Header / Breadcrumb */}
       <div className="bg-[#F8F8F8] border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7 flex items-center justify-between">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-700">User Dashboard</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-700">Địa chỉ của tôi</h2>
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
             <button onClick={() => navigate('/')} className="flex items-center gap-1 hover:text-emerald-600">
               <FiHome className="w-4 h-4" />
-              <span>Home</span>
+              <span>Trang chủ</span>
             </button>
             <span className="text-gray-400">&gt;</span>
-            <span className="font-medium">Address Book</span>
+            <span className="font-medium">Địa chỉ của tôi</span>
           </div>
         </div>
       </div>
@@ -81,61 +82,7 @@ const Address = () => {
       {/* Main content */}
       <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-8 lg:py-10 flex flex-col lg:flex-row gap-8">
         {/* Left sidebar card */}
-        <aside className="w-full lg:w-1/3 xl:w-1/4">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-b from-emerald-50 to-white px-6 pt-8 pb-6 text-center">
-              <div className="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100 flex items-center justify-center text-3xl font-semibold text-emerald-600">
-                {user.avatar ? (
-                  <img src={user.avatar} alt={name} className="w-full h-full object-cover" />
-                ) : (
-                  name.charAt(0).toUpperCase()
-                )}
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-gray-800">{name}</h3>
-              {user.email && (
-                <p className="text-sm text-gray-500 mt-1">{user.email}</p>
-              )}
-            </div>
-
-            <nav className="border-t border-gray-100 divide-y divide-gray-100 text-sm">
-              <button
-                onClick={() => navigate('/profile')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiHome className="w-4 h-4" />
-                <span>Dashboard</span>
-              </button>
-              <button
-                onClick={() => navigate('/myorders')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiShoppingBag className="w-4 h-4" />
-                <span>Order</span>
-              </button>
-              <button
-                onClick={() => navigate('/wishlist')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiHeart className="w-4 h-4" />
-                <span>Wishlist</span>
-              </button>
-              <button
-                onClick={() => navigate('/address')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 text-emerald-600 bg-emerald-50 font-semibold"
-              >
-                <FiMapPin className="w-4 h-4" />
-                <span>Address</span>
-              </button>
-              <button
-                onClick={() => navigate('/info')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiUser className="w-4 h-4" />
-                <span>Profile</span>
-              </button>
-            </nav>
-          </div>
-        </aside>
+        <UserSidebarMenu />
 
         {/* Right main panel - Address Book */}
         <main className="flex-1">
@@ -143,7 +90,7 @@ const Address = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">My Address Book</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Địa chỉ của tôi</h2>
                 <div className="flex items-center gap-1">
                   <div className="w-8 h-0.5 bg-emerald-600"></div>
                   <svg className="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
@@ -158,7 +105,7 @@ const Address = () => {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                <span>+ Add New Address</span>
+                <span>+ Thêm địa chỉ mới</span>
               </button>
             </div>
 
@@ -220,7 +167,7 @@ const Address = () => {
                         )}
                         {address.mobile && (
                           <p>
-                            <span className="font-medium">Phone:</span> +{address.mobile}
+                            <span className="font-medium">Số điện thoại:</span> {address.mobile}
                           </p>
                         )}
                       </div>
@@ -232,14 +179,14 @@ const Address = () => {
                           className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded transition-colors"
                         >
                           <MdEdit className="w-4 h-4" />
-                          <span>Edit</span>
+                          <span>Sửa</span>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(address._id)}
                           className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
                         >
                           <MdDelete className="w-4 h-4" />
-                          <span>Remove</span>
+                          <span>Xóa</span>
                         </button>
                       </div>
                     </div>

@@ -162,15 +162,15 @@ const Profile = () => {
             <div className='max-w-6xl mx-auto space-y-6'>
                 {/* Profile Setting Section */}
                 <div className='bg-white rounded-lg shadow-sm p-6'>
-                    <h2 className='text-xl font-semibold text-gray-800 mb-6'>Profile Setting</h2>
+                    <h2 className='text-xl font-semibold text-gray-800 mb-6'>Cài đặt hồ sơ</h2>
                     
                     <form onSubmit={handleSubmit} className='space-y-5'>
                         {/* First Name */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>First Name</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Tên</label>
                             <input
                                 type='text'
-                                placeholder='Enter Your First Name'
+                                    placeholder='Nhập tên của bạn'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.firstName}
                                 name='firstName'
@@ -181,10 +181,10 @@ const Profile = () => {
 
                         {/* Last Name */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Last Name</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Họ</label>
                             <input
                                 type='text'
-                                placeholder='Enter Your Last Name'
+                                placeholder='Nhập họ của bạn'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.lastName}
                                 name='lastName'
@@ -195,10 +195,10 @@ const Profile = () => {
 
                         {/* Phone Number */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Your Phone Number</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Số điện thoại</label>
                             <input
                                 type='text'
-                                placeholder='Enter Your Number'
+                                placeholder='Nhập số điện thoại của bạn'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.mobile}
                                 name='mobile'
@@ -209,10 +209,10 @@ const Profile = () => {
 
                         {/* Email */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Enter Email Address</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Email</label>
                             <input
                                 type='email'
-                                placeholder='Enter Your Email Address'
+                                placeholder='Nhập email của bạn'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.email}
                                 name='email'
@@ -223,7 +223,7 @@ const Profile = () => {
 
                         {/* Photo */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Photo</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Ảnh đại diện</label>
                             <div className='flex-1 max-w-md flex items-center gap-3'>
                                 <label className='px-4 py-2 bg-teal-600 text-white rounded cursor-pointer hover:bg-teal-700 transition-colors text-sm'>
                                     Chọn tệp
@@ -244,7 +244,7 @@ const Profile = () => {
                                         disabled={loading}
                                         className='px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:bg-gray-400 text-sm'
                                     >
-                                        {loading ? 'Uploading...' : 'Upload'}
+                                        {loading ? 'Tải lên...' : 'Tải lên'}
                                     </button>
                                 )}
                             </div>
@@ -252,10 +252,10 @@ const Profile = () => {
 
                         {/* Password */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Password</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Mật khẩu</label>
                             <input
                                 type='password'
-                                placeholder='Enter Your Password'
+                                placeholder='Nhập mật khẩu của bạn'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.password}
                                 name='password'
@@ -265,10 +265,10 @@ const Profile = () => {
 
                         {/* Confirm Password */}
                         <div className='flex items-center gap-6'>
-                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Confirm Password</label>
+                            <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Xác nhận mật khẩu</label>
                             <input
                                 type='password'
-                                placeholder='Enter Your Confirm Password'
+                                placeholder='Nhập xác nhận mật khẩu của bạn'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.confirmPassword}
                                 name='confirmPassword'
@@ -291,12 +291,12 @@ const Profile = () => {
                 {/* Address Section */}
                 <div className='bg-white rounded-lg shadow-sm p-6'>
                     <div className='flex justify-between items-center mb-6'>
-                        <h2 className='text-xl font-semibold text-gray-800'>Address</h2>
+                        <h2 className='text-xl font-semibold text-gray-800'>Địa chỉ</h2>
                         <button
                             onClick={() => setOpenAddress(true)}
                             className='px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors'
                         >
-                            Add Address
+                            Thêm địa chỉ
                         </button>
                     </div>
 
@@ -305,7 +305,7 @@ const Profile = () => {
                             addressList.map((address) => (
                                 <div key={address._id} className='border border-gray-200 rounded-lg p-4 relative hover:shadow-md transition-shadow bg-white'>
                                     <span className='absolute top-3 right-3 px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded'>
-                                        {address.status === 'home' ? 'Home' : address.status === 'office' ? 'Office' : 'Other'}
+                                        {address.status === 'home' ? 'Nhà' : address.status === 'office' ? 'Văn phòng' : 'Khác'}
                                     </span>
                                     <div className='mb-4 pr-16'>
                                         <p className='font-semibold text-gray-800 mb-2'>{address.name}</p>
@@ -313,27 +313,27 @@ const Profile = () => {
                                         <p className='text-sm text-gray-600 mb-1'>
                                             {[address.ward, address.district, address.province].filter(Boolean).join(', ')}
                                         </p>
-                                        <p className='text-sm text-gray-600 mt-2'>Mobile No. {address.mobile}</p>
+                                        <p className='text-sm text-gray-600 mt-2'>Số điện thoại: {address.mobile}</p>
                                     </div>
                                     <div className='flex gap-2 mt-4'>
                                         <button
                                             onClick={() => handleEditClick(address)}
                                             className='flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm font-medium'
                                         >
-                                            Edit
+                                            Sửa
                                         </button>
                                         <button
                                             onClick={() => handleDeleteClick(address._id)}
                                             className='flex-1 px-3 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors text-sm font-medium'
                                         >
-                                            Remove
+                                            Xóa
                                         </button>
                                     </div>
                                 </div>
                             ))
                         ) : (
                             <div className='col-span-full text-center py-8 text-gray-500'>
-                                No addresses found. Click "Add Address" to add one.
+                                Không có địa chỉ nào. Click "Thêm địa chỉ" để thêm mới.
                             </div>
                         )}
                     </div>
@@ -353,20 +353,20 @@ const Profile = () => {
             {showDeleteConfirm && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
                     <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
-                        <h3 className='text-lg font-semibold mb-4'>Confirm Delete</h3>
-                        <p className='text-gray-600 mb-6'>Are you sure you want to delete this address? This action cannot be undone.</p>
+                        <h3 className='text-lg font-semibold mb-4'>Xác nhận xóa</h3>
+                        <p className='text-gray-600 mb-6'>Bạn có chắc chắn muốn xóa địa chỉ này không? Hành động này không thể hoàn tác.</p>
                         <div className='flex justify-end gap-3'>
                             <button
                                 onClick={() => setShowDeleteConfirm(false)}
                                 className='px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
                             >
-                                Cancel
+                                Hủy
                             </button>
                             <button
                                 onClick={handleDeleteAddress}
                                 className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors'
                             >
-                                Delete
+                                Xóa
                             </button>
                         </div>
                     </div>

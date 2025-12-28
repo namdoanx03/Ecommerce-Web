@@ -74,7 +74,7 @@ const Register = () => {
                 <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7">
                     <div className="flex items-center justify-between gap-4">
                         {/* Page Title - Left */}
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-600">Sign Up</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-600">Đăng ký</h2>
                         
                         {/* Breadcrumb - Right */}
                         <div className="flex items-center gap-1.5 sm:gap-2 text-sm text-gray-600">
@@ -84,7 +84,7 @@ const Register = () => {
                                 </svg>
                     </Link>
                             <span className="text-gray-600">&gt;</span>
-                            <span className="text-gray-600 font-bold">Sign Up</span>
+                            <span className="text-gray-600 font-bold">Đăng ký</span>
                         </div>
                     </div>
                 </div>
@@ -121,8 +121,8 @@ const Register = () => {
                             <div className="log-in-box w-full max-w-md bg-white rounded-lg shadow-sm p-6 sm:p-8">
                                 {/* log-in-title */}
                                 <div className="log-in-title mb-6">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Welcome To Fastkart</h3>
-                                    <h4 className="text-base text-gray-600">Create Your Account</h4>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-1">Chào mừng bạn đến với Binkeyit</h3>
+                                    <h4 className="text-base text-gray-600">Tạo tài khoản</h4>
                                 </div>
 
                                 {/* input-box */}
@@ -151,7 +151,7 @@ const Register = () => {
                                                             : 'top-1/2 -translate-y-1/2 text-base text-gray-500'
                                                     }`}
                                                 >
-                                                    Name
+                                                    Tên
                                                 </label>
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@ const Register = () => {
                                                             : 'top-1/2 -translate-y-1/2 text-base text-gray-500'
                                                     }`}
                                                 >
-                                                    Email Address
+                                                    Email
                                                 </label>
                             </div>
                         </div>
@@ -207,7 +207,7 @@ const Register = () => {
                                                             : 'top-1/2 -translate-y-1/2 text-base text-gray-500'
                                                     }`}
                                                 >
-                                                    Password
+                                                    Mật khẩu
                                                 </label>
                                                 <button
                                                     type="button"
@@ -242,7 +242,7 @@ const Register = () => {
                                                             : 'top-1/2 -translate-y-1/2 text-base text-gray-500'
                                                     }`}
                                                 >
-                                                    Confirm Password
+                                                    Xác nhận mật khẩu
                                                 </label>
                                                 <button
                                                     type="button"
@@ -261,7 +261,7 @@ const Register = () => {
                                     type="submit"
                                                 disabled={!valideValue}
                                 >
-                                                Sign Up
+                                                Đăng ký
                                 </button>
                                         </div>
                                     </form>
@@ -288,7 +288,7 @@ const Register = () => {
                                                     className="blur-up lazyloaded w-5 h-5" 
                                                     alt="Google" 
                                                 />
-                                                Sign Up with Google
+                                                Đăng ký với Google
                                             </a>
                                         </li>
                                         <li>
@@ -301,7 +301,7 @@ const Register = () => {
                                                     className="blur-up lazyloaded w-5 h-5" 
                                                     alt="Facebook" 
                                                 />
-                                                Sign Up with Facebook
+                                                Đăng ký với Facebook
                                             </a>
                                         </li>
                                     </ul>
@@ -314,12 +314,12 @@ const Register = () => {
 
                                 {/* Login Link - sign-up-box */}
                                 <div className="sign-up-box text-center">
-                                    <h4 className="text-sm text-gray-600 mb-1">Already have an account?</h4>
+                                    <h4 className="text-sm text-gray-600 mb-1">Đã có tài khoản?</h4>
                                     <Link
                                         to="/login"
                                         className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
                                     >
-                                        Log In
+                                        Đăng nhập
                                     </Link>
                                 </div>
                             </div>

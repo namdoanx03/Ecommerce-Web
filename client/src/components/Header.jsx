@@ -191,14 +191,14 @@ const Header = () => {
                   {/* Left: Location - Hiển thị từ 1280px (xl) trở lên */}
                   <div className="hidden xl:flex items-center gap-2 text-sm whitespace-nowrap">
                       <HiLocationMarker size={18} />
-                      <span className='font-medium'>1418 Riverwood Drive, CA 96052, US</span>
+                      <span className='font-medium'>Số 1 Chùa Quỳnh, Hai Bà Trưng, Hà Nội</span>
                   </div>
                   {/* Center: Message - Responsive text */}
                   <div className="flex-1 flex items-center justify-center text-center text-xs sm:text-sm min-w-0 px-1 sm:px-2">
                       <span className="truncate">
-                          <span className="font-semibold">Welcome to Fastkart !</span> 
-                          <span className="hidden lg:inline"> Wrap new offers/gift every single day on Weekends.</span> 
-                          <span className="font-semibold"> <span className="hidden sm:inline">New Coupon Code: </span><span className="underline">Fast024</span></span>
+                          <span className="font-semibold">Chào mừng bạn đến với Binkeyit !</span> 
+                          <span className="hidden lg:inline"> Gói ưu đãi mới mỗi ngày trong tuần.</span> 
+                          <span className="font-semibold"> <span className="hidden sm:inline">Mã ưu đãi mới: </span><span className="underline">SALE2026</span></span>
                       </span>
                   </div>
                   {/* Right: Lang/Currency - Luôn hiển thị */}
@@ -376,19 +376,19 @@ const Header = () => {
                                                       onClick={() => navigate("/login")}
                                                       className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
                                                   >
-                                                      Log In
+                                                      Đăng nhập
                                                   </button>
                                                   <button
                                                       onClick={() => navigate("/register")}
                                                       className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
                                                   >
-                                                      Register
+                                                      Đăng ký
                                                   </button>
                                                   <button
                                                       onClick={() => navigate("/forgot-password")}
                                                       className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
                                                   >
-                                                      Forgot Password
+                                                      Quên mật khẩu
                                                   </button>
                                               </>
                                           )}
@@ -440,8 +440,8 @@ const Header = () => {
                               <div className="hidden xl:flex items-center gap-2 text-sm text-gray-600">
                                   <FiPhone size={18} className="text-gray-600 flex-shrink-0" />
                                   <div className="flex flex-col">
-                                      <span className="text-xs text-gray-600">24/7 Delivery</span>
-                                      <a href="tel:+918881042340" className="text-sm font-semibold text-black hover:text-emerald-600 transition-colors">+91 888 104 2340</a>
+                                      <span className="text-xs text-gray-600">Giao hàng 24/7</span>
+                                      <a href="tel:+918881042340" className="text-sm font-semibold text-black hover:text-emerald-600 transition-colors">+84.988.678.xxx</a>
                                   </div>
                               </div>
 
@@ -486,8 +486,8 @@ const Header = () => {
                                       <div className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none">
                                           <FiUser size={20} className="text-gray-600 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                           <div className="hidden xl:flex flex-col">
-                                              <span className="text-xs text-gray-600">Hello,</span>
-                                              <span className="text-sm font-medium text-gray-700">My Account</span>
+                                              <span className="text-xs text-gray-600">Xin chào,</span>
+                                              <span className="text-sm font-medium text-gray-700">{user?.name || 'Người dùng'}</span>
                                           </div>
                                       </div>
                                       {/* Invisible bridge để hover không bị ngắt */}
@@ -509,8 +509,8 @@ const Header = () => {
                                       <div className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none">
                                           <FiUser size={20} className="text-gray-600 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                           <div className="hidden xl:flex flex-col">
-                                              <span className="text-xs text-gray-600">Hello,</span>
-                                              <span className="text-sm font-medium text-gray-700">My Account</span>
+                                              <span className="text-xs text-gray-600">Xin chào,</span>
+                                              <span className="text-sm font-medium text-gray-700">{user?.name || 'Người dùng'}</span>
                                           </div>
                                       </div>
                                       {/* Invisible bridge để hover không bị ngắt */}
@@ -521,7 +521,7 @@ const Header = () => {
                                                   onClick={redirectToLoginPage}
                                                   className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
                                               >
-                                                  Log In
+                                                  Đăng nhập
                                               </button>
                                               <button
                                                   onClick={() => {
@@ -529,7 +529,7 @@ const Header = () => {
                                                   }}
                                                   className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
                                               >
-                                                  Register
+                                                  Đăng ký
                                               </button>
                                               <button
                                                   onClick={() => {
@@ -537,7 +537,7 @@ const Header = () => {
                                                   }}
                                                   className="block w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm text-gray-700"
                                               >
-                                                  Forgot Password
+                                                  Quên mật khẩu
                                               </button>
                                           </div>
                                       </div>

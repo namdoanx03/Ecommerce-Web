@@ -91,7 +91,7 @@ const Footer = () => {
                                     <span>Hotline 24/7 :</span>
                                 </div>
                                 <a href="tel:+84xxx130768" className="font-bold text-base text-gray-800 hover:text-emerald-600">
-                                    (+84) xxx.130.768
+                                    (+84) 988.678.xxx
                                 </a>
                             </div>
                             <div>

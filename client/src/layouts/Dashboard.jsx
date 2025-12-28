@@ -70,7 +70,7 @@ const Dashboard = () => {
                 <div className="flex items-center w-full gap-0">
                   <input
                     type="text"
-                    placeholder="Search Fastkart.."
+                    placeholder="Tìm kiếm Binkeyit.."
                     className="flex-1 px-4 py-2.5 rounded-l-lg border-none focus:outline-none bg-[#f9f9f6] text-gray-700 placeholder-gray-500"
                   />
                   <button

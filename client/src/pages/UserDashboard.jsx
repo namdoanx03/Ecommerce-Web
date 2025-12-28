@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FiHome, FiShoppingBag, FiHeart, FiCreditCard, FiMapPin, FiUser, FiDownload, FiShield } from 'react-icons/fi'
+import { FiHome, FiShoppingBag, FiHeart } from 'react-icons/fi'
 import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import { setOrder } from '../store/orderSlice'
+import UserSidebarMenu from '../components/UserSidebarMenu'
 
 const UserDashboard = () => {
   const user = useSelector(state => state.user)
@@ -51,7 +52,7 @@ const UserDashboard = () => {
     return { total, pending, wishlist }
   }, [orders])
 
-  const name = user.name || 'User'
+  const name = user.name || 'Người dùng'
 
   const totalPages = useMemo(() => {
     if (!orders || orders.length === 0) return 1
@@ -131,14 +132,14 @@ const UserDashboard = () => {
       {/* Header / Breadcrumb */}
       <div className="bg-[#F8F8F8] border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7 flex items-center justify-between">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-700">User Dashboard</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-700">Tài khoản của tôi</h2>
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
             <button onClick={() => navigate('/')} className="flex items-center gap-1 hover:text-emerald-600">
               <FiHome className="w-4 h-4" />
-              <span>Home</span>
+              <span>Trang chủ</span>
             </button>
             <span className="text-gray-400">&gt;</span>
-            <span className="font-medium">User Dashboard</span>
+            <span className="font-medium">Tài khoản của tôi</span>
           </div>
         </div>
       </div>
@@ -146,70 +147,16 @@ const UserDashboard = () => {
       {/* Main content */}
       <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-8 lg:py-10 flex flex-col lg:flex-row gap-8">
         {/* Left sidebar card */}
-        <aside className="w-full lg:w-1/3 xl:w-1/4">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-b from-emerald-50 to-white px-6 pt-8 pb-6 text-center">
-              <div className="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100 flex items-center justify-center text-3xl font-semibold text-emerald-600">
-                {user.avatar ? (
-                  <img src={user.avatar} alt={name} className="w-full h-full object-cover" />
-                ) : (
-                  name.charAt(0).toUpperCase()
-                )}
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-gray-800">{name}</h3>
-              {user.email && (
-                <p className="text-sm text-gray-500 mt-1">{user.email}</p>
-              )}
-            </div>
-
-            <nav className="border-t border-gray-100 divide-y divide-gray-100 text-sm">
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`w-full flex items-center gap-3 px-6 py-3.5 font-semibold ${activeTab === 'dashboard' ? 'text-emerald-600 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`}
-              >
-                <FiHome className="w-4 h-4" />
-                <span>Dashboard</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('order')}
-                className={`w-full flex items-center gap-3 px-6 py-3.5 ${activeTab === 'order' ? 'text-emerald-600 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`}
-              >
-                <FiShoppingBag className="w-4 h-4" />
-                <span>Order</span>
-              </button>
-              <button
-                onClick={() => navigate('/wishlist')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiHeart className="w-4 h-4" />
-                <span>Wishlist</span>
-              </button>
-              <button
-                onClick={() => navigate('/address')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiMapPin className="w-4 h-4" />
-                <span>Address</span>
-              </button>
-              <button
-                onClick={() => navigate('/info')}
-                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
-              >
-                <FiUser className="w-4 h-4" />
-                <span>Profile</span>
-              </button>
-            </nav>
-          </div>
-        </aside>
+        <UserSidebarMenu />
 
         {/* Right main panel */}
         <main className="flex-1">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
             {activeTab === 'dashboard' && (
               <>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">My Dashboard</h2>
-                <p className="text-sm text-gray-500 mb-6 max-w-2xl">
-                  From your My Account Dashboard you have the ability to view a snapshot of your recent account activity and update your account information.
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">Tổng quan</h2>
+                <p className="text-sm text-gray-500 mb-6 max-w-4xl">
+                  Từ tài khoản của bạn, bạn có thể xem tổng quan về hoạt động gần đây của tài khoản và cập nhật thông tin tài khoản của bạn.
                 </p>
 
                 {/* Stats cards */}
@@ -219,7 +166,7 @@ const UserDashboard = () => {
                       <FiShoppingBag />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Total Order</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">Tổng đơn hàng</p>
                       <p className="mt-1 text-lg font-semibold text-gray-800">{stats.total}</p>
                     </div>
                   </div>
@@ -228,7 +175,7 @@ const UserDashboard = () => {
                       ✓
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Total Pending Order</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">Tổng đơn hàng chờ</p>
                       <p className="mt-1 text-lg font-semibold text-gray-800">{stats.pending}</p>
                     </div>
                   </div>
@@ -237,7 +184,7 @@ const UserDashboard = () => {
                       <FiHeart />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Total Wishlist</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">Tổng yêu thích</p>
                       <p className="mt-1 text-lg font-semibold text-gray-800">{stats.wishlist}</p>
                     </div>
                   </div>
@@ -246,18 +193,18 @@ const UserDashboard = () => {
                 {/* Account information sections (static for now) */}
                 <section className="space-y-6 text-sm">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-gray-800">Account Information</h3>
+                <h3 className="text-base font-semibold text-gray-800">Thông tin tài khoản</h3>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Contact Information</h4>
+                    <h4 className="font-semibold text-gray-700">Thông tin liên hệ</h4>
                     <button
                       onClick={() => navigate('/dashboard/profile-setting')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
-                      Edit
+                      Chỉnh sửa
                     </button>
                   </div>
                   <p className="text-gray-700 font-medium">{name}</p>
@@ -266,11 +213,11 @@ const UserDashboard = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Newsletters</h4>
-                    <span className="text-emerald-600 text-xs font-semibold cursor-pointer">Edit</span>
+                    <h4 className="font-semibold text-gray-700">Bản tin</h4>
+                    <span className="text-emerald-600 text-xs font-semibold cursor-pointer">Chỉnh sửa</span>
                   </div>
                   <p className="text-gray-600">
-                    You are currently not subscribed to any newsletter.
+                    Bạn hiện không đăng ký bản tin.
                   </p>
                 </div>
               </div>
@@ -278,30 +225,30 @@ const UserDashboard = () => {
               <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-dashed border-gray-200">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Default Billing Address</h4>
+                    <h4 className="font-semibold text-gray-700">Địa chỉ thanh toán mặc định</h4>
                     <button
                       onClick={() => navigate('/address')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
-                      Edit Address
+                      Chỉnh sửa địa chỉ
                     </button>
                   </div>
                   <p className="text-gray-600">
-                    You have not set a default billing address.
+                    Bạn chưa có địa chỉ thanh toán mặc định.
                   </p>
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Default Shipping Address</h4>
+                    <h4 className="font-semibold text-gray-700">Địa chỉ giao hàng mặc định</h4>
                     <button
                       onClick={() => navigate('/address')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
-                      Edit Address
+                      Chỉnh sửa địa chỉ
                     </button>
                   </div>
                   <p className="text-gray-600">
-                    You have not set a default shipping address.
+                    Bạn chưa có địa chỉ giao hàng mặc định.
                   </p>
                 </div>
               </div>
@@ -311,13 +258,13 @@ const UserDashboard = () => {
 
             {activeTab === 'order' && (
               <>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">My Orders History</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">Lịch sử đơn hàng</h2>
                 <p className="text-sm text-gray-500 mb-6 max-w-2xl">
-                  Xem lịch sử các đơn hàng của bạn cùng trạng thái giao hàng chi tiết.
+                  Xem lịch sử các đơn hàng của bạn cùng trạng thái thanh toán và giao hàng chi tiết.
                 </p>
 
                 {(!orders || orders.length === 0) && !loading && (
-                  <p className="text-sm text-gray-500">Bạn chưa có đơn hàng nào.</p>
+                  <p className="text-sm text-gray-500">Bạn hiện không có đơn hàng nào.</p>
                 )}
 
                 {orders && orders.length > 0 && (
