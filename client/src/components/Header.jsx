@@ -487,7 +487,7 @@ const Header = () => {
                                           <FiUser size={20} className="text-gray-600 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                           <div className="hidden xl:flex flex-col">
                                               <span className="text-xs text-gray-600">Xin chào,</span>
-                                              <span className="text-sm font-medium text-gray-700">{user?.name || 'Người dùng'}</span>
+                                              <span className="text-sm font-medium text-gray-700">Tài khoản của tôi</span>
                                           </div>
                                       </div>
                                       {/* Invisible bridge để hover không bị ngắt */}
@@ -509,8 +509,8 @@ const Header = () => {
                                       <div className="flex items-center gap-1 sm:gap-2 cursor-pointer select-none">
                                           <FiUser size={20} className="text-gray-600 md:w-6 md:h-6 lg:w-7 lg:h-7" />
                                           <div className="hidden xl:flex flex-col">
-                                              <span className="text-xs text-gray-600">Xin chào,</span>
-                                              <span className="text-sm font-medium text-gray-700">{user?.name || 'Người dùng'}</span>
+                                              <span className="text-xs text-gray-600">Hello,</span>
+                                              <span className="text-sm font-medium text-gray-700">My Account</span>
                                           </div>
                                       </div>
                                       {/* Invisible bridge để hover không bị ngắt */}

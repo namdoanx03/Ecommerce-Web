@@ -80,26 +80,24 @@ const OrderDetail = () => {
     return `${day} ${month}, ${year} lúc ${hours}:${minutes}`
   }
 
-  const getPaymentMethod = (paymentMethod) => {
-    if (!paymentMethod) return 'N/A';
-    const method = paymentMethod.toUpperCase();
-    if (method.includes('VNPAY')) {
+  const getPaymentMethod = (paymentStatus) => {
+    if (!paymentStatus) return 'N/A';
+    const status = paymentStatus.toUpperCase();
+    if (status.includes('VNPAY')) {
       return 'VNPay';
-    } else if (method.includes('MOMO')) {
-      return 'MoMo';
-    } else if (method.includes('CASH ON DELIVERY') || method.includes('COD')) {
+    } else if (status.includes('CASH ON DELIVERY') || status.includes('COD')) {
       return 'Thanh toán khi nhận hàng';
-    } else if (method.includes('PAYPAL')) {
+    } else if (status.includes('PAYPAL')) {
       return 'Paypal';
     }
-    return paymentMethod;
+    return paymentStatus;
   }
 
-  const getDeliveryStatusColor = (orderStatus) => {
-    if (!orderStatus) return 'bg-gray-100 text-gray-700';
+  const getDeliveryStatusColor = (paymentStatus) => {
+    if (!paymentStatus) return 'bg-gray-100 text-gray-700';
     
-    const status = orderStatus.toUpperCase();
-    if (status.includes('SUCCESS')) {
+    const status = paymentStatus.toUpperCase();
+    if (status.includes('VNPAY') || status.includes('CASH ON DELIVERY')) {
       return 'bg-green-100 text-green-700';
     } else if (status.includes('PENDING')) {
       return 'bg-gray-100 text-gray-700';
@@ -109,11 +107,11 @@ const OrderDetail = () => {
     return 'bg-gray-100 text-gray-700';
   }
 
-  const getDeliveryStatusText = (orderStatus) => {
-    if (!orderStatus) return 'Đang xử lý';
+  const getDeliveryStatusText = (paymentStatus) => {
+    if (!paymentStatus) return 'Đang xử lý';
     
-    const status = orderStatus.toUpperCase();
-    if (status.includes('SUCCESS')) {
+    const status = paymentStatus.toUpperCase();
+    if (status.includes('VNPAY') || status.includes('CASH ON DELIVERY')) {
       return 'Thành công';
     } else if (status.includes('PENDING')) {
       return 'Đang xử lý';
@@ -315,9 +313,9 @@ const OrderDetail = () => {
             <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
               <h3 className="text-sm font-semibold text-gray-700 mb-3">Phương thức thanh toán</h3>
               <p className="text-sm text-gray-600">
-                {getPaymentMethod(order.payment_method) === 'Thanh toán khi nhận hàng' 
+                {getPaymentMethod(order.payment_status) === 'Thanh toán khi nhận hàng' 
                   ? 'Thanh toán khi nhận hàng (Tiền mặt/Thẻ). Chấp nhận thanh toán bằng thẻ/Internet banking tùy thuộc vào thiết bị có sẵn.'
-                  : `Phương thức thanh toán ${getPaymentMethod(order.payment_method)}.`
+                  : `Phương thức thanh toán ${getPaymentMethod(order.payment_status)}.`
                 }
               </p>
             </div>
@@ -335,7 +333,7 @@ const OrderDetail = () => {
               <button
                 className="text-teal-600 hover:text-teal-700 text-sm font-medium underline"
                 onClick={() => {
-                  navigate(`/dashboard/order-tracking/${order._id}`)
+                  toast.info('Chức năng theo dõi đơn hàng sắp có')
                 }}
               >
                 Theo dõi đơn hàng

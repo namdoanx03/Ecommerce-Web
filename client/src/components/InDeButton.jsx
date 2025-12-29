@@ -8,110 +8,66 @@ import Loading from './Loading'
 import { useSelector } from 'react-redux'
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
-const InDeButton = ({ data, quantity, setQuantity }) => {
+const InDeButton = ({ data }) => {
     const { updateCartItem, deleteCartItem } = useGlobalContext()
     const cartItem = useSelector(state => state.cartItem.cart)
-    const [cartItemDetails, setCartItemsDetails] = useState(null)
-
-    // Nếu không có quantity/setQuantity từ props, sử dụng state local
-    const [localQty, setLocalQty] = useState(1)
-    const qty = quantity !== undefined ? quantity : localQty
-    const setQty = setQuantity || setLocalQty
+    const [qty, setQty] = useState(0)
+    const [cartItemDetails,setCartItemsDetails] = useState()
 
     useEffect(() => {
-        if (!data?._id) {
+        if (!data?._id || !cartItem || cartItem.length === 0) {
             setCartItemsDetails(null);
-            if (!quantity && setQty) setQty(1);
-            return;
-        }
-
-        if (!cartItem || cartItem.length === 0) {
-            setCartItemsDetails(null);
-            if (!quantity && setQty) setQty(1);
+            setQty(1);
             return;
         }
 
         const product = cartItem.find(item => item?.productId?._id === data._id);
-        if (product) {
-            setCartItemsDetails(product);
-            if (!quantity && setQty) setQty(product?.quantity || 1);
-        } else {
-            setCartItemsDetails(null);
-            if (!quantity && setQty) setQty(1);
-        }
-    }, [cartItem, data, quantity, setQty]);
+        setCartItemsDetails(product || null);
+        setQty(product?.quantity || 1);
+    }, [cartItem, data]);
 
     const increaseQty = async(e) => {
         e.preventDefault()
         e.stopPropagation()
-        
-        // Kiểm tra stock
-        const maxQty = data?.stock || 999;
-        if (qty >= maxQty) {
-            toast.error(`Chỉ còn ${maxQty} sản phẩm trong kho`);
-            return;
-        }
-
-        if (cartItemDetails) {
-            // Nếu đã có trong giỏ, cập nhật giỏ hàng
+        if (cartItemDetails && qty < data.stock) {
             const response = await updateCartItem(cartItemDetails?._id, qty + 1)
-            if (response.success && setQty) {
+            if (response.success) {
                 setQty(qty + 1)
             }
-        } else {
-            // Nếu chưa có trong giỏ, chỉ tăng quantity local
-            if (setQty) setQty(qty + 1)
         }
     }
 
     const decreaseQty = async(e) => {
         e.preventDefault()
         e.stopPropagation()
+        if (!cartItemDetails) return;
         
-        // Nếu số lượng = 1 và đang trong giỏ hàng, xóa sản phẩm khỏi giỏ
-        if (qty === 1 && cartItemDetails) {
-            await deleteCartItem(cartItemDetails._id)
-            if (setQty) setQty(1) // Reset về 1 cho trường hợp không có trong giỏ nữa
-            return
-        }
-        
-        // Nếu số lượng <= 1 nhưng chưa có trong giỏ, không làm gì
-        if (qty <= 1) {
-            return
-        }
-
-        if (cartItemDetails) {
-            // Nếu đã có trong giỏ, cập nhật giỏ hàng
+        if (qty === 1) {
+            // Nếu số lượng là 1, xóa sản phẩm khỏi giỏ hàng
+            const response = await deleteCartItem(cartItemDetails._id)
+            if (response?.success) {
+                toast.success("Đã xóa sản phẩm khỏi giỏ hàng")
+            }
+        } else if (qty > 1) {
+            // Nếu số lượng > 1, giảm số lượng
             const response = await updateCartItem(cartItemDetails._id, qty - 1)
-            if (response?.success && setQty) {
+            if (response?.success) {
                 setQty(qty - 1)
             }
-        } else {
-            // Nếu chưa có trong giỏ, chỉ giảm quantity local
-            if (setQty) setQty(qty - 1)
         }
     }
     return (
-        <div className='flex-shrink-0'>
-            <div className='flex items-center bg-gray-100 p-1 rounded-lg border border-gray-200'>
-                <button 
-                    onClick={decreaseQty} 
-                    className='bg-white hover:bg-gray-50 w-8 h-8 rounded flex items-center justify-center transition-colors border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed'
-                    disabled={!cartItemDetails && qty <= 1}
-                >
-                    <FaMinus className='text-red-500 text-sm'/>
-                </button>
+        <div className='w-full max-w-[150px]'>
 
-                <p className='w-12 text-center font-medium text-gray-800 mx-2'>{qty}</p>
+            <div className='flex w-full h-full bg-gray-100 p-1 rounded'>
+                <button onClick={decreaseQty} className='bg-white hover:bg-green-700 text-white flex-1 h-8 p-1 rounded flex items-center justify-center'><FaMinus  className='text-red-500'/></button>
 
-                <button 
-                    onClick={increaseQty} 
-                    className='bg-white hover:bg-gray-50 w-8 h-8 rounded flex items-center justify-center transition-colors border border-gray-200'
-                    disabled={qty >= (data?.stock || 999)}
-                >
-                    <FaPlus className='text-red-500 text-sm' />
-                </button>
+                <p className='flex-1 w-full font-medium px-3 flex items-center justify-center'>{qty}</p>
+
+                <button onClick={increaseQty} className='bg-white hover:bg-green-700 text-white flex-1 h-8 p-1 rounded flex  items-center justify-center'><FaPlus className='text-red-500' /></button>
             </div>
+
+
         </div>
     )
 }

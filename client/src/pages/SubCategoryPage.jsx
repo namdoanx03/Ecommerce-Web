@@ -108,23 +108,23 @@ const SubCategoryPage = () => {
         {/* Header Section */}
         <div className='mb-6'>
           <div className='flex items-center justify-between mb-4'>
-            <h1 className="text-2xl font-semibold text-gray-800">Tất cả danh mục con</h1>
+            <h1 className="text-2xl font-semibold text-gray-800">All Sub Category</h1>
             <button 
               onClick={() => navigate('/dashboard/upload-subcategory')} 
               className='px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2'
             >
               <span className='text-lg font-bold'>+</span>
-              <span>Thêm mới</span>
+              <span>Add New</span>
             </button>
           </div>
           {/* Search Bar - Below action buttons */}
           <div className='flex items-center gap-2 justify-end'>
-            <label className='text-sm text-gray-700 font-medium'>Tìm kiếm:</label>
+            <label className='text-sm text-gray-700 font-medium'>Search:</label>
             <div className='max-w-md bg-white px-4 flex items-center gap-3 py-2 rounded-lg border border-gray-300 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200'>
               <IoSearchOutline size={20} className='text-gray-400' />
               <input
                 type='text'
-                placeholder='Tìm kiếm danh mục con...'
+                placeholder='Search subcategory...'
                 className='h-full w-full outline-none bg-transparent text-sm'
                 value={search}
                 onChange={handleOnChange}
@@ -138,21 +138,21 @@ const SubCategoryPage = () => {
           <table className='w-full text-sm'>
             <thead>
               <tr className='bg-[#F3F3F3] border-b border-gray-200'>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tên danh mục con</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Ngày tạo</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Ảnh danh mục con</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Danh mục</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tùy chọn</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Product Name</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Date</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Product Image</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Category</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Option</th>
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-200'>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-8 text-gray-500">Đang tải...</td>
+                  <td colSpan="5" className="text-center py-8 text-gray-500">Loading...</td>
                 </tr>
               ) : filteredSubCategories.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-8 text-gray-500">Không tìm thấy danh mục con</td>
+                  <td colSpan="5" className="text-center py-8 text-gray-500">No subcategories found</td>
                 </tr>
               ) : (
                 filteredSubCategories.map((subCategory) => {
@@ -196,14 +196,14 @@ const SubCategoryPage = () => {
                       <td className='p-4 text-center'>
                         <div className='flex items-center justify-center gap-3'>
                           <button 
-                            title='Xem' 
+                            title='View' 
                             className='text-gray-400 hover:text-blue-600 transition-colors'
                             onClick={() => handleView(subCategory)}
                           >
                             <FaEye size={18} />
                           </button>
                           <button 
-                            title='Sửa' 
+                            title='Edit' 
                             className='text-gray-400 hover:text-green-600 transition-colors'
                             onClick={() => {
                               setOpenEdit(true)
@@ -213,7 +213,7 @@ const SubCategoryPage = () => {
                             <TbEdit size={18} />
                           </button>
                           <button 
-                            title='Xóa' 
+                            title='Delete' 
                             className='text-gray-400 hover:text-red-600 transition-colors'
                             onClick={() => openDeleteModal(subCategory)}
                           >

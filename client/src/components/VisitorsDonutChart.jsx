@@ -4,23 +4,18 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const VisitorsDonutChart = ({ data: chartData }) => {
-  // Use real data if available, otherwise use default
-  const labels = chartData?.labels || ['Chưa có dữ liệu'];
-  const values = chartData?.values || [100];
-
-  // Generate colors dynamically
-  const generateColors = (count) => {
-    const colors = ['#10b981', '#f59e0b', '#8b5cf6', '#3b82f6', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1'];
-    return Array.from({ length: count }, (_, i) => colors[i % colors.length]);
-  };
-
   const data = {
-    labels: labels,
+    labels: chartData?.labels || ['The Passersby', 'The Occasionals', 'The Regulars', 'The Superfans'],
     datasets: [
       {
-        label: 'Phương thức thanh toán',
-        data: values,
-        backgroundColor: generateColors(labels.length),
+        label: 'Visitors',
+        data: chartData?.values || [35, 25, 25, 15],
+        backgroundColor: [
+          '#10b981', // green
+          '#f59e0b', // orange
+          '#8b5cf6', // purple
+          '#3b82f6', // blue
+        ],
         borderWidth: 0,
       },
     ],
@@ -50,8 +45,8 @@ const VisitorsDonutChart = ({ data: chartData }) => {
             const label = context.label || '';
             const value = context.parsed || 0;
             const total = context.dataset.data.reduce((a, b) => a + b, 0);
-            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-            return `${label}: ${value} đơn hàng (${percentage}%)`;
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${label}: ${value} (${percentage}%)`;
           }
         }
       },

@@ -1,13 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FiHome, FiShoppingBag, FiHeart } from 'react-icons/fi'
+import { FiHome, FiShoppingBag, FiHeart, FiCreditCard, FiMapPin, FiUser, FiDownload, FiShield } from 'react-icons/fi'
 import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import { setOrder } from '../store/orderSlice'
-import UserSidebarMenu from '../components/UserSidebarMenu'
-import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
-import toast from 'react-hot-toast'
 
 const UserDashboard = () => {
   const user = useSelector(state => state.user)
@@ -18,15 +15,6 @@ const UserDashboard = () => {
   const location = useLocation()
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState(location.pathname === '/myorders' ? 'order' : 'dashboard')
-  const [selectedOrderId, setSelectedOrderId] = useState(null)
-  const [trackingOrder, setTrackingOrder] = useState(null)
-  const [trackingLoading, setTrackingLoading] = useState(false)
-  const [orderDetail, setOrderDetail] = useState(null)
-  const [orderDetailLoading, setOrderDetailLoading] = useState(false)
-  const [reviews, setReviews] = useState({}) // { productId: { rating: number, comment: string } }
-  const [reviewLoading, setReviewLoading] = useState(false)
-  const [hasReviewed, setHasReviewed] = useState(false)
-  const [checkingReview, setCheckingReview] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = 5
 
@@ -48,79 +36,6 @@ const UserDashboard = () => {
     fetchOrders()
   }, [dispatch])
 
-  const loadTrackingOrder = async (orderId) => {
-    try {
-      setTrackingLoading(true)
-      const response = await Axios({ ...SummaryApi.getOrderItems })
-      const { data: responseData } = response
-      if (responseData.success && Array.isArray(responseData.data)) {
-        const found = responseData.data.find(
-          (o) => o._id === orderId || o.orderId === orderId
-        )
-        setTrackingOrder(found || null)
-      } else {
-        setTrackingOrder(null)
-      }
-    } catch (error) {
-      setTrackingOrder(null)
-    } finally {
-      setTrackingLoading(false)
-    }
-  }
-
-  const loadOrderDetail = async (orderId) => {
-    try {
-      setOrderDetailLoading(true)
-      const response = await Axios({ ...SummaryApi.getOrderItems })
-      const { data: responseData } = response
-      if (responseData.success && Array.isArray(responseData.data)) {
-        const found = responseData.data.find(
-          (o) => o._id === orderId || o.orderId === orderId
-        )
-        setOrderDetail(found || null)
-        
-        // Check if order has been reviewed
-        if (found) {
-          checkOrderReview(orderId)
-        }
-      } else {
-        setOrderDetail(null)
-      }
-    } catch (error) {
-      setOrderDetail(null)
-    } finally {
-      setOrderDetailLoading(false)
-    }
-  }
-
-  const checkOrderReview = async (orderId) => {
-    try {
-      setCheckingReview(true)
-      const response = await Axios({
-        ...SummaryApi.checkReview,
-        params: { orderId }
-      })
-      if (response.data && response.data.success) {
-        setHasReviewed(response.data.data.reviewed || false)
-        // If already reviewed, load existing reviews
-        if (response.data.data.review && response.data.data.review.reviews) {
-          const existingReviews = {}
-          response.data.data.review.reviews.forEach(review => {
-            existingReviews[review.productId] = {
-              rating: review.rating,
-              comment: review.comment || ''
-            }
-          })
-          setReviews(existingReviews)
-        }
-      }
-    } catch (error) {
-      setHasReviewed(false)
-    } finally {
-      setCheckingReview(false)
-    }
-  }
-
   useEffect(() => {
     if (location.pathname === '/myorders') {
       setActiveTab('order')
@@ -131,12 +46,12 @@ const UserDashboard = () => {
 
   const stats = useMemo(() => {
     const total = orders.length || 0
-    const pending = orders.filter(o => (o.order_status || '').toUpperCase() === 'PENDING').length
+    const pending = orders.filter(o => (o.payment_status || '').toUpperCase() === 'PENDING').length
     const wishlist = 0
     return { total, pending, wishlist }
   }, [orders])
 
-  const name = user.name || 'Người dùng'
+  const name = user.name || 'User'
 
   const totalPages = useMemo(() => {
     if (!orders || orders.length === 0) return 1
@@ -187,32 +102,28 @@ const UserDashboard = () => {
     return paymentMethod;
   }
 
-  const getDeliveryStatusColor = (orderStatus) => {
-    if (!orderStatus) return 'bg-gray-100 text-gray-700';
+  const getDeliveryStatusColor = (paymentStatus) => {
+    if (!paymentStatus) return 'bg-red-100 text-red-700';
     
-    const status = orderStatus.toUpperCase();
+    const status = paymentStatus.toUpperCase();
     if (status.includes('SUCCESS')) {
       return 'bg-green-100 text-green-700';
-    } else if (status.includes('PENDING')) {
-      return 'bg-gray-100 text-gray-700';
-    } else if (status.includes('FAILED') || status.includes('CANCELLED') || status.includes('CANCEL')) {
+    } else {
+      // Tất cả các trạng thái khác (PENDING, FAILED, CANCELLED, CANCEL) đều là "Đã hủy"
       return 'bg-red-100 text-red-700';
     }
-    return 'bg-gray-100 text-gray-700';
   }
 
-  const getDeliveryStatusText = (orderStatus) => {
-    if (!orderStatus) return 'Đang xử lý';
+  const getDeliveryStatusText = (paymentStatus) => {
+    if (!paymentStatus) return 'Đã hủy';
     
-    const status = orderStatus.toUpperCase();
+    const status = paymentStatus.toUpperCase();
     if (status.includes('SUCCESS')) {
       return 'Thành công';
-    } else if (status.includes('PENDING')) {
-      return 'Chờ thanh toán';
-    } else if (status.includes('FAILED') || status.includes('CANCELLED') || status.includes('CANCEL')) {
+    } else {
+      // Tất cả các trạng thái khác (PENDING, FAILED, CANCELLED, CANCEL) đều là "Đã hủy"
       return 'Đã hủy';
     }
-    return 'Đang xử lý';
   }
 
   return (
@@ -220,14 +131,14 @@ const UserDashboard = () => {
       {/* Header / Breadcrumb */}
       <div className="bg-[#F8F8F8] border-b border-gray-200">
         <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-5 sm:py-7 flex items-center justify-between">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-700">Tài khoản của tôi</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-700">User Dashboard</h2>
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
             <button onClick={() => navigate('/')} className="flex items-center gap-1 hover:text-emerald-600">
               <FiHome className="w-4 h-4" />
-              <span>Trang chủ</span>
+              <span>Home</span>
             </button>
             <span className="text-gray-400">&gt;</span>
-            <span className="font-medium">Tài khoản của tôi</span>
+            <span className="font-medium">User Dashboard</span>
           </div>
         </div>
       </div>
@@ -235,16 +146,70 @@ const UserDashboard = () => {
       {/* Main content */}
       <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-8 lg:py-10 flex flex-col lg:flex-row gap-8">
         {/* Left sidebar card */}
-        <UserSidebarMenu />
+        <aside className="w-full lg:w-1/3 xl:w-1/4">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-gradient-to-b from-emerald-50 to-white px-6 pt-8 pb-6 text-center">
+              <div className="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100 flex items-center justify-center text-3xl font-semibold text-emerald-600">
+                {user.avatar ? (
+                  <img src={user.avatar} alt={name} className="w-full h-full object-cover" />
+                ) : (
+                  name.charAt(0).toUpperCase()
+                )}
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-gray-800">{name}</h3>
+              {user.email && (
+                <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+              )}
+            </div>
+
+            <nav className="border-t border-gray-100 divide-y divide-gray-100 text-sm">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`w-full flex items-center gap-3 px-6 py-3.5 font-semibold ${activeTab === 'dashboard' ? 'text-emerald-600 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`}
+              >
+                <FiHome className="w-4 h-4" />
+                <span>Dashboard</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('order')}
+                className={`w-full flex items-center gap-3 px-6 py-3.5 ${activeTab === 'order' ? 'text-emerald-600 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`}
+              >
+                <FiShoppingBag className="w-4 h-4" />
+                <span>Order</span>
+              </button>
+              <button
+                onClick={() => navigate('/wishlist')}
+                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+              >
+                <FiHeart className="w-4 h-4" />
+                <span>Wishlist</span>
+              </button>
+              <button
+                onClick={() => navigate('/address')}
+                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+              >
+                <FiMapPin className="w-4 h-4" />
+                <span>Address</span>
+              </button>
+              <button
+                onClick={() => navigate('/info')}
+                className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+              >
+                <FiUser className="w-4 h-4" />
+                <span>Profile</span>
+              </button>
+            </nav>
+          </div>
+        </aside>
 
         {/* Right main panel */}
         <main className="flex-1">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
             {activeTab === 'dashboard' && (
               <>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Tổng quan</h2>
-                <p className="text-sm text-gray-500 mb-6 max-w-4xl">
-                  Từ tài khoản của bạn, bạn có thể xem tổng quan về hoạt động gần đây của tài khoản và cập nhật thông tin tài khoản của bạn.
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">My Dashboard</h2>
+                <p className="text-sm text-gray-500 mb-6 max-w-2xl">
+                  From your My Account Dashboard you have the ability to view a snapshot of your recent account activity and update your account information.
                 </p>
 
                 {/* Stats cards */}
@@ -254,7 +219,7 @@ const UserDashboard = () => {
                       <FiShoppingBag />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Tổng đơn hàng</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">Total Order</p>
                       <p className="mt-1 text-lg font-semibold text-gray-800">{stats.total}</p>
                     </div>
                   </div>
@@ -263,7 +228,7 @@ const UserDashboard = () => {
                       ✓
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Tổng đơn hàng chờ</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">Total Pending Order</p>
                       <p className="mt-1 text-lg font-semibold text-gray-800">{stats.pending}</p>
                     </div>
                   </div>
@@ -272,7 +237,7 @@ const UserDashboard = () => {
                       <FiHeart />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Tổng yêu thích</p>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide">Total Wishlist</p>
                       <p className="mt-1 text-lg font-semibold text-gray-800">{stats.wishlist}</p>
                     </div>
                   </div>
@@ -281,18 +246,18 @@ const UserDashboard = () => {
                 {/* Account information sections (static for now) */}
                 <section className="space-y-6 text-sm">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-semibold text-gray-800">Thông tin tài khoản</h3>
+                <h3 className="text-base font-semibold text-gray-800">Account Information</h3>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Thông tin liên hệ</h4>
+                    <h4 className="font-semibold text-gray-700">Contact Information</h4>
                     <button
                       onClick={() => navigate('/dashboard/profile-setting')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
-                      Chỉnh sửa
+                      Edit
                     </button>
                   </div>
                   <p className="text-gray-700 font-medium">{name}</p>
@@ -301,11 +266,11 @@ const UserDashboard = () => {
 
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Bản tin</h4>
-                    <span className="text-emerald-600 text-xs font-semibold cursor-pointer">Chỉnh sửa</span>
+                    <h4 className="font-semibold text-gray-700">Newsletters</h4>
+                    <span className="text-emerald-600 text-xs font-semibold cursor-pointer">Edit</span>
                   </div>
                   <p className="text-gray-600">
-                    Bạn hiện không đăng ký bản tin.
+                    You are currently not subscribed to any newsletter.
                   </p>
                 </div>
               </div>
@@ -313,30 +278,30 @@ const UserDashboard = () => {
               <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-dashed border-gray-200">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Địa chỉ thanh toán mặc định</h4>
+                    <h4 className="font-semibold text-gray-700">Default Billing Address</h4>
                     <button
                       onClick={() => navigate('/address')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
-                      Chỉnh sửa địa chỉ
+                      Edit Address
                     </button>
                   </div>
                   <p className="text-gray-600">
-                    Bạn chưa có địa chỉ thanh toán mặc định.
+                    You have not set a default billing address.
                   </p>
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-gray-700">Địa chỉ giao hàng mặc định</h4>
+                    <h4 className="font-semibold text-gray-700">Default Shipping Address</h4>
                     <button
                       onClick={() => navigate('/address')}
                       className="text-emerald-600 text-xs font-semibold hover:underline"
                     >
-                      Chỉnh sửa địa chỉ
+                      Edit Address
                     </button>
                   </div>
                   <p className="text-gray-600">
-                    Bạn chưa có địa chỉ giao hàng mặc định.
+                    You have not set a default shipping address.
                   </p>
                 </div>
               </div>
@@ -346,13 +311,13 @@ const UserDashboard = () => {
 
             {activeTab === 'order' && (
               <>
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">Lịch sử đơn hàng</h2>
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">My Orders History</h2>
                 <p className="text-sm text-gray-500 mb-6 max-w-2xl">
-                  Xem lịch sử các đơn hàng của bạn cùng trạng thái thanh toán và giao hàng chi tiết.
+                  Xem lịch sử các đơn hàng của bạn cùng trạng thái giao hàng chi tiết.
                 </p>
 
                 {(!orders || orders.length === 0) && !loading && (
-                  <p className="text-sm text-gray-500">Bạn hiện không có đơn hàng nào.</p>
+                  <p className="text-sm text-gray-500">Bạn chưa có đơn hàng nào.</p>
                 )}
 
                 {orders && orders.length > 0 && (
@@ -362,15 +327,15 @@ const UserDashboard = () => {
                         <tr>
                           <th className="p-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Mã đơn</th>
                           <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Thanh toán</th>
-                          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái đơn hàng</th>
+                          <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái thanh toán</th>
                           <th className="p-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Tổng tiền</th>
                           <th className="p-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Thao tác</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-100">
                         {paginatedOrders.map((order, index) => {
-                          const badgeClass = getDeliveryStatusColor(order.order_status)
-                          const statusText = getDeliveryStatusText(order.order_status)
+                          const badgeClass = getDeliveryStatusColor(order.payment_status)
+                          const statusText = getDeliveryStatusText(order.payment_status)
                           return (
                             <tr key={order._id || index} className="hover:bg-gray-50">
                               <td className="p-3 text-sm text-teal-600 font-semibold">
@@ -390,21 +355,13 @@ const UserDashboard = () => {
                               <td className="p-3 text-center">
                                 <div className="flex items-center justify-center gap-2">
                                   <button
-                                    onClick={() => {
-                                      setSelectedOrderId(order._id)
-                                      setActiveTab('detail')
-                                      loadOrderDetail(order._id)
-                                    }}
+                                    onClick={() => navigate(`/order-detail/${order._id}`)}
                                     className="px-3 py-1 text-xs font-semibold rounded-full border border-teal-500 text-teal-600 hover:bg-teal-50"
                                   >
                                     Chi tiết đơn hàng
                                   </button>
                                   <button
-                                    onClick={() => {
-                                      setSelectedOrderId(order._id)
-                                      setActiveTab('tracking')
-                                      loadTrackingOrder(order._id)
-                                    }}
+                                    onClick={() => navigate(`/order-tracking/${order._id}`)}
                                     className="px-3 py-1 text-xs font-semibold rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50"
                                   >
                                     Theo dõi
@@ -462,733 +419,6 @@ const UserDashboard = () => {
                         Sau
                       </button>
                     </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {activeTab === 'tracking' && (
-              <>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Theo dõi đơn hàng</h2>
-                    <p className="text-sm text-gray-500">
-                      Xem chi tiết trạng thái đơn hàng của bạn
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setActiveTab('order')
-                      setTrackingOrder(null)
-                      setSelectedOrderId(null)
-                    }}
-                    className="px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                  >
-                    ← Quay lại
-                  </button>
-                </div>
-
-                {trackingLoading && (
-                  <div className="flex items-center justify-center py-12">
-                    <p className="text-sm text-gray-500">Đang tải...</p>
-                  </div>
-                )}
-
-                {!trackingLoading && !trackingOrder && (
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-                    <p className="text-gray-700 font-semibold mb-2">
-                      Không tìm thấy đơn hàng
-                    </p>
-                    <button
-                      onClick={() => {
-                        setActiveTab('order')
-                        setTrackingOrder(null)
-                        setSelectedOrderId(null)
-                      }}
-                      className="mt-4 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
-                    >
-                      Quay lại danh sách đơn hàng
-                    </button>
-                  </div>
-                )}
-
-                {!trackingLoading && trackingOrder && (
-                  <>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-                      {/* Product image */}
-                      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center p-6">
-                        <div className="w-40 h-40 sm:w-52 sm:h-52 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
-                          {trackingOrder.product_details?.[0]?.image ? (
-                            <img
-                              src={trackingOrder.product_details[0].image}
-                              alt={trackingOrder.product_details[0].name}
-                              className="w-full h-full object-contain"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none'
-                              }}
-                            />
-                          ) : (
-                            <span className="text-xs text-gray-400">Không có ảnh</span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Tracking info */}
-                      <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                        <div className="grid md:grid-cols-3 gap-4">
-                          <div className="space-y-1">
-                            <p className="text-xs font-semibold text-gray-500 uppercase">
-                              Mã đơn hàng
-                            </p>
-                            <p className="text-lg font-semibold text-teal-600">
-                              {trackingOrder.orderId}
-                            </p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-xs font-semibold text-gray-500 uppercase">
-                              Ngày đặt
-                            </p>
-                            <p className="text-sm text-gray-700">
-                              {trackingOrder.createdAt ? (
-                                <>
-                                  {new Date(trackingOrder.createdAt).toLocaleDateString('vi-VN', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric'
-                                  })}{' '}
-                                  {new Date(trackingOrder.createdAt).toLocaleTimeString('vi-VN', {
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </>
-                              ) : 'N/A'}
-                            </p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-xs font-semibold text-gray-500 uppercase">
-                              Trạng thái hiện tại
-                            </p>
-                            <p className={`text-sm font-semibold ${
-                              (() => {
-                                const status = (trackingOrder.order_status || '').toUpperCase()
-                                if (status.includes('SUCCESS')) return 'text-green-600'
-                                if (status.includes('PENDING')) return 'text-gray-600'
-                                if (status.includes('FAILED') || status.includes('CANCELLED') || status.includes('CANCEL')) return 'text-red-600'
-                                return 'text-gray-600'
-                              })()
-                            }`}>
-                              {getDeliveryStatusText(trackingOrder.order_status)}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Timeline bar */}
-                        <div className="mt-6">
-                          <div className="relative flex items-center justify-between">
-                            <div className="absolute left-4 right-4 top-1/2 h-[2px] bg-gray-200 -z-10" />
-                            {[
-                              { key: 'PLACED', label: 'Đã đặt hàng' },
-                              { key: 'PROCESSING', label: 'Đang chuẩn bị' },
-                              { key: 'SHIPPED', label: 'Đang giao hàng' },
-                              { key: 'DELIVERED', label: 'Đã giao hàng' }
-                            ].map((step, index) => {
-                              const status = (trackingOrder.order_status || '').toUpperCase()
-                              let currentStepIndex = 0
-                              if (status.includes('SUCCESS')) currentStepIndex = 3
-                              else if (status.includes('PENDING')) currentStepIndex = 1
-                              else if (status.includes('FAILED') || status.includes('CANCELLED') || status.includes('CANCEL')) currentStepIndex = -1 // Không hoàn thành bước nào nếu đã hủy
-                              
-                              const isCompleted = index <= currentStepIndex && currentStepIndex >= 0
-                              return (
-                                <div
-                                  key={step.key}
-                                  className="flex flex-col items-center flex-1"
-                                >
-                                  <div
-                                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
-                                      isCompleted
-                                        ? 'bg-emerald-500 border-emerald-500 text-white'
-                                        : 'bg-white border-gray-300 text-gray-400'
-                                    }`}
-                                  >
-                                    {index + 1}
-                                  </div>
-                                  <p className="mt-2 text-xs font-medium text-gray-700 text-center">
-                                    {step.label}
-                                  </p>
-                                </div>
-                              )
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Timeline table */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                      <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
-                        <h3 className="text-sm font-semibold text-gray-800">
-                          Lịch sử trạng thái đơn hàng
-                        </h3>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead className="bg-[#F3F3F3]">
-                            <tr>
-                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Mô tả
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Ngày
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Thời gian
-                              </th>
-                              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Ghi chú
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-gray-100">
-                            <tr>
-                              <td className="px-6 py-3 text-gray-800">Đã đặt hàng</td>
-                              <td className="px-6 py-3 text-gray-700">
-                                {trackingOrder.createdAt ? new Date(trackingOrder.createdAt).toLocaleDateString('vi-VN', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                }) : 'N/A'}
-                              </td>
-                              <td className="px-6 py-3 text-gray-700">
-                                {trackingOrder.createdAt ? new Date(trackingOrder.createdAt).toLocaleTimeString('vi-VN', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                }) : 'N/A'}
-                              </td>
-                              <td className="px-6 py-3 text-gray-500">
-                                Đơn hàng đã được tạo thành công.
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="px-6 py-3 text-gray-800">Đang chuẩn bị</td>
-                              <td className="px-6 py-3 text-gray-700">
-                                {trackingOrder.createdAt ? new Date(trackingOrder.createdAt).toLocaleDateString('vi-VN', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                }) : 'N/A'}
-                              </td>
-                              <td className="px-6 py-3 text-gray-700">—</td>
-                              <td className="px-6 py-3 text-gray-500">
-                                Đơn hàng đang được chuẩn bị.
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="px-6 py-3 text-gray-800">Đang giao hàng</td>
-                              <td className="px-6 py-3 text-gray-700">—</td>
-                              <td className="px-6 py-3 text-gray-700">—</td>
-                              <td className="px-6 py-3 text-gray-500">
-                                Sẽ được cập nhật khi đơn giao cho đơn vị vận chuyển.
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="px-6 py-3 text-gray-800">Đã giao hàng</td>
-                              <td className="px-6 py-3 text-gray-700">—</td>
-                              <td className="px-6 py-3 text-gray-700">—</td>
-                              <td className="px-6 py-3 text-gray-500">
-                                Sẽ được cập nhật khi đơn được giao thành công.
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-
-            {activeTab === 'detail' && (
-              <>
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">Chi tiết đơn hàng</h2>
-                    <p className="text-sm text-gray-500">
-                      Xem thông tin chi tiết về đơn hàng của bạn
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setActiveTab('order')
-                      setOrderDetail(null)
-                      setSelectedOrderId(null)
-                    }}
-                    className="px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                  >
-                    ← Quay lại
-                  </button>
-                </div>
-
-                {orderDetailLoading && (
-                  <div className="flex items-center justify-center py-12">
-                    <p className="text-sm text-gray-500">Đang tải...</p>
-                  </div>
-                )}
-
-                {!orderDetailLoading && !orderDetail && (
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-                    <p className="text-gray-700 font-semibold mb-2">
-                      Không tìm thấy đơn hàng
-                    </p>
-                    <button
-                      onClick={() => {
-                        setActiveTab('order')
-                        setOrderDetail(null)
-                        setSelectedOrderId(null)
-                      }}
-                      className="mt-4 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
-                    >
-                      Quay lại danh sách đơn hàng
-                    </button>
-                  </div>
-                )}
-
-                {!orderDetailLoading && orderDetail && (
-                  <>
-                    <div className="mb-6">
-                      <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                        Đơn hàng #{orderDetail.orderId?.split('-')[1]?.slice(0, 5) || orderDetail._id?.slice(-5) || 'N/A'}
-                      </h2>
-                      <p className="text-sm text-gray-600">
-                        {(() => {
-                          const date = orderDetail.createdAt ? new Date(orderDetail.createdAt) : null
-                          if (!date) return 'N/A'
-                          const day = String(date.getDate()).padStart(2, '0')
-                          const month = String(date.getMonth() + 1).padStart(2, '0')
-                          const year = date.getFullYear()
-                          const hours = String(date.getHours()).padStart(2, '0')
-                          const minutes = String(date.getMinutes()).padStart(2, '0')
-                          return `${day}/${month}/${year} ${hours}:${minutes}`
-                        })()}
-                        {' / '}
-                        {orderDetail.product_details?.reduce((sum, item) => sum + (item.qty || 1), 0) || 0} sản phẩm
-                        {' / Tổng '}
-                        {DisplayPriceInVND(orderDetail.totalAmt || 0)}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {/* Left Column - Items */}
-                      <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100">
-                        <div className="bg-teal-600 text-white px-4 py-3">
-                          <span className="font-semibold text-sm uppercase">Sản phẩm</span>
-                        </div>
-
-                        <div className="overflow-x-auto">
-                          <div className="max-h-[400px] overflow-y-auto">
-                            <table className="w-full">
-                              <thead className="bg-gray-50 sticky top-0 z-10">
-                                <tr>
-                                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Sản phẩm</th>
-                                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Số lượng</th>
-                                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Giá</th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-gray-200 bg-white">
-                                {orderDetail.product_details && orderDetail.product_details.length > 0 
-                                  ? orderDetail.product_details.map((product, index) => {
-                                    let productImage = null;
-                                    
-                                    if (product.image && typeof product.image === 'string' && product.image.trim() !== '') {
-                                      productImage = product.image;
-                                    } else if (orderDetail.productId && orderDetail.productId[index]) {
-                                      const populatedProduct = orderDetail.productId[index];
-                                      if (populatedProduct.image) {
-                                        if (Array.isArray(populatedProduct.image) && populatedProduct.image.length > 0) {
-                                          productImage = populatedProduct.image[0];
-                                        } else if (typeof populatedProduct.image === 'string') {
-                                          productImage = populatedProduct.image;
-                                        }
-                                      }
-                                    }
-
-                                    return (
-                                      <tr key={index} className="hover:bg-gray-50">
-                                        <td className="px-4 py-3">
-                                          <div className="flex items-center gap-3">
-                                            {productImage ? (
-                                              <img
-                                                src={productImage}
-                                                alt={product.name}
-                                                className="w-12 h-12 object-cover rounded"
-                                                onError={(e) => {
-                                                  e.target.style.display = 'none';
-                                                }}
-                                              />
-                                            ) : (
-                                              <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center"></div>
-                                            )}
-                                            <span className="text-sm font-medium text-gray-800">{product.name || 'N/A'}</span>
-                                          </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-center text-sm text-gray-600">
-                                          {product.qty || 1}
-                                        </td>
-                                        <td className="px-4 py-3 text-right text-sm font-medium text-gray-800">
-                                          {DisplayPriceInVND(product.price || 0)}
-                                        </td>
-                                      </tr>
-                                    );
-                                  })
-                                  : (
-                                    <tr>
-                                      <td colSpan="3" className="px-4 py-8 text-center text-gray-500">Không có sản phẩm</td>
-                                    </tr>
-                                  )
-                                }
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-
-                        {/* Financial Breakdown */}
-                        <div className="px-4 py-4 border-t border-gray-200 space-y-2 bg-white">
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span>Tổng phụ</span>
-                            <span>{DisplayPriceInVND(orderDetail.subTotalAmt || 0)}</span>
-                          </div>
-                          <div className="flex justify-between text-sm text-gray-600">
-                            <span>Vận chuyển</span>
-                            <span>{DisplayPriceInVND((orderDetail.totalAmt || 0) - (orderDetail.subTotalAmt || 0))}</span>
-                          </div>
-                          <div className="flex justify-between text-lg font-bold text-teal-600 pt-2 border-t border-gray-200">
-                            <span>Tổng tiền</span>
-                            <span>{DisplayPriceInVND(orderDetail.totalAmt || 0)}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Column - Summary, Shipping, Payment */}
-                      <div className="space-y-4">
-                        {/* Order Summary Box */}
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                          <h3 className="text-sm font-semibold text-gray-700 mb-3">Tóm tắt</h3>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Mã đơn hàng:</span>
-                              <span className="font-medium text-gray-800">{orderDetail.orderId || 'N/A'}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Ngày đặt hàng:</span>
-                              <span className="font-medium text-gray-800">
-                                {orderDetail.createdAt ? new Date(orderDetail.createdAt).toLocaleDateString('vi-VN', {
-                                  day: '2-digit',
-                                  month: '2-digit',
-                                  year: 'numeric'
-                                }) : 'N/A'}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Trạng thái:</span>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDeliveryStatusColor(orderDetail.order_status)}`}>
-                                {getDeliveryStatusText(orderDetail.order_status)}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Tổng đơn hàng:</span>
-                              <span className="font-medium text-gray-800">{DisplayPriceInVND(orderDetail.totalAmt || 0)}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Shipping Address */}
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                          <h3 className="text-sm font-semibold text-gray-700 mb-3">Địa chỉ giao hàng</h3>
-                          <div className="space-y-1 text-sm text-gray-600">
-                            <p className="font-medium text-gray-800">{orderDetail.delivery_address?.name || 'N/A'}</p>
-                            {orderDetail.delivery_address?.address_line && (
-                              <p>{orderDetail.delivery_address.address_line}</p>
-                            )}
-                            <p>
-                              {[
-                                orderDetail.delivery_address?.ward,
-                                orderDetail.delivery_address?.district,
-                                orderDetail.delivery_address?.province
-                              ].filter(Boolean).join(', ') || 'N/A'}
-                            </p>
-                            <p>Số điện thoại: {orderDetail.delivery_address?.mobile || 'N/A'}</p>
-                          </div>
-                        </div>
-
-                        {/* Expected Date Of Delivery */}
-                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                          <h3 className="text-sm font-semibold text-gray-700 mb-3">Ngày giao hàng dự kiến</h3>
-                          <p className="text-sm text-gray-600 mb-2">
-                            {(() => {
-                              if (!orderDetail.createdAt) return 'N/A'
-                              const deliveryDate = new Date(orderDetail.createdAt)
-                              deliveryDate.setDate(deliveryDate.getDate() + 3)
-                              return deliveryDate.toLocaleDateString('vi-VN', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
-                              })
-                            })()}
-                          </p>
-                          <button
-                            className="text-teal-600 hover:text-teal-700 text-sm font-medium underline"
-                            onClick={() => {
-                              setActiveTab('tracking')
-                              setTrackingOrder(orderDetail)
-                              loadTrackingOrder(orderDetail._id)
-                            }}
-                          >
-                            Theo dõi đơn hàng
-                          </button>
-                        </div>
-
-                        {/* Review Button - Only show if status is SUCCESS */}
-                        {getDeliveryStatusText(orderDetail.order_status) === 'Thành công' && (
-                          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3">Đánh giá sản phẩm</h3>
-                            <p className="text-sm text-gray-600 mb-3">
-                              Chia sẻ trải nghiệm của bạn về các sản phẩm trong đơn hàng này
-                            </p>
-                            <button
-                              className="w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
-                              onClick={() => {
-                                setActiveTab('review')
-                              }}
-                            >
-                              Đánh giá sản phẩm
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-
-            {activeTab === 'review' && (
-              <>
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-800 mb-1">Đánh giá sản phẩm</h2>
-                    <p className="text-xs text-gray-500">
-                      Hãy chia sẻ trải nghiệm của bạn về các sản phẩm trong đơn hàng
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setActiveTab('order')
-                      setOrderDetail(null)
-                      setSelectedOrderId(null)
-                      setReviews({})
-                    }}
-                    className="px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                  >
-                    ← Quay lại
-                  </button>
-                </div>
-
-                {orderDetailLoading && (
-                  <div className="flex items-center justify-center py-12">
-                    <p className="text-sm text-gray-500">Đang tải...</p>
-                  </div>
-                )}
-
-                {!orderDetailLoading && !orderDetail && (
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-                    <p className="text-gray-700 font-semibold mb-2">
-                      Không tìm thấy đơn hàng
-                    </p>
-                    <button
-                      onClick={() => {
-                        setActiveTab('order')
-                        setOrderDetail(null)
-                        setSelectedOrderId(null)
-                        setReviews({})
-                      }}
-                      className="mt-4 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700"
-                    >
-                      Quay lại danh sách đơn hàng
-                    </button>
-                  </div>
-                )}
-
-                {!orderDetailLoading && orderDetail && orderDetail.product_details && orderDetail.product_details.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
-                      <h3 className="text-base font-semibold text-gray-800 mb-3">
-                        Đơn hàng #{orderDetail.orderId?.split('-')[1]?.slice(0, 5) || orderDetail._id?.slice(-5) || 'N/A'}
-                      </h3>
-                      <div className="space-y-4">
-                        {orderDetail.product_details.map((product, index) => {
-                          const productId = product.productId
-                          const currentReview = reviews[productId] || { rating: 0, comment: '' }
-
-                          return (
-                            <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
-                              <div className="flex items-start gap-3 mb-3">
-                                {product.image ? (
-                                  <img
-                                    src={product.image}
-                                    alt={product.name}
-                                    className="w-16 h-16 object-cover rounded border border-gray-200 flex-shrink-0"
-                                    onError={(e) => {
-                                      e.target.src = '/no-image.png'
-                                    }}
-                                  />
-                                ) : (
-                                  <div className="w-16 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center flex-shrink-0">
-                                    <span className="text-xs text-gray-400">Không có ảnh</span>
-                                  </div>
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2">{product.name || 'N/A'}</h4>
-                                  <div className="flex items-center gap-2 text-xs text-gray-600">
-                                    <span>Số lượng: {product.qty || 1}</span>
-                                    <span className="font-medium text-teal-600">
-                                      {DisplayPriceInVND(product.price || 0)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="space-y-2">
-                                <div>
-                                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                                    Đánh giá sản phẩm
-                                  </label>
-                                  <div className="flex items-center gap-1">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <button
-                                        key={star}
-                                        type="button"
-                                        onClick={() => {
-                                          setReviews({
-                                            ...reviews,
-                                            [productId]: {
-                                              ...currentReview,
-                                              rating: star
-                                            }
-                                          })
-                                        }}
-                                        className={`text-lg transition-colors ${
-                                          star <= currentReview.rating
-                                            ? 'text-yellow-400'
-                                            : 'text-gray-300 hover:text-yellow-300'
-                                        }`}
-                                      >
-                                        ★
-                                      </button>
-                                    ))}
-                                    {currentReview.rating > 0 && (
-                                      <span className="text-xs text-gray-600 ml-1">
-                                        ({currentReview.rating}/5)
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-
-                                <div>
-                                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                                    Nhận xét (tùy chọn)
-                                  </label>
-                                  <textarea
-                                    value={currentReview.comment}
-                                    onChange={(e) => {
-                                      setReviews({
-                                        ...reviews,
-                                        [productId]: {
-                                          ...currentReview,
-                                          comment: e.target.value
-                                        }
-                                      })
-                                    }}
-                                    placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
-                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 resize-none"
-                                    rows={2}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-
-                      <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end gap-2">
-                        <button
-                          onClick={() => {
-                            setActiveTab('order')
-                            setReviews({})
-                          }}
-                          className="px-6 py-2 text-sm font-medium border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                        >
-                          Hủy
-                        </button>
-                        <button
-                          onClick={async () => {
-                            try {
-                              setReviewLoading(true)
-                              
-                              // Prepare review data
-                              const reviewData = Object.keys(reviews).map(productId => ({
-                                productId: productId,
-                                rating: reviews[productId].rating,
-                                comment: reviews[productId].comment || ''
-                              }))
-
-                              // Only submit reviews that have rating > 0
-                              const reviewsToSubmit = reviewData.filter(r => r.rating > 0)
-
-                              if (reviewsToSubmit.length === 0) {
-                                toast.error('Vui lòng đánh giá ít nhất một sản phẩm')
-                                return
-                              }
-
-                              const response = await Axios({
-                                ...SummaryApi.submitReview,
-                                data: {
-                                  orderId: orderDetail._id,
-                                  reviews: reviewsToSubmit
-                                }
-                              })
-
-                              if (response.data && response.data.success) {
-                                toast.success('Cảm ơn bạn đã đánh giá sản phẩm!')
-                                setHasReviewed(true)
-                                setReviews({})
-                                setActiveTab('detail')
-                                // Reload order detail to update status
-                                await loadOrderDetail(orderDetail._id)
-                              } else {
-                                toast.error(response.data?.message || 'Có lỗi xảy ra khi gửi đánh giá')
-                              }
-                            } catch (error) {
-                              console.error('Error submitting review:', error)
-                              toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi gửi đánh giá')
-                            } finally {
-                              setReviewLoading(false)
-                            }
-                          }}
-                          disabled={reviewLoading || Object.values(reviews).every(r => r.rating === 0)}
-                          className="px-6 py-2 text-sm font-medium bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                        >
-                          {reviewLoading ? 'Đang gửi...' : 'Gửi đánh giá'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {!orderDetailLoading && orderDetail && (!orderDetail.product_details || orderDetail.product_details.length === 0) && (
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-                    <p className="text-gray-700 font-semibold">
-                      Đơn hàng không có sản phẩm để đánh giá
-                    </p>
                   </div>
                 )}
               </>

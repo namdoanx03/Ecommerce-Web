@@ -1,16 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import SummaryApi from '../common/SummaryApi'
 import Axios from '../utils/Axios'
 import AxiosToastError from '../utils/AxiosToastError'
-import { FaAngleUp, FaAngleDown } from "react-icons/fa6";
+import { FaAngleRight, FaAngleUp, FaAngleDown } from "react-icons/fa6";
 import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 import Divider from '../components/Divider'
 import { pricewithDiscount } from '../utils/PriceWithDiscount'
 import AddToCartButton from '../components/AddToCartButton'
+import { IoIosHome } from "react-icons/io";
 import InDeButton from '../components/InDeButton'
-import { FiHome } from 'react-icons/fi'
 import pr5 from '../assets/pr5.jpg'
 import pr4 from '../assets/pr4.jpg'
 import pr3 from '../assets/pr3.jpg'
@@ -32,29 +31,12 @@ const suggestedProducts = [
 
 const ProductDisplayPage = () => {
   const params = useParams()
-  const navigate = useNavigate()
   const productId = params?.product?.split("-")?.slice(-1)[0]
-  const [data, setData] = useState({ name: "", image: [], unit: "", stock: 0, price: 0, discount: 0, description: "" })
+  const [data, setData] = useState({ name: "", image: [] })
   const [image, setImage] = useState(0)
   const [loading, setLoading] = useState(false)
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-  const [quantity, setQuantity] = useState(1)
   const thumbnailRef = useRef(null)
-  const cartItem = useSelector(state => state.cartItem.cart)
-
-  // Sync quantity với cartItem
-  useEffect(() => {
-    if (!data?._id || !cartItem || cartItem.length === 0) {
-      setQuantity(1)
-      return
-    }
-    const product = cartItem.find(item => item?.productId?._id === data._id)
-    if (product) {
-      setQuantity(product?.quantity || 1)
-    } else {
-      setQuantity(1)
-    }
-  }, [cartItem, data._id])
 
   const fetchProductDetails = async () => {
     try {
@@ -129,16 +111,13 @@ const ProductDisplayPage = () => {
   return (
     <div className='bg-white min-h-screen'>
       {/* Breadcrumb */}
-      <div className='bg-[#f8f8f8] border-b border-gray-200'>
+      <div className='bg-[#f8f8f8]'>
         <div className='container mx-auto flex items-center justify-between h-24 py-7 px-4 sm:px-6 lg:px-16'>
-          <h2 className='text-xl sm:text-2xl font-bold text-gray-700'>Chi tiết sản phẩm</h2>
-          <div className='flex items-center gap-1.5 text-sm text-gray-600'>
-            <button onClick={() => navigate('/')} className="flex items-center gap-1 hover:text-emerald-600">
-              <FiHome className='w-4 h-4' />
-              <span>Trang chủ</span>
-            </button>
-            <span className='text-gray-400'>&gt;</span>
-            <span className='font-medium text-gray-700'>Chi tiết sản phẩm</span>
+          <h2 className='text-2xl font-bold'>Chi tiết sản phẩm</h2>
+          <div className='flex items-center gap-2 h-10'>
+            <a href='/'><IoIosHome className='text-gray-500 text-xl' /></a>
+            <FaAngleRight className='text-gray-500 text-base' />
+            <span className='text-gray-700 font-medium'>Chi tiết sản phẩm</span>
           </div>
         </div>
       </div>
@@ -167,16 +146,13 @@ const ProductDisplayPage = () => {
                   <button
                     type='button'
                     key={img + index}
-                    className={`w-16 h-16 min-w-16 min-h-16 cursor-pointer rounded-lg border-2 ${image === index ? 'border-emerald-500' : 'border-gray-100'} bg-white flex items-center justify-center transition-colors`}
+                    className={`w-16 h-16 min-w-16 min-h-16 cursor-pointer rounded-lg border-2 ${image === index ? 'border-green-500' : 'border-gray-100'} bg-white flex items-center justify-center`}
                     onClick={() => setImage(index)}
                   >
                     <img
                       src={img}
                       alt='min-product'
                       className='w-14 h-14 object-contain rounded-lg'
-                      onError={(e) => {
-                        e.target.src = '/no-image.png'
-                      }}
                     />
                   </button>
                 ))}
@@ -193,49 +169,39 @@ const ProductDisplayPage = () => {
 
             {/* Ảnh lớn */}
             <div className='bg-white rounded-lg flex items-center justify-center p-3 shadow-sm border w-[320px] lg:w-[380px] h-[380px]'>
-              {loading ? (
-                <div className='text-gray-400'>Đang tải...</div>
-              ) : data.image && data.image.length > 0 ? (
+              {data.image.length > 0 && (
                 <img
                   src={data.image[image]}
                   className='max-h-full max-w-full object-contain rounded-lg'
-                  alt={data.name || 'Sản phẩm'}
-                  onError={(e) => {
-                    e.target.src = '/no-image.png'
-                  }}
+                  alt={data.name}
                 />
-              ) : (
-                <div className='text-gray-400 text-center'>
-                  <p>Không có ảnh</p>
-                </div>
               )}
             </div>
           </div>
 
           {/* Thông tin sản phẩm */}
           <div className='flex-1'>
-            {loading ? (
-              <div className='bg-white rounded-lg p-5 shadow-sm border'>
-                <div className='text-gray-400 text-center py-8'>Đang tải thông tin sản phẩm...</div>
-              </div>
-            ) : (
             <div className='bg-white rounded-lg p-5 shadow-sm border flex flex-col gap-4'>
-              {data.discount && data.discount > 0 && (
-                <div className='flex items-center gap-3'>
+              <div className='flex items-center gap-3'>
+                {data.discount ? (
                   <span className='bg-red-100 text-red-500 px-3 py-1 rounded-md text-lg font-semibold'>
                     Giảm {data.discount}%
                   </span>
-                </div>
-              )}
+                ) : (
+                  <span className='bg-gray-100 text-gray-600 px-3 py-1 rounded-md text-sm font-semibold'>
+                    Không giảm giá
+                  </span>
+                )}
+              </div>
 
               <h1 className='text-2xl font-bold leading-snug'>{data.name}</h1>
 
               <div className='flex flex-wrap items-center justify-between gap-3'>
                 <div className='flex items-center gap-3'>
-                  <span className='text-red-500 text-2xl sm:text-3xl font-bold'>
+                  <span className='text-red-500 text-2xl font-bold'>
                     {DisplayPriceInVND(pricewithDiscount(data.price, data.discount))}
                   </span>
-                  {data.discount && data.discount > 0 && (
+                  {data.discount && (
                     <span className='line-through text-gray-400 text-lg'>
                       {DisplayPriceInVND(data.price)}
                     </span>
@@ -247,18 +213,14 @@ const ProductDisplayPage = () => {
                 </div>
               </div>
 
-              {data.description && (
-                <div className='text-sm text-gray-700'>
-                  <span className='font-semibold'>Mô tả: </span>
-                  <span>{data.description}</span>
-                </div>
-              )}
+              <div className='text-sm text-gray-700'>
+                <span className='font-semibold'>Mô tả: </span>
+                <span>{data.description}</span>
+              </div>
 
-              {data.stock !== undefined && (
-                <span className={`text-sm font-semibold ${data.stock === 0 ? 'text-red-500' : 'text-green-600'}`}>
-                  {data.stock === 0 ? 'Hết hàng' : 'Còn hàng'}
-                </span>
-              )}
+              <span className={`text-sm font-semibold ${data.stock === 0 ? 'text-red-500' : 'text-green-600'}`}>
+                {data.stock === 0 ? 'Hết hàng' : 'Còn hàng'}
+              </span>
 
               <Divider />
 
@@ -268,27 +230,27 @@ const ProductDisplayPage = () => {
                   <p className='text-base font-semibold mb-2'>
                     Nhanh lên! khuyến mại sẽ kết thúc trong
                   </p>
-                  <ul className='flex gap-2 sm:gap-3'>
+                  <ul className='flex gap-3'>
                     <li>
-                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-3 sm:px-4 py-2 text-xl sm:text-2xl font-medium text-black min-w-[60px]'>
+                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-4 py-2 text-2xl font-medium text-black min-w-[60px]'>
                         {String(countdown.days).padStart(2, '0')}
                         <div className='text-xs text-gray-500 font-medium mt-1'>Ngày</div>
                       </div>
                     </li>
                     <li>
-                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-3 sm:px-4 py-2 text-xl sm:text-2xl font-medium text-black min-w-[60px]'>
+                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-4 py-2 text-2xl font-medium text-black min-w-[60px]'>
                         {String(countdown.hours).padStart(2, '0')}
                         <div className='text-xs text-gray-500 font-medium mt-1'>Giờ</div>
                       </div>
                     </li>
                     <li>
-                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-3 sm:px-4 py-2 text-xl sm:text-2xl font-medium text-black min-w-[60px]'>
+                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-4 py-2 text-2xl font-medium text-black min-w-[60px]'>
                         {String(countdown.minutes).padStart(2, '0')}
                         <div className='text-xs text-gray-500 font-medium mt-1'>Phút</div>
                       </div>
                     </li>
                     <li>
-                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-3 sm:px-4 py-2 text-xl sm:text-2xl font-medium text-black min-w-[60px]'>
+                      <div className='flex flex-col items-center justify-center bg-gray-100 rounded-lg px-4 py-2 text-2xl font-medium text-black min-w-[60px]'>
                         {String(countdown.seconds).padStart(2, '0')}
                         <div className='text-xs text-gray-500 font-medium mt-1'>Giây</div>
                       </div>
@@ -297,33 +259,30 @@ const ProductDisplayPage = () => {
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-4'>
-                  <InDeButton data={data} quantity={quantity} setQuantity={setQuantity} />
+                  <InDeButton data={data} />
                   <AddToCartButton
                     data={data}
-                    quantity={quantity}
                     showAddToCartButton={true}
-                    className='h-12 px-8 text-lg font-bold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition disabled:bg-gray-300 disabled:text-gray-500 whitespace-nowrap'
+                    className='h-12 px-8 text-lg font-bold rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition disabled:bg-gray-300 disabled:text-gray-500'
                   >
                     Thêm vào giỏ
                   </AddToCartButton>
                 </div>
 
-                {data.stock !== undefined && data.stock > 0 && (
-                  <div className='mt-4'>
-                    <h6 className='mb-1 font-medium text-sm'>
-                      Nhanh lên! Chỉ còn {data.stock} sản phẩm trong kho
-                    </h6>
-                    <div className='w-full h-3 bg-gray-200 rounded-full overflow-hidden'>
-                      <div
-                        className='h-full bg-emerald-500'
-                        style={{
-                          width: `${data.maxStock && data.maxStock > 0 ? Math.round((data.stock / data.maxStock) * 100) : 30}%`,
-                          transition: 'width 0.3s'
-                        }}
-                      ></div>
-                    </div>
+                <div className='mt-4'>
+                  <h6 className='mb-1 font-medium'>
+                    Nhanh lên! Chỉ còn {data.stock} sản phẩm trong kho
+                  </h6>
+                  <div className='w-full h-3 bg-gray-200 rounded-full overflow-hidden'>
+                    <div
+                      className='h-full bg-emerald-500'
+                      style={{
+                        width: `${data.maxStock ? Math.round((data.stock / data.maxStock) * 100) : 30}%`,
+                        transition: 'width 0.3s'
+                      }}
+                    ></div>
                   </div>
-                )}
+                </div>
               </div>
 
               <Divider />
@@ -334,15 +293,15 @@ const ProductDisplayPage = () => {
                 <div className='bg-[#f8f8f8] rounded-lg p-3 max-w-md space-y-2 text-sm'>
                   <div className='flex gap-2'>
                     <span className='font-medium w-28'>Đơn vị:</span>
-                    <span>{data.unit ? `${data.unit} (cái / kg)` : '--'}</span>
+                    <span>{data.unit} (cái / kg)</span>
                   </div>
                   <div className='flex gap-2'>
                     <span className='font-medium w-28'>Mã sản phẩm:</span>
-                    <span className='break-all'>{data._id || '--'}</span>
+                    <span>{data._id || '--'}</span>
                   </div>
                   <div className='flex gap-2'>
                     <span className='font-medium w-28'>Còn hàng:</span>
-                    <span>{data.stock !== undefined ? data.stock : '--'}</span>
+                    <span>{data.stock}</span>
                   </div>
                 </div>
 
@@ -372,7 +331,6 @@ const ProductDisplayPage = () => {
                 </ul>
               </div>
             </div>
-            )}
           </div>
         </div>
 
@@ -380,7 +338,7 @@ const ProductDisplayPage = () => {
         <aside className='w-[320px] hidden lg:block'>
           <div className='rounded-lg bg-white py-5 mb-6 shadow-sm border'>
             <div className='flex items-center mb-4 px-4'>
-              <span className='text-gray-600 text-lg font-semibold mr-2'>|</span>
+              <div className='w-1 h-6 bg-red-500 rounded mr-2'></div>
               <h3 className='font-bold text-lg'>Sản phẩm gợi ý</h3>
             </div>
             <ul className='flex flex-col'>

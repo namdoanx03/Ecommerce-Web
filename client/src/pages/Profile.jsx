@@ -170,7 +170,7 @@ const Profile = () => {
                             <label className='text-sm font-medium text-gray-700 w-40 flex-shrink-0 text-left'>Tên</label>
                             <input
                                 type='text'
-                                    placeholder='Nhập tên của bạn'
+                                    placeholder='Enter Your First Name'
                                 className='flex-1 max-w-md px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent'
                                 value={userData.firstName}
                                 name='firstName'
@@ -305,7 +305,7 @@ const Profile = () => {
                             addressList.map((address) => (
                                 <div key={address._id} className='border border-gray-200 rounded-lg p-4 relative hover:shadow-md transition-shadow bg-white'>
                                     <span className='absolute top-3 right-3 px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded'>
-                                        {address.status === 'home' ? 'Nhà' : address.status === 'office' ? 'Văn phòng' : 'Khác'}
+                                        {address.status === 'home' ? 'Home' : address.status === 'office' ? 'Office' : 'Other'}
                                     </span>
                                     <div className='mb-4 pr-16'>
                                         <p className='font-semibold text-gray-800 mb-2'>{address.name}</p>
@@ -360,13 +360,13 @@ const Profile = () => {
                                 onClick={() => setShowDeleteConfirm(false)}
                                 className='px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'
                             >
-                                Hủy
+                                Cancel
                             </button>
                             <button
                                 onClick={handleDeleteAddress}
                                 className='px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors'
                             >
-                                Xóa
+                                Delete
                             </button>
                         </div>
                     </div>

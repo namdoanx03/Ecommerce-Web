@@ -158,10 +158,6 @@ const SummaryApi = {
         url : '/api/order/delete-order',
         method : 'delete'
     },
-    updateOrderStatus : {
-        url : '/api/order/update-status',
-        method : 'put'
-    },
     dashboardSummary: {
         url: '/api/user/dashboard-summary',
         method: 'get'
@@ -193,10 +189,6 @@ const SummaryApi = {
     deleteVoucher: {
         url: '/api/voucher/delete',
         method: 'delete'
-    },
-    validateVoucher: {
-        url: '/api/voucher/validate',
-        method: 'post'
     },
     // Chat API
     fetchChatMessages: {

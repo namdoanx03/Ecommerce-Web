@@ -21,11 +21,15 @@ const orderSchema = new mongoose.Schema({
         image : String,
         productId : String
     }],
+    paymentId : {
+        type : String,
+        default : ""
+    },
     payment_method : {
         type : String,
         default : ""
     },
-    order_status : {
+    payment_status : {
         type : String,
         default : ""
     },
@@ -40,11 +44,6 @@ const orderSchema = new mongoose.Schema({
     totalAmt : {
         type : Number,
         default : 0
-    },
-    voucherId : {
-        type : mongoose.Schema.ObjectId,
-        ref : 'voucher',
-        default : null
     },
     invoice_receipt : {
         type : String,

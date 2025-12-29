@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { FiHome } from 'react-icons/fi'
+import { FiHome, FiShoppingBag, FiHeart, FiCreditCard, FiMapPin, FiUser, FiDownload, FiShield } from 'react-icons/fi'
 import Axios from '../utils/Axios'
 import SummaryApi from '../common/SummaryApi'
 import AxiosToastError from '../utils/AxiosToastError'
 import CardProduct from '../components/CardProduct'
-import UserSidebarMenu from '../components/UserSidebarMenu'
 
 const Wishlist = () => {
   const user = useSelector(state => state.user)
@@ -37,7 +36,7 @@ const Wishlist = () => {
     fetchWishlist()
   }, [user?._id])
 
-  const name = user.name || 'Người dùng'
+  const name = user.name || 'User'
 
   return (
     <div className="bg-[#F8F8F8] min-h-screen">
@@ -67,7 +66,61 @@ const Wishlist = () => {
       <div className="bg-white min-h-[calc(100vh-100px)]">
         <div className="container mx-auto px-4 sm:px-5 lg:px-16 py-8 lg:py-10 flex flex-col lg:flex-row gap-8">
           {/* Left sidebar card */}
-          <UserSidebarMenu />
+          <aside className="w-full lg:w-1/3 xl:w-1/4">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-gradient-to-b from-emerald-50 to-white px-6 pt-8 pb-6 text-center">
+                <div className="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100 flex items-center justify-center text-3xl font-semibold text-emerald-600">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={name} className="w-full h-full object-cover" />
+                  ) : (
+                    name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <h3 className="mt-4 text-lg font-semibold text-gray-800">{name}</h3>
+                {user.email && (
+                  <p className="text-sm text-gray-500 mt-1">{user.email}</p>
+                )}
+              </div>
+
+              <nav className="border-t border-gray-100 divide-y divide-gray-100 text-sm">
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+                >
+                  <FiHome className="w-4 h-4" />
+                  <span>Tổng quan</span>
+                </button>
+                <button
+                  onClick={() => navigate('/myorders')}
+                  className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+                >
+                  <FiShoppingBag className="w-4 h-4" />
+                  <span>Đơn hàng</span>
+                </button>
+                <button
+                  onClick={() => navigate('/wishlist')}
+                  className="w-full flex items-center gap-3 px-6 py-3.5 text-emerald-600 bg-emerald-50 font-semibold"
+                >
+                  <FiHeart className="w-4 h-4" />
+                  <span>Yêu thích</span>
+                </button>
+                <button
+                  onClick={() => navigate('/address')}
+                  className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+                >
+                  <FiMapPin className="w-4 h-4" />
+                  <span>Địa chỉ của tôi</span>
+                </button>
+                <button
+                  onClick={() => navigate('/info')}
+                  className="w-full flex items-center gap-3 px-6 py-3.5 hover:bg-gray-50 text-gray-700"
+                >
+                  <FiUser className="w-4 h-4" />
+                  <span>Thông tin tài khoản</span>
+                </button>
+              </nav>
+            </div>
+          </aside>
 
           {/* Right main content */}
           <main className="flex-1">

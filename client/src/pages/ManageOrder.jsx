@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import SummaryApi from '../common/SummaryApi'
 import AxiosToastError from '../utils/AxiosToastError'
 import Axios from '../utils/Axios'
+import { FaEye } from "react-icons/fa";
+import { TbEdit } from "react-icons/tb";
+import { FaRegTrashCan } from "react-icons/fa6";
 import { IoSearchOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -118,33 +121,36 @@ const ManageOrder = () => {
   const formatDateTime = (dateString) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
-    const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     const month = months[date.getMonth()]
     const day = date.getDate()
     const year = date.getFullYear()
     let hours = date.getHours()
     const minutes = String(date.getMinutes()).padStart(2, '0')
-    return `${day} ${month}, ${year} lúc ${hours}:${minutes}`
+    const ampm = hours >= 12 ? 'pm' : 'am'
+    hours = hours % 12
+    hours = hours ? hours : 12
+    return `${month} ${day}, ${year} at ${hours}:${minutes} ${ampm}`
   }
 
-  const getPaymentMethodFromOrder = (order) => {
-    if (!order || !order.payment_method) return 'N/A';
-    const method = order.payment_method.toUpperCase();
-    if (method.includes('VNPAY')) {
+  const getPaymentMethod = (paymentStatus) => {
+    if (!paymentStatus) return 'N/A';
+    const status = paymentStatus.toUpperCase();
+    if (status.includes('VNPAY')) {
       return 'VNPay';
-    } else if (method.includes('MOMO')) {
-      return 'MoMo';
-    } else if (method.includes('CASH ON DELIVERY') || method.includes('COD')) {
+    } else if (status.includes('CASH ON DELIVERY') || status.includes('COD')) {
       return 'Thanh toán khi nhận hàng';
+    } else if (status.includes('PAYPAL')) {
+      return 'Paypal';
     }
-    return order.payment_method;
+    return paymentStatus;
   }
 
-  const getDeliveryStatusColor = (orderStatus) => {
-    if (!orderStatus) return 'bg-gray-100 text-gray-700';
+  const getDeliveryStatusColor = (paymentStatus) => {
+    if (!paymentStatus) return 'bg-gray-100 text-gray-700';
     
-    const status = orderStatus.toUpperCase();
-    if (status.includes('SUCCESS')) {
+    const status = paymentStatus.toUpperCase();
+    if (status.includes('VNPAY') || status.includes('CASH ON DELIVERY')) {
       return 'bg-green-100 text-green-700';
     } else if (status.includes('PENDING')) {
       return 'bg-gray-100 text-gray-700';
@@ -154,11 +160,11 @@ const ManageOrder = () => {
     return 'bg-gray-100 text-gray-700';
   }
 
-  const getDeliveryStatusText = (orderStatus) => {
-    if (!orderStatus) return 'Đang xử lý';
+  const getDeliveryStatusText = (paymentStatus) => {
+    if (!paymentStatus) return 'Đang xử lý';
     
-    const status = orderStatus.toUpperCase();
-    if (status.includes('SUCCESS')) {
+    const status = paymentStatus.toUpperCase();
+    if (status.includes('VNPAY') || status.includes('CASH ON DELIVERY')) {
       return 'Thành công';
     } else if (status.includes('PENDING')) {
       return 'Đang xử lý';
@@ -177,28 +183,28 @@ const ManageOrder = () => {
     <div className='min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8'>
       {/* Main Content Container - White Background */}
       <div className='bg-white rounded-lg shadow-sm p-6 sm:p-8'>
-            {/* Header Section */}
-            <div className='mb-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h1 className="text-2xl font-semibold text-gray-800">Tất cả đơn hàng</h1>
-                {/* Search Bar - Top right */}
-                <div className='flex items-center gap-2'>
-                  <label className='text-sm text-gray-700 font-medium'>Tìm kiếm:</label>
-                  <div className='max-w-md bg-white px-4 flex items-center gap-3 py-2 rounded-lg border border-gray-300 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200'>
-                    <IoSearchOutline size={20} className='text-gray-400' />
-                    <input
-                      type='text'
-                      placeholder='Tìm kiếm đơn hàng...'
-                      className='h-full w-full outline-none bg-transparent text-sm'
-                      value={search}
-                      onChange={handleOnChange}
-                    />
-                  </div>
-                </div>
+        {/* Header Section */}
+        <div className='mb-6'>
+          <div className='flex items-center justify-between mb-4'>
+            <h1 className="text-2xl font-semibold text-gray-800">Tất cả đơn hàng</h1>
+            {/* Search Bar - Top right */}
+            <div className='flex items-center gap-2'>
+              <label className='text-sm text-gray-700 font-medium'>Tìm kiếm:</label>
+              <div className='max-w-md bg-white px-4 flex items-center gap-3 py-2 rounded-lg border border-gray-300 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200'>
+                <IoSearchOutline size={20} className='text-gray-400' />
+                <input
+                  type='text'
+                  placeholder='Tìm kiếm đơn hàng...'
+                  className='h-full w-full outline-none bg-transparent text-sm'
+                  value={search}
+                  onChange={handleOnChange}
+                />
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Table Section */}
+        {/* Table Section */}
         <div className='overflow-x-auto'>
           <table className='w-full text-sm'>
             <thead>
@@ -209,7 +215,7 @@ const ManageOrder = () => {
                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Phương thức thanh toán</th>
                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Trạng thái giao hàng</th>
                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tổng tiền</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Trạng thái đơn hàng</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tùy chọn</th>
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-200'>
@@ -270,10 +276,7 @@ const ManageOrder = () => {
                         </div>
                       </td>
                       <td className='p-4 text-center'>
-                        <span 
-                          className='font-medium text-gray-800 hover:text-teal-600 cursor-pointer transition-colors'
-                          onClick={() => handleViewOrder(order)}
-                        >
+                        <span className='font-medium text-gray-800'>
                           {order.orderId || 'N/A'}
                         </span>
                       </td>
@@ -284,12 +287,12 @@ const ManageOrder = () => {
                       </td>
                       <td className='p-4 text-center'>
                         <span className='text-gray-600'>
-                          {getPaymentMethodFromOrder(order)}
+                          {getPaymentMethod(order.payment_status)}
                         </span>
                       </td>
                       <td className='p-4 text-center'>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${getDeliveryStatusColor(order.order_status)}`}>
-                          {getDeliveryStatusText(order.order_status)}
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${getDeliveryStatusColor(order.payment_status)}`}>
+                          {getDeliveryStatusText(order.payment_status)}
                         </span>
                       </td>
                       <td className='p-4 text-center'>
@@ -298,67 +301,43 @@ const ManageOrder = () => {
                         </span>
                       </td>
                       <td className='p-4 text-center'>
-                        <div className='flex items-center justify-center gap-2'>
-                          {order.order_status?.toUpperCase() !== 'SUCCESS' && order.order_status?.toUpperCase() !== 'CANCELLED' && (
-                            <>
-                              <button
-                                className='px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors'
-                                onClick={async () => {
-                                  try {
-                                    const response = await Axios({
-                                      ...SummaryApi.updateOrderStatus,
-                                      data: {
-                                        orderId: order._id,
-                                        status: 'SUCCESS'
-                                      }
-                                    })
-                                    if (response.data.success) {
-                                      toast.success('Đơn hàng đã được xác nhận thành công')
-                                      fetchOrderData()
-                                    } else {
-                                      toast.error(response.data.message || 'Có lỗi xảy ra')
-                                    }
-                                  } catch (error) {
-                                    AxiosToastError(error)
-                                  }
-                                }}
-                              >
-                                Xác nhận
-                              </button>
-                              <button
-                                className='px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors'
-                                onClick={async () => {
-                                  if (!window.confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')) {
-                                    return
-                                  }
-                                  try {
-                                    const response = await Axios({
-                                      ...SummaryApi.updateOrderStatus,
-                                      data: {
-                                        orderId: order._id,
-                                        status: 'CANCELLED'
-                                      }
-                                    })
-                                    if (response.data.success) {
-                                      toast.success('Đơn hàng đã được hủy')
-                                      fetchOrderData()
-                                    } else {
-                                      toast.error(response.data.message || 'Có lỗi xảy ra')
-                                    }
-                                  } catch (error) {
-                                    AxiosToastError(error)
-                                  }
-                                }}
-                              >
-                                Hủy
-                              </button>
-                            </>
-                          )}
-                          {(order.order_status?.toUpperCase() === 'SUCCESS' || order.order_status?.toUpperCase() === 'CANCELLED') && (
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getDeliveryStatusColor(order.order_status)}`}>
-                              {getDeliveryStatusText(order.order_status)}
-                            </span>
-                          )}
+                        <div className='flex items-center justify-center gap-3'>
+                          <button
+                            title='Xem'
+                            className='text-gray-400 hover:text-blue-600 transition-colors'
+                            onClick={() => handleViewOrder(order)}
+                          >
+                            <FaEye size={18} />
+                          </button>
+                          <button
+                            title='Sửa'
+                            className='text-gray-400 hover:text-yellow-600 transition-colors'
+                            onClick={() => {
+                              // TODO: Implement edit order
+                              toast.info('Chức năng sửa đơn hàng sắp có')
+                            }}
+                          >
+                            <TbEdit size={18} />
+                          </button>
+                          <button
+                            title='Xóa'
+                            className='text-gray-400 hover:text-red-600 transition-colors'
+                            onClick={() => {
+                              // TODO: Implement delete order
+                              toast.info('Chức năng xóa đơn hàng sắp có')
+                            }}
+                          >
+                            <FaRegTrashCan size={18} />
+                          </button>
+                          <button
+                            className='px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors'
+                            onClick={() => {
+                              // TODO: Implement tracking
+                              toast.info('Chức năng theo dõi đơn hàng sắp có')
+                            }}
+                          >
+                            Theo dõi
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -394,82 +373,6 @@ const ManageOrder = () => {
             </div>
           </div>
         )}
-
-        {/* Order Tracking Section - Below Order List */}
-        <div className='mt-8'>
-          <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-            {/* Left Side - Order Tracking */}
-            <div className='lg:col-span-1'>
-              <div className='bg-gray-50 rounded-lg p-6 border border-gray-200'>
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Theo dõi đơn hàng</h2>
-                <div className='space-y-3'>
-                  {orderData.slice(0, 5).map((order) => {
-                    let firstProductImage = null;
-                    
-                    if (order.product_details && order.product_details.length > 0) {
-                      const productDetail = order.product_details[0];
-                      if (productDetail.image && productDetail.image.trim() !== '') {
-                        firstProductImage = productDetail.image;
-                      }
-                    }
-                    
-                    if (!firstProductImage && order.productId && order.productId.length > 0) {
-                      const firstProduct = order.productId[0];
-                      if (firstProduct.image && Array.isArray(firstProduct.image) && firstProduct.image.length > 0) {
-                        firstProductImage = firstProduct.image[0];
-                      } else if (firstProduct.image && typeof firstProduct.image === 'string') {
-                        firstProductImage = firstProduct.image;
-                      }
-                    }
-
-                    return (
-                      <div
-                        key={order._id}
-                        className='p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer'
-                        onClick={() => navigate(`/dashboard/order-tracking/${order._id}`)}
-                      >
-                        <div className='flex items-center gap-3'>
-                          {firstProductImage ? (
-                            <img
-                              src={firstProductImage}
-                              alt="Order"
-                              className='w-12 h-12 object-cover rounded border border-gray-200'
-                              onError={(e) => {
-                                e.target.src = "https://via.placeholder.com/48"
-                              }}
-                            />
-                          ) : (
-                            <div className='w-12 h-12 bg-gray-100 rounded border border-gray-200 flex items-center justify-center'>
-                              <span className='text-gray-400 text-xs'>N/A</span>
-                            </div>
-                          )}
-                          <div className='flex-1 min-w-0'>
-                            <p className='text-sm font-medium text-gray-800 truncate'>
-                              {order.orderId || 'N/A'}
-                            </p>
-                            <p className='text-xs text-gray-500 mt-1'>
-                              {formatDate(order.createdAt)}
-                            </p>
-                            <p className='text-xs font-semibold text-teal-600 mt-1'>
-                              {DisplayPriceInVND(order.totalAmt || 0)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {orderData.length === 0 && !loading && (
-                    <p className='text-sm text-gray-500 text-center py-4'>
-                      Chưa có đơn hàng để theo dõi
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-            {/* Right Side - Empty space */}
-            <div className='lg:col-span-2'></div>
-          </div>
-        </div>
 
       </div>
     </div>

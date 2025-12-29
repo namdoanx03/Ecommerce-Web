@@ -99,22 +99,22 @@ export async function createPaymentController(request, response) {
                 });
             }
 
-        const returnUrl = process.env.VNPAY_RETURN_URL || `${process.env.FRONTEND_URL || "http://localhost:5173"}/check-payment`;
-        const vnp_Url = process.env.VNPAY_URL || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            const returnUrl = process.env.VNPAY_RETURN_URL || `${process.env.FRONTEND_URL || "http://localhost:5173"}/check-payment`;
+            const vnp_Url = process.env.VNPAY_URL || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
-        // Get client IP address (handle proxy/load balancer)
+            // Get client IP address (handle proxy/load balancer)
             // VNPay requires IPv4 address, not IPv6
-        let ipAddr = request.headers['x-forwarded-for'] || 
-                     request.headers['x-real-ip'] || 
-                     request.connection.remoteAddress || 
-                     request.socket.remoteAddress ||
-                     (request.connection.socket ? request.connection.socket.remoteAddress : null) ||
-                     '127.0.0.1';
-        
-        // Extract first IP if it's a comma-separated list
-        if (ipAddr.includes(',')) {
-            ipAddr = ipAddr.split(',')[0].trim();
-        }
+            let ipAddr = request.headers['x-forwarded-for'] || 
+                         request.headers['x-real-ip'] || 
+                         request.connection.remoteAddress || 
+                         request.socket.remoteAddress ||
+                         (request.connection.socket ? request.connection.socket.remoteAddress : null) ||
+                         '127.0.0.1';
+            
+            // Extract first IP if it's a comma-separated list
+            if (ipAddr.includes(',')) {
+                ipAddr = ipAddr.split(',')[0].trim();
+            }
             
             // Convert IPv6 localhost (::1) to IPv4 (127.0.0.1)
             if (ipAddr === '::1' || ipAddr === '::ffff:127.0.0.1') {
@@ -127,39 +127,39 @@ export async function createPaymentController(request, response) {
             }
             
             let orderId = pendingOrder.orderId;
-        let bankCode = request.query.bankCode || "";
-        let createDate = moment().format("YYYYMMDDHHmmss");
+            let bankCode = request.query.bankCode || "";
+            let createDate = moment().format("YYYYMMDDHHmmss");
             let orderInfo = `Thanh_toan_don_hang_${userId}`;
-        let locale = request.query.language || "vn";
-        let currCode = "VND";
+            let locale = request.query.language || "vn";
+            let currCode = "VND";
 
-        let vnp_Params = {
-            vnp_Version: "2.1.0",
-            vnp_Command: "pay",
-            vnp_TmnCode: tmnCode,
-            vnp_Locale: locale,
-            vnp_CurrCode: currCode,
-            vnp_TxnRef: orderId,
-            vnp_OrderInfo: orderInfo,
-            vnp_OrderType: "billpayment",
+            let vnp_Params = {
+                vnp_Version: "2.1.0",
+                vnp_Command: "pay",
+                vnp_TmnCode: tmnCode,
+                vnp_Locale: locale,
+                vnp_CurrCode: currCode,
+                vnp_TxnRef: orderId,
+                vnp_OrderInfo: orderInfo,
+                vnp_OrderType: "billpayment",
                 vnp_Amount: Math.round(finalAmount * 100),
-            vnp_ReturnUrl: returnUrl,
-            vnp_IpAddr: ipAddr,
-            vnp_CreateDate: createDate
-        };
+                vnp_ReturnUrl: returnUrl,
+                vnp_IpAddr: ipAddr,
+                vnp_CreateDate: createDate
+            };
 
-        if (bankCode !== "") {
-            vnp_Params["vnp_BankCode"] = bankCode;
-        }
+            if (bankCode !== "") {
+                vnp_Params["vnp_BankCode"] = bankCode;
+            }
 
-        vnp_Params = sortObject(vnp_Params);
+            vnp_Params = sortObject(vnp_Params);
 
-        let signData = querystring.stringify(vnp_Params);
-        let hmac = crypto.createHmac("sha512", secretKey);
+            let signData = querystring.stringify(vnp_Params);
+            let hmac = crypto.createHmac("sha512", secretKey);
             let signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
-        vnp_Params["vnp_SecureHash"] = signed;
+            vnp_Params["vnp_SecureHash"] = signed;
 
-        let paymentUrl = vnp_Url + "?" + querystring.stringify(vnp_Params);
+            let paymentUrl = vnp_Url + "?" + querystring.stringify(vnp_Params);
             return response.json({ paymentUrl, orderId: pendingOrder.orderId, type: 'vnpay' });
             
         } else if (typePayment === 'momo') {
@@ -275,7 +275,7 @@ export async function createPaymentController(request, response) {
 
             // Update pending order with MoMo orderId (lưu vào một field tạm để dùng trong callback)
             await PendingOrderModel.findByIdAndUpdate(pendingOrder._id, {
-                $set: { momoOrderId: orderId } // Tạm thời lưu MoMo orderId
+                $set: { paymentId: orderId } // Tạm thời lưu MoMo orderId vào paymentId field
             });
 
             return response.json({
@@ -352,7 +352,7 @@ export async function checkPaymentController(request, response) {
         
         const signData = querystring.stringify(sortedQuery);
         console.log("[checkPaymentController] Sign data string:", signData);
-
+        
         const hmac = crypto.createHmac("sha512", secretKey);
         const checkSum = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
@@ -378,10 +378,10 @@ export async function checkPaymentController(request, response) {
                 console.warn("[checkPaymentController] Signature mismatch but responseCode = 00, continuing with payment processing...");
                 signatureValid = true; // Override để tiếp tục xử lý
             } else {
-            return response.status(400).json({ 
-                message: "Dữ liệu không hợp lệ - chữ ký không khớp",
-                success: false 
-            });
+                return response.status(400).json({ 
+                    message: "Dữ liệu không hợp lệ - chữ ký không khớp",
+                    success: false 
+                });
             }
         }
 
@@ -408,7 +408,7 @@ export async function checkPaymentController(request, response) {
                 success: false
             });
         }
-
+        
         console.log("[checkPaymentController] Pending order found:", {
             orderId: pendingOrder.orderId,
             userId: pendingOrder.userId
@@ -426,12 +426,12 @@ export async function checkPaymentController(request, response) {
                 orderId: pendingOrder.orderId,
                 productId: pendingOrder.productId,
                 product_details: pendingOrder.product_details,
+                paymentId: query.vnp_TransactionNo || query.vnp_BankTranNo || "",
                 payment_method: "VNPAY",
-                order_status: "SUCCESS",
+                payment_status: "SUCCESS",
                 delivery_address: pendingOrder.delivery_address,
                 subTotalAmt: pendingOrder.subTotalAmt,
-                totalAmt: pendingOrder.totalAmt,
-                voucherId: pendingOrder.voucherId || null
+                totalAmt: pendingOrder.totalAmt
             };
 
             createdOrder = await OrderModel.create(orderPayload);
@@ -446,7 +446,8 @@ export async function checkPaymentController(request, response) {
             
             console.log("[checkPaymentController] Order created successfully:", {
                 orderId: createdOrder.orderId,
-                order_status: createdOrder.order_status
+                payment_status: createdOrder.payment_status,
+                paymentId: createdOrder.paymentId
             });
 
             // Xóa pending order
@@ -484,8 +485,8 @@ export async function checkPaymentController(request, response) {
                 
                 const updateUserResult = await UserModel.updateOne(
                     { _id: pendingOrder.userId },
-                { shopping_cart: [] }
-            );
+                    { shopping_cart: [] }
+                );
                 console.log("[checkPaymentController] Updated user shopping_cart:", updateUserResult.modifiedCount);
             } catch (cartError) {
                 console.error("[checkPaymentController] Error clearing cart:", cartError);
@@ -494,15 +495,15 @@ export async function checkPaymentController(request, response) {
             }
 
             // Update voucher if exists
-            if (pendingOrder.voucherId) {
-                await VoucherModel.findByIdAndUpdate(
-                    pendingOrder.voucherId,
-                    { $inc: { used_count: 1 } }
-                );
-            }
+            // if (pendingOrder.voucherId) {
+            //     await VoucherModel.findByIdAndUpdate(
+            //         pendingOrder.voucherId,
+            //         { $inc: { used_count: 1 } }
+            //     );
+            // }
 
             console.log("[checkPaymentController] Payment processing completed successfully");
-
+            
             return response.json({
                 message: "Thanh toán thành công",
                 data: query,
@@ -565,22 +566,22 @@ export async function momoCallbackController(request, response) {
         
         if (resultCode !== '0') {
             // Payment failed - tìm và xóa pending order
-            const pendingOrder = await PendingOrderModel.findOne({ momoOrderId: orderId });
+            const pendingOrder = await PendingOrderModel.findOne({ paymentId: orderId });
             if (pendingOrder) {
                 await PendingOrderModel.findByIdAndDelete(pendingOrder._id);
             }
             return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-failed?message=Thanh toán thất bại`);
         }
 
-        // Find pending order by MoMo orderId (stored in momoOrderId field)
+        // Find pending order by MoMo orderId (stored in paymentId field)
         const pendingOrder = await PendingOrderModel.findOne({ 
-            momoOrderId: orderId 
+            paymentId: orderId 
         });
 
         if (!pendingOrder) {
             // Kiểm tra xem order đã được tạo chưa (idempotency check)
             const existingOrder = await OrderModel.findOne({ 
-                orderId: pendingOrder.orderId,
+                paymentId: orderId,
                 payment_method: "MOMO"
             });
             if (existingOrder) {
@@ -595,12 +596,12 @@ export async function momoCallbackController(request, response) {
             orderId: pendingOrder.orderId,
             productId: pendingOrder.productId,
             product_details: pendingOrder.product_details,
+            paymentId: orderId,
             payment_method: "MOMO",
-            order_status: "SUCCESS",
+            payment_status: "SUCCESS",
             delivery_address: pendingOrder.delivery_address,
             subTotalAmt: pendingOrder.subTotalAmt,
-            totalAmt: pendingOrder.totalAmt,
-            voucherId: pendingOrder.voucherId || null
+            totalAmt: pendingOrder.totalAmt
         };
 
         const createdOrder = await OrderModel.create(orderPayload);
@@ -618,7 +619,6 @@ export async function momoCallbackController(request, response) {
         }
 
         // Decrease product stock
-        console.log("[momoCallbackController] Decreasing product stock...");
         try {
             for (const productDetail of pendingOrder.product_details) {
                 const productId = productDetail.productId;
@@ -628,10 +628,9 @@ export async function momoCallbackController(request, response) {
                     productId,
                     { $inc: { stock: -quantity } }
                 );
-                console.log(`[momoCallbackController] Decreased stock for product ${productId} by ${quantity}`);
             }
         } catch (stockError) {
-            console.error("[momoCallbackController] Error decreasing product stock:", stockError);
+            console.error("Error decreasing product stock:", stockError);
             // Continue even if stock update fails - order is already created
         }
 
@@ -648,12 +647,12 @@ export async function momoCallbackController(request, response) {
         }
 
         // Update voucher if exists
-        if (pendingOrder.voucherId) {
-            await VoucherModel.findByIdAndUpdate(
-                pendingOrder.voucherId,
-                { $inc: { used_count: 1 } }
-            );
-        }
+        // if (pendingOrder.voucherId) {
+        //     await VoucherModel.findByIdAndUpdate(
+        //         pendingOrder.voucherId,
+        //         { $inc: { used_count: 1 } }
+        //     );
+        // }
         
         return response.redirect(`${process.env.FRONTEND_URL || "http://localhost:5173"}/payment-success/${createdOrder._id}`);
         
@@ -664,12 +663,16 @@ export async function momoCallbackController(request, response) {
 }
 
 export async function CashOnDeliveryOrderController(request, response) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    
     try {
         const userId = request.userId; // auth middleware
         const { list_items, totalAmt, addressId, subTotalAmt, voucherId } = request.body;
 
         // Validate input
         if (!list_items || !Array.isArray(list_items) || list_items.length === 0) {
+            await session.abortTransaction();
             return response.status(400).json({
                 message: "Danh sách sản phẩm không hợp lệ",
                 error: true,
@@ -677,9 +680,10 @@ export async function CashOnDeliveryOrderController(request, response) {
             });
         }
 
-        // Validate each item has valid product data and check stock
+        // Validate each item has valid product data
         for (const item of list_items) {
             if (!item.productId || !item.productId._id) {
+                await session.abortTransaction();
                 return response.status(400).json({
                     message: "Thông tin sản phẩm không hợp lệ",
                     error: true,
@@ -687,30 +691,9 @@ export async function CashOnDeliveryOrderController(request, response) {
                 });
             }
             if (!item.productId.price || item.productId.price <= 0) {
+                await session.abortTransaction();
                 return response.status(400).json({
                     message: `Sản phẩm "${item.productId.name || 'N/A'}" không có giá hợp lệ`,
-                    error: true,
-                    success: false
-                });
-            }
-            
-            // Check stock availability
-            const quantity = item.quantity || item.qty || 1;
-            const product = await ProductModel.findById(item.productId._id).select('stock name').lean();
-            if (!product) {
-                return response.status(400).json({
-                    message: `Sản phẩm "${item.productId.name || 'N/A'}" không tồn tại`,
-                    error: true,
-                    success: false
-                });
-            }
-            if (product.stock === null || product.stock === undefined) {
-                // Skip stock check if stock is null/undefined
-                continue;
-            }
-            if (product.stock < quantity) {
-                return response.status(400).json({
-                    message: `Sản phẩm "${product.name || item.productId.name || 'N/A'}" không đủ tồn kho. Tồn kho hiện tại: ${product.stock}, số lượng yêu cầu: ${quantity}`,
                     error: true,
                     success: false
                 });
@@ -747,16 +730,17 @@ export async function CashOnDeliveryOrderController(request, response) {
                     productId: el.productId._id.toString()
                 };
             }),
+            paymentId: "",
             payment_method: "CASH ON DELIVERY",
-            order_status: "PENDING",
+            payment_status: "PENDING",
             delivery_address: addressId,
             subTotalAmt: Number(subTotalAmt) || 0,
             totalAmt: Number(totalAmt) || 0,
-            voucherId: voucherId || null
         };
 
         // Validate totals
         if (payload.totalAmt <= 0) {
+            await session.abortTransaction();
             return response.status(400).json({
                 message: "Tổng tiền đơn hàng không hợp lệ",
                 error: true,
@@ -764,66 +748,55 @@ export async function CashOnDeliveryOrderController(request, response) {
             });
         }
 
-        const generatedOrder = await OrderModel.create(payload);
+        const generatedOrder = await OrderModel.create([payload], { session });
 
         // Decrease product stock
-        console.log("[CashOnDeliveryOrderController] Decreasing product stock...");
-        try {
-            for (const productDetail of payload.product_details) {
-                const productId = productDetail.productId;
-                const quantity = productDetail.qty || 1;
-                
-                await ProductModel.findByIdAndUpdate(
-                    productId,
-                    { $inc: { stock: -quantity } }
-                );
-                console.log(`[CashOnDeliveryOrderController] Decreased stock for product ${productId} by ${quantity}`);
-            }
-        } catch (stockError) {
-            console.error("[CashOnDeliveryOrderController] Error decreasing product stock:", stockError);
-            // Continue even if stock update fails - order is already created
+        for (const productDetail of payload.product_details) {
+            const productId = productDetail.productId;
+            const quantity = productDetail.qty || 1;
+            
+            await ProductModel.findByIdAndUpdate(
+                productId,
+                { $inc: { stock: -quantity } },
+                { session }
+            );
         }
 
         // Remove from cart
-        console.log("[CashOnDeliveryOrderController] Clearing cart for userId:", userId);
-        try {
-            await CartProductModel.deleteMany({ userId: userId });
-            await UserModel.updateOne(
-                { _id: userId },
-                { shopping_cart: [] }
-            );
-        } catch (cartError) {
-            console.error("[CashOnDeliveryOrderController] Error clearing cart:", cartError);
-            // Continue even if cart clearing fails - order is already created
-        }
+        await CartProductModel.deleteMany({ userId: userId }).session(session);
+        await UserModel.updateOne(
+            { _id: userId },
+            { shopping_cart: [] },
+            { session }
+        );
 
         // Update voucher if exists
         if (voucherId) {
-            try {
-                await VoucherModel.findByIdAndUpdate(
-                    voucherId,
-                    { $inc: { used_count: 1 } }
-                );
-            } catch (voucherError) {
-                console.error("[CashOnDeliveryOrderController] Error updating voucher:", voucherError);
-                // Continue even if voucher update fails
-            }
+            await VoucherModel.findByIdAndUpdate(
+                voucherId,
+                { $inc: { used_count: 1 } },
+                { session }
+            );
         }
+
+        await session.commitTransaction();
 
         return response.json({
             message: "Order successfully",
             error: false,
             success: true,
-            data: generatedOrder
+            data: generatedOrder[0]
         });
 
     } catch (error) {
-        console.error("[CashOnDeliveryOrderController] Error:", error);
+        await session.abortTransaction();
         return response.status(500).json({
             message: error.message || error,
             error: true,
             success: false
         });
+    } finally {
+        session.endSession();
     }
 }
 
@@ -897,69 +870,5 @@ export async function deleteOrderController(req, res) {
         return res.json({ message: "Order deleted", error: false, success: true });
     } catch (error) {
         return res.status(500).json({ message: error.message || error, error: true, success: false });
-    }
-}
-
-export async function updateOrderStatusController(req, res) {
-    try {
-        const userId = req.userId;
-        const { orderId, status } = req.body;
-        
-        if (!orderId || !status) {
-            return res.status(400).json({ 
-                message: "Provide orderId and status", 
-                error: true, 
-                success: false 
-            });
-        }
-
-        // Validate status
-        const validStatuses = ['SUCCESS', 'CANCELLED', 'PENDING'];
-        if (!validStatuses.includes(status.toUpperCase())) {
-            return res.status(400).json({ 
-                message: "Invalid status. Must be SUCCESS, CANCELLED, or PENDING", 
-                error: true, 
-                success: false 
-            });
-        }
-
-        // Check if user is admin
-        const user = await UserModel.findById(userId).select('role');
-        if (!user || user.role !== 'ADMIN') {
-            return res.status(403).json({ 
-                message: "Only admin can update order status", 
-                error: true, 
-                success: false 
-            });
-        }
-
-        // Update order status
-        const updatedOrder = await OrderModel.findOneAndUpdate(
-            { _id: orderId },
-            { order_status: status.toUpperCase() },
-            { new: true }
-        );
-
-        if (!updatedOrder) {
-            return res.status(404).json({ 
-                message: "Order not found", 
-                error: true, 
-                success: false 
-            });
-        }
-
-        return res.json({ 
-            message: "Order status updated successfully", 
-            error: false, 
-            success: true,
-            data: updatedOrder
-        });
-    } catch (error) {
-        console.error("Error updating order status:", error);
-        return res.status(500).json({ 
-            message: error.message || error, 
-            error: true, 
-            success: false 
-        });
     }
 }

@@ -34,69 +34,7 @@ const CheckoutPage = () => {
   const [formKey, setFormKey] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("VNPAY");
-  
-  // Voucher state
-  const [voucherCode, setVoucherCode] = useState('');
-  const [appliedVoucher, setAppliedVoucher] = useState(null);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [finalTotalPrice, setFinalTotalPrice] = useState(totalPrice);
-  const [loadingVoucher, setLoadingVoucher] = useState(false);
 
-  // Update finalTotalPrice when totalPrice changes (if no voucher applied)
-  React.useEffect(() => {
-    if (!appliedVoucher) {
-      setFinalTotalPrice(totalPrice);
-      setDiscountAmount(0);
-    }
-  }, [totalPrice, appliedVoucher]);
-
-
-  // Handle apply voucher
-  const handleApplyVoucher = async () => {
-    if (!voucherCode.trim()) {
-      toast.error("Vui lòng nhập mã giảm giá!");
-      return;
-    }
-
-    setLoadingVoucher(true);
-    try {
-      const response = await Axios.post(
-        `http://localhost:8080/api/voucher/validate`,
-        {
-          code: voucherCode.trim(),
-          totalAmount: notDiscountTotalPrice
-        }
-      );
-
-      if (response.data.success) {
-        const { voucher, discountAmount, finalAmount } = response.data.data;
-        setAppliedVoucher(voucher);
-        setDiscountAmount(discountAmount);
-        setFinalTotalPrice(finalAmount);
-        toast.success(response.data.message || "Áp dụng mã giảm giá thành công!");
-      }
-    } catch (error) {
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        AxiosToastError(error);
-      }
-      setAppliedVoucher(null);
-      setDiscountAmount(0);
-      setFinalTotalPrice(notDiscountTotalPrice);
-    } finally {
-      setLoadingVoucher(false);
-    }
-  };
-
-  // Handle remove voucher
-  const handleRemoveVoucher = () => {
-    setVoucherCode('');
-    setAppliedVoucher(null);
-    setDiscountAmount(0);
-    setFinalTotalPrice(notDiscountTotalPrice);
-    toast.success("Đã xóa mã giảm giá");
-  };
 
   const handlePaymentVNPay = async () => {
     if (!addressList[selectAddress]?._id) {
@@ -112,13 +50,11 @@ const CheckoutPage = () => {
       const response = await Axios.post(
         `http://localhost:8080/api/order/create-payment`,
         {
-          amount: finalTotalPrice,
+          amount: totalPrice,
           list_items: cartItemsList,
           addressId: addressList[selectAddress]?._id,
-          subTotalAmt: notDiscountTotalPrice,
-          totalAmt: finalTotalPrice,
-          typePayment: 'vnpay',
-          voucherId: appliedVoucher?._id || null,
+          subTotalAmt: totalPrice,
+          totalAmt: totalPrice,
         }
       );
       const { paymentUrl } = response.data;
@@ -146,9 +82,8 @@ const CheckoutPage = () => {
         data: {
           list_items: cartItemsList,
           addressId: addressList[selectAddress]?._id,
-          subTotalAmt: notDiscountTotalPrice,
-          totalAmt: finalTotalPrice,
-          voucherId: appliedVoucher?._id || null,
+          subTotalAmt: totalPrice,
+          totalAmt: totalPrice,
         }
       })
 
@@ -462,55 +397,6 @@ const CheckoutPage = () => {
                 <div className="text-center text-gray-500 py-4">Giỏ hàng trống</div>
               )}
             </div>
-            {/* Voucher Section */}
-            <div className="border-t pt-4 mb-4">
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Nhập mã giảm giá"
-                  value={voucherCode}
-                  onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-                  disabled={loadingVoucher || !!appliedVoucher}
-                  className="flex-1 border rounded px-3 py-2 text-sm"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !loadingVoucher && !appliedVoucher) {
-                      handleApplyVoucher();
-                    }
-                  }}
-                />
-                {appliedVoucher ? (
-                  <button
-                    type="button"
-                    onClick={handleRemoveVoucher}
-                    className="px-4 py-2 bg-red-600 text-white rounded text-sm font-medium hover:bg-red-700"
-                  >
-                    Xóa
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleApplyVoucher}
-                    disabled={loadingVoucher || !voucherCode.trim()}
-                    className="px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    {loadingVoucher ? 'Đang xử lý...' : 'Áp dụng'}
-                  </button>
-                )}
-              </div>
-              {appliedVoucher && (
-                <div className="bg-green-50 border border-green-200 rounded p-3 mb-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-green-800">{appliedVoucher.name}</p>
-                      <p className="text-xs text-green-600">Mã: {appliedVoucher.code}</p>
-                    </div>
-                    <span className="text-sm font-bold text-green-700">
-                      -{DisplayPriceInVND(discountAmount)}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
             <div className="border-t pt-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Tổng phụ</span>
@@ -522,13 +408,11 @@ const CheckoutPage = () => {
               </div>
               <div className="flex justify-between">
                 <span>Phiếu giảm giá/Mã</span>
-                <span className={discountAmount > 0 ? 'text-green-600 font-semibold' : ''}>
-                  {discountAmount > 0 ? `-${DisplayPriceInVND(discountAmount)}` : '0 đ'}
-                </span>
+                <span>0 đ</span>
               </div>
               <div className="flex justify-between font-bold text-base text-red-600">
                 <span>Tổng cộng (VND)</span>
-                <span>{DisplayPriceInVND(finalTotalPrice)}</span>
+                <span>{DisplayPriceInVND(totalPrice)}</span>
               </div>
             </div>
             <button

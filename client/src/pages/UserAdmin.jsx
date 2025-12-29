@@ -115,16 +115,16 @@ const UserAdmin = () => {
                 {/* Header Section */}
                 <div className='mb-6'>
                     <div className='flex items-center justify-between mb-4'>
-                        <h1 className="text-2xl font-semibold text-gray-800">Tất cả người dùng</h1>
+                        <h1 className="text-2xl font-semibold text-gray-800">All Users</h1>
                     </div>
                     {/* Search Bar - Below action buttons */}
                     <div className='flex items-center gap-2 justify-end'>
-                        <label className='text-sm text-gray-700 font-medium'>Tìm kiếm:</label>
+                        <label className='text-sm text-gray-700 font-medium'>Search:</label>
                         <div className='max-w-md bg-white px-4 flex items-center gap-3 py-2 rounded-lg border border-gray-300 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200'>
                             <IoSearchOutline size={20} className='text-gray-400' />
                             <input
                                 type='text'
-                                placeholder='Tìm kiếm người dùng...'
+                                placeholder='Search user...'
                                 className='h-full w-full outline-none bg-transparent text-sm'
                                 value={search}
                                 onChange={handleOnChange}
@@ -138,22 +138,22 @@ const UserAdmin = () => {
                     <table className='w-full text-sm'>
                         <thead>
                             <tr className='bg-[#F3F3F3] border-b border-gray-200'>
-                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tên</th>
+                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Name</th>
                                 <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Email</th>
-                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Vai trò</th>
-                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Trạng thái</th>
-                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Ngày tạo</th>
-                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tùy chọn</th>
+                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Role</th>
+                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Status</th>
+                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Date</th>
+                                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Option</th>
                             </tr>
                         </thead>
                         <tbody className='divide-y divide-gray-200'>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-8 text-gray-500">Đang tải...</td>
+                                    <td colSpan="6" className="text-center py-8 text-gray-500">Loading...</td>
                                 </tr>
                             ) : filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-8 text-gray-500">Không tìm thấy người dùng</td>
+                                    <td colSpan="6" className="text-center py-8 text-gray-500">No users found</td>
                                 </tr>
                             ) : (
                                 filteredUsers.map((user) => {
@@ -193,7 +193,7 @@ const UserAdmin = () => {
                                                         ? 'bg-purple-100 text-purple-700' 
                                                         : 'bg-blue-100 text-blue-700'
                                                 }`}>
-                                                    {user.role === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
+                                                    {user.role || 'USER'}
                                                 </span>
                                             </td>
                                             <td className='p-4 text-center'>
@@ -204,7 +204,7 @@ const UserAdmin = () => {
                                                         ? 'bg-red-100 text-red-700'
                                                         : 'bg-gray-100 text-gray-700'
                                                 }`}>
-                                                    {user.status === 'Active' ? 'Hoạt động' : user.status === 'Suspended' ? 'Đã khóa' : 'Hoạt động'}
+                                                    {user.status || 'Active'}
                                                 </span>
                                             </td>
                                             <td className='p-4 text-center'>
@@ -215,14 +215,14 @@ const UserAdmin = () => {
                                             <td className='p-4 text-center'>
                                                 <div className='flex items-center justify-center gap-3'>
                                                     <button
-                                                        title='Xem'
+                                                        title='View'
                                                         className='text-gray-400 hover:text-blue-600 transition-colors'
                                                         onClick={() => handleView(user)}
                                                     >
                                                         <FaEye size={18} />
                                                     </button>
                                                     <button
-                                                        title='Sửa'
+                                                        title='Edit'
                                                         className='text-gray-400 hover:text-green-600 transition-colors'
                                                         onClick={() => {
                                                             setOpenEdit(true)
@@ -232,7 +232,7 @@ const UserAdmin = () => {
                                                         <TbEdit size={18} />
                                                     </button>
                                                     <button
-                                                        title='Xóa'
+                                                        title='Delete'
                                                         className='text-gray-400 hover:text-red-600 transition-colors'
                                                         onClick={() => openDeleteModal(user)}
                                                     >
@@ -325,7 +325,7 @@ const UserAdmin = () => {
                                                         ? 'bg-purple-100 text-purple-700' 
                                                         : 'bg-blue-100 text-blue-700'
                                                 }`}>
-                                                    {viewUser.role === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
+                                                    {viewUser.role || 'USER'}
                                                 </span>
                                             </div>
                                         </div>
@@ -340,7 +340,7 @@ const UserAdmin = () => {
                                                         ? 'bg-red-100 text-red-700'
                                                         : 'bg-gray-100 text-gray-700'
                                                 }`}>
-                                                    {viewUser.status === 'Active' ? 'Hoạt động' : viewUser.status === 'Suspended' ? 'Đã khóa' : 'Hoạt động'}
+                                                    {viewUser.status || 'Active'}
                                                 </span>
                                             </div>
                                         </div>

@@ -401,7 +401,7 @@ const UploadProduct = () => {
                 </div>
 
                 <div className='grid gap-1'>
-                  <label htmlFor='price' className='font-medium'>Giá</label>
+                  <label htmlFor='price' className='font-medium'>Price</label>
                   <input
                     id='price'
                     type='number'

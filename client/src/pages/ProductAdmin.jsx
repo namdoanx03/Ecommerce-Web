@@ -9,7 +9,6 @@ import { TbEdit } from "react-icons/tb";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 import { valideURLConvert } from '../utils/valideURLConvert'
-import { DisplayPriceInVND } from '../utils/DisplayPriceInVND'
 
 const ProductAdmin = () => {
   const [allProducts, setAllProducts] = useState([])
@@ -62,7 +61,11 @@ const ProductAdmin = () => {
   }
 
   const formatCurrency = (amount) => {
-    return DisplayPriceInVND(amount || 0);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(amount || 0);
   };
 
   useEffect(() => {
@@ -170,29 +173,29 @@ const ProductAdmin = () => {
         {/* Header Section */}
         <div className='mb-6'>
           <div className='flex items-center justify-between mb-4'>
-            <h1 className="text-2xl font-semibold text-gray-800">Danh sách sản phẩm</h1>
+            <h1 className="text-2xl font-semibold text-gray-800">Products List</h1>
             <div className='flex items-center gap-3'>
               <button className='px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors'>
-                Nhập
+                Import
               </button>
               <button className='px-4 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors'>
-                Xuất
+                Export
               </button>
               <Link to="/dashboard/upload-product">
                 <button className='px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors'>
-                  Thêm sản phẩm
+                  Add Product
                 </button>
               </Link>
             </div>
           </div>
           {/* Search Bar - Below action buttons */}
           <div className='flex items-center gap-2 justify-end'>
-            <label className='text-sm text-gray-700 font-medium'>Tìm kiếm:</label>
+            <label className='text-sm text-gray-700 font-medium'>Search:</label>
             <div className='max-w-md bg-white px-4 flex items-center gap-3 py-2 rounded-lg border border-gray-300 focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-200'>
               <IoSearchOutline size={20} className='text-gray-400' />
               <input
                 type='text'
-                placeholder='Tìm kiếm sản phẩm...'
+                placeholder='Search product...'
                 className='h-full w-full outline-none bg-transparent text-sm'
                 value={search}
                 onChange={handleOnChange}
@@ -206,23 +209,23 @@ const ProductAdmin = () => {
           <table className='w-full text-sm'>
             <thead>
               <tr className='bg-[#F3F3F3] border-b border-gray-200'>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Ảnh sản phẩm</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider max-w-[200px]'>Tên sản phẩm</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Danh mục</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Số lượng</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Giá</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Giá sau giảm</th>
-                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Tùy chọn</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Product Image</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider max-w-[200px]'>Product Name</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Category</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Current Qty</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Price</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Price After Discount</th>
+                <th className='p-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider'>Option</th>
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-200'>
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-8 text-gray-500">Đang tải...</td>
+                  <td colSpan="7" className="text-center py-8 text-gray-500">Loading...</td>
                 </tr>
               ) : productData.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-8 text-gray-500">Không tìm thấy sản phẩm</td>
+                  <td colSpan="7" className="text-center py-8 text-gray-500">No products found</td>
                 </tr>
               ) : (
                 productData.map((p) => {
@@ -253,9 +256,7 @@ const ProductAdmin = () => {
                         </span>
                       </td>
                       <td className='p-4 text-center'>
-                        <span className={`font-medium ${(p.stock || 0) < 10 ? 'text-red-600' : 'text-gray-700'}`}>
-                          {p.stock || 0}
-                        </span>
+                        <span className='text-gray-700'>{p.stock || 0}</span>
                       </td>
                       <td className='p-4 text-center'>
                         <span className='text-gray-700 font-medium'>{formatCurrency(originalPrice)}</span>
@@ -266,21 +267,21 @@ const ProductAdmin = () => {
                       <td className='p-4 text-center'>
                         <div className='flex items-center justify-center gap-3'>
                           <button 
-                            title='Xem' 
+                            title='View' 
                             className='text-gray-400 hover:text-blue-600 transition-colors'
                             onClick={() => handleView(p)}
                           >
                             <FaEye size={18} />
                           </button>
                           <button 
-                            title='Sửa' 
+                            title='Edit' 
                             className='text-gray-400 hover:text-green-600 transition-colors'
                             onClick={() => handleEdit(p)}
                           >
                             <TbEdit size={18} />
                           </button>
                           <button 
-                            title='Xóa' 
+                            title='Delete' 
                             className='text-gray-400 hover:text-red-600 transition-colors'
                             onClick={() => openDeleteModal(p._id)}
                           >
@@ -298,7 +299,7 @@ const ProductAdmin = () => {
         {/* Pagination */}
         <div className='flex items-center justify-between px-4 py-4 border-t border-gray-200 mt-4'>
           <span className='text-gray-600 text-sm'>
-            {`Hiển thị ${(page - 1) * limit + 1} đến ${Math.min(page * limit, filteredProducts.length)} trong tổng số ${filteredProducts.length} kết quả`}
+            {`Showing ${(page - 1) * limit + 1} to ${Math.min(page * limit, filteredProducts.length)} of ${filteredProducts.length} results`}
           </span>
           <div className='flex items-center gap-1 rounded-lg border border-gray-300 bg-white'>
             <button 

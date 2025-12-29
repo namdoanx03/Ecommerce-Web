@@ -8,7 +8,7 @@ import Loading from './Loading'
 import { useSelector } from 'react-redux'
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
-const AddToCartButton = ({ data, quantity = 1, showFullWidth = false, className = '', children }) => {
+const AddToCartButton = ({ data, showFullWidth = false, className = '', children }) => {
     const { fetchCartItem} = useGlobalContext()
     const [loading, setLoading] = useState(false)
     const cartItem = useSelector(state => state.cartItem.cart)
@@ -29,33 +29,20 @@ const AddToCartButton = ({ data, quantity = 1, showFullWidth = false, className 
         try {
             setLoading(true)
 
-            // Gọi API quantity lần để thêm với số lượng đúng
-            let successCount = 0
-            for (let i = 0; i < quantity; i++) {
-                try {
-                    const response = await Axios({
-                        ...SummaryApi.addTocart,
-                        data: {
-                            productId: data?._id
-                        }
-                    })
-
-                    const { data: responseData } = response
-                    if (responseData.success) {
-                        successCount++
-                    }
-                } catch (error) {
-                    // Continue even if one request fails
+            const response = await Axios({
+                ...SummaryApi.addTocart,
+                data: {
+                    productId: data?._id
                 }
-            }
+            })
 
-            if (successCount > 0) {
-                toast.success(`Đã thêm ${successCount} sản phẩm vào giỏ hàng`)
+            const { data: responseData } = response
+
+            if (responseData.success) {
+                toast.success(responseData.message)
                 if (fetchCartItem) {
                     fetchCartItem()
                 }
-            } else {
-                toast.error("Không thể thêm sản phẩm vào giỏ hàng")
             }
         } catch (error) {
             AxiosToastError(error)
@@ -93,7 +80,7 @@ const AddToCartButton = ({ data, quantity = 1, showFullWidth = false, className 
     }
 
     return (
-        <div className='w-full max-w-[180px]'>
+        <div className='w-full max-w-[150px]'>
             <button onClick={handleADDTocart} className={finalClassName} disabled={loading}>
                 {loading ? <Loading /> : (children || "Thêm vào giỏ")}
             </button>

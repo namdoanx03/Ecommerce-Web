@@ -1,32 +1,42 @@
 import mongoose from "mongoose";
 
-/**
- * Pending Order Model
- * Lưu thông tin đơn hàng tạm thời cho thanh toán online
- * Chỉ lưu khi chưa thanh toán thành công, sẽ được xóa sau khi tạo order thực sự
- */
 const pendingOrderSchema = new mongoose.Schema({
-    orderId: {
-        type: String,
-        required: [true, "Provide orderId"],
-        unique: true,
-        index: true
-    },
     userId: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
         required: true
     },
+    orderId: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true
+    },
     productId: [{
         type: mongoose.Schema.ObjectId,
-        ref: "product"
+        ref: 'product'
     }],
     product_details: [{
-        name: String,
-        qty: Number,
-        price: Number,
-        image: String,
-        productId: String
+        name: {
+            type: String,
+            default: ""
+        },
+        qty: {
+            type: Number,
+            default: 1
+        },
+        price: {
+            type: Number,
+            default: 0
+        },
+        image: {
+            type: String,
+            default: ""
+        },
+        productId: {
+            type: String,
+            required: true
+        }
     }],
     delivery_address: {
         type: mongoose.Schema.ObjectId,
@@ -42,22 +52,30 @@ const pendingOrderSchema = new mongoose.Schema({
     },
     payment_method: {
         type: String,
-        default: ""
-    },
-    momoOrderId: {
-        type: String,
-        default: "" // Tạm thời lưu MoMo orderId để dùng trong callback
+        default: "VNPAY"
     },
     voucherId: {
         type: mongoose.Schema.ObjectId,
         ref: 'voucher',
         default: null
+    },
+    paymentId: {
+        type: String,
+        default: ""
+    },
+    // TTL index để tự động xóa sau 24 giờ nếu không được sử dụng
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        expires: 86400 // 24 hours in seconds
     }
 }, {
     timestamps: true
 });
 
-// TTL index để tự động xóa sau 24 giờ (cho trường hợp payment fail nhưng không có callback)
+// Index để tìm pending order nhanh hơn
+pendingOrderSchema.index({ orderId: 1 });
+pendingOrderSchema.index({ userId: 1 });
 pendingOrderSchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 
 const PendingOrderModel = mongoose.model('pendingorder', pendingOrderSchema);
